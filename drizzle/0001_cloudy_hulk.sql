@@ -1,0 +1,1 @@
+ALTER TABLE "delivery_zones" ADD CONSTRAINT "delivery_zone_unique" UNIQUE("wilaya_code","commune_name_ascii");
