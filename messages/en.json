@@ -1,0 +1,668 @@
+{
+  "metadata": {
+    "title": "Magie Klayn — Scented Mist for Body & Hair",
+    "description": "Eleven mists, eleven moods. A scented veil that matches every version of you — from the softest morning to the boldest night."
+  },
+  "nav": {
+    "home": "Home",
+    "shop": "Shop",
+    "build": "Build Your Box",
+    "vote": "Vote",
+    "cart": "Cart",
+    "admin": "Admin",
+    "login": "Login",
+    "logout": "Logout",
+    "collection": "Collection",
+    "coffrets": "Coffrets",
+    "about": "About"
+  },
+  "common": {
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "add": "Add",
+    "remove": "Remove",
+    "search": "Search",
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "success": "Success!",
+    "tryAgain": "Try Again",
+    "confirm": "Are you sure?",
+    "yes": "Yes",
+    "no": "No",
+    "submit": "Submit",
+    "continue": "Continue",
+    "viewAll": "View All",
+    "seeMore": "See More",
+    "show": "Show",
+    "hide": "Hide",
+    "filters": "Filters",
+    "sortBy": "Sort by",
+    "quantity": "Quantity",
+    "price": "Price",
+    "total": "Total",
+    "subtotal": "Subtotal",
+    "delivery": "Delivery",
+    "free": "Free",
+    "currency": "DA",
+    "openCart": "Open cart"
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "Scented Mist — Body & Hair",
+      "headlineLine1": "Every Color",
+      "headlineLine2": "Tells A",
+      "headlineLine3": "Story",
+      "description": "Eleven mists, eleven moods. A scented veil that matches every version of you — from the softest morning to the boldest night.",
+      "discoverCollection": "Discover the Collection",
+      "ourStory": "Our Story",
+      "bodySplashLabel": "Scented Mist",
+      "scroll": "Scroll",
+      "shopNow": "Shop Now",
+      "buildBox": "Build Your Box"
+    },
+    "features": {
+      "fresh": {
+        "title": "Fresh Daily",
+        "desc": "Baked fresh every morning with premium ingredients"
+      },
+      "delivery": {
+        "title": "Fast Delivery",
+        "desc": "Same-day delivery available for local orders"
+      },
+      "custom": {
+        "title": "Custom Boxes",
+        "desc": "Build your perfect cookie box"
+      }
+    },
+    "featured": {
+      "eyebrow": "The Collection",
+      "titleLine1": "Eleven Mists.",
+      "titleLine2": "Eleven Moods.",
+      "subtitle": "Each bottle carries its own color, like an emotion you choose for the moment. Find yours.",
+      "productMeta": "Scented Mist · Body & Hair"
+    },
+    "vote": {
+      "title": "Bring It Back!",
+      "subtitle": "Vote for your favorite retired flavors",
+      "cta": "Cast Your Vote",
+      "nextDrop": "Next Drop In"
+    },
+    "countdown": {
+      "badge": "Next Drop In",
+      "title": "Something is ",
+      "highlight": "coming",
+      "subtitle": "A secret creation is about to be revealed.",
+      "productSuffix": "drops in:",
+      "hint": "Limited batch · Be ready",
+      "noDrop": "No upcoming drops scheduled"
+    },
+    "newsletter": {
+      "title": "Stay In The Light",
+      "subtitle": "New arrivals, limited editions, and color stories — straight to your inbox.",
+      "emailLabel": "Email address",
+      "placeholder": "Your email address",
+      "button": "Subscribe",
+      "success": "Thanks for subscribing!"
+    },
+    "ticker": {
+      "aria": "Our fragrances"
+    }
+  },
+  "shop": {
+    "title": "Our Cookies",
+    "subtitle": "Handcrafted with love",
+    "filters": {
+      "all": "All",
+      "cookies": "Cookies",
+      "boxes": "Boxes"
+    },
+    "sort": {
+      "name": "Name",
+      "popular": "Most Popular",
+      "priceLow": "Price: Low to High",
+      "priceHigh": "Price: High to Low",
+      "newest": "Newest",
+      "nameAsc": "Name: A-Z",
+      "nameDesc": "Name: Z-A"
+    },
+    "addToCart": "Add to Cart",
+    "soldOut": "Sold Out",
+    "new": "New",
+    "viewDetails": "View Details",
+    "noProducts": "No products found"
+  },
+  "product": {
+    "backToShop": "Back to Shop",
+    "flavour": "Flavour",
+    "allergens": "Allergens",
+    "boxContents": "What's Inside",
+    "quantity": "Quantity",
+    "addToCart": "Add to Cart",
+    "added": "Added to Cart!",
+    "related": "You Might Also Like",
+    "description": "Description",
+    "ingredients": "Ingredients"
+  },
+  "build": {
+    "title": "Build Your Box",
+    "subtitle": "Create your perfect cookie selection",
+    "selectSize": "Choose Box Size",
+    "boxOf4": "Box of 4",
+    "boxOf6": "Box of 6",
+    "boxOf12": "Box of 12",
+    "selected": "Selected",
+    "of": "of",
+    "add": "Add",
+    "remove": "Remove",
+    "yourBox": "Your Box",
+    "emptyBox": "Your box is empty",
+    "addToCart": "Add Box to Cart",
+    "completeSelection": "Please complete your selection",
+    "pieces": "pieces"
+  },
+  "vote": {
+    "title": "Bring It Back!",
+    "subtitle": "Vote for your favorite retired flavors. The most popular cookies might make a comeback!",
+    "badge": "Community Vote",
+    "votes": "votes",
+    "vote": "Vote",
+    "voted": "Voted!",
+    "totalVotes": "total votes cast",
+    "noCandidates": "No vote candidates yet. Check back soon!",
+    "candidates": "candidates"
+  },
+  "cart": {
+    "title": "Your Cart",
+    "subtitle": "Review your order",
+    "empty": "Your cart is empty",
+    "continueShopping": "Continue Shopping",
+    "qty": "Qty",
+    "remove": "Remove",
+    "orderSummary": "Order Summary",
+    "checkout": "Proceed to Checkout",
+    "note": "Special requests? Add them at checkout",
+    "clearCart": "Clear Cart"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "subtitle": "Complete your order",
+    "contactInfo": "Contact Information",
+    "fullName": "Full Name",
+    "phone": "Phone Number",
+    "address": "Delivery Address",
+    "wilaya": "Wilaya",
+    "selectWilaya": "Select wilaya",
+    "commune": "Commune",
+    "selectCommune": "Select commune",
+    "deliveryType": "Delivery Type",
+    "stopDesk": "Stop Desk",
+    "homeDelivery": "Home Delivery",
+    "selectDelivery": "Select delivery",
+    "noWilayas": "Delivery zones not available. Please contact support.",
+    "cookingNote": "Cooking Note (optional)",
+    "cookingNotePlaceholder": "Any special cooking instructions?",
+    "giftNote": "Gift Note (optional)",
+    "giftNotePlaceholder": "Add a personal message...",
+    "placeOrder": "Place Order",
+    "processing": "Processing...",
+    "success": "Order placed successfully!",
+    "required": "Required",
+    "orderDetails": "Order Details"
+  },
+  "footer": {
+    "tagline": "Mists As Perfume",
+    "quickLinks": "Quick Links",
+    "contact": "Contact",
+    "followUs": "Follow Us",
+    "rights": "All rights reserved",
+    "shop": {
+      "title": "Shop",
+      "all": "All fragrances",
+      "about": "About"
+    },
+    "about": {
+      "title": "About",
+      "story": "Our story",
+      "stockists": "Stockists"
+    },
+    "help": {
+      "title": "Help",
+      "contact": "Contact",
+      "shipping": "Shipping",
+      "faq": "FAQ"
+    },
+    "legal": {
+      "privacy": "Privacy",
+      "terms": "Terms"
+    }
+  },
+  "admin": {
+    "sidebar": {
+      "dashboard": "Dashboard",
+      "orders": "Orders",
+      "products": "Products",
+      "weeklyDrop": "Weekly Drop",
+      "votes": "Votes",
+      "signOut": "Sign Out",
+      "language": "Language"
+    },
+    "topbar": {
+      "adminDashboard": "Admin Dashboard"
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "subtitle": "Overview of your shop's performance",
+      "totalOrders": "Total Orders",
+      "revenue": "Revenue",
+      "mostOrdered": "Most Ordered",
+      "mostVoted": "Most Voted",
+      "recentOrders": "Recent Orders",
+      "noOrders": "No orders yet",
+      "viewAll": "View All",
+      "manageProducts": "Manage Products",
+      "scheduleDrop": "Schedule Drop",
+      "viewVotes": "View Votes"
+    },
+    "orders": {
+      "title": "Orders",
+      "subtitle": "Manage customer orders",
+      "orderId": "Order ID",
+      "customer": "Customer",
+      "total": "Total",
+      "status": "Status",
+      "date": "Date",
+      "actions": "Actions",
+      "view": "View",
+      "delete": "Delete",
+      "noOrders": "No orders yet",
+      "topWilayas": "Top Wilayas",
+      "wilaya": "Wilaya",
+      "commune": "Commune",
+      "deliveryType": "Delivery Type",
+      "filters": "Filters",
+      "allWilayas": "All Wilayas",
+      "allStatuses": "All Statuses",
+      "selectWilaya": "Select wilaya",
+      "selectStatus": "Select status",
+      "selectDate": "Select date",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "clearFilters": "Clear Filters",
+      "results": "results",
+      "orders": "orders",
+      "noData": "No data available",
+      "deliveryTypes": {
+        "stop_desk": "Stop Desk",
+        "home": "Home Delivery"
+      },
+      "statusLabels": {
+        "pending": "Pending",
+        "confirmed": "Confirmed",
+        "preparing": "Preparing",
+        "ready": "Ready",
+        "delivered": "Delivered",
+        "cancelled": "Cancelled"
+      },
+      "stats": {
+        "total": "Total Orders",
+        "revenue": "Revenue",
+        "pending": "Pending",
+        "delivered": "Delivered"
+      },
+      "orderDetails": {
+        "title": "Order Details",
+        "status": "Order Status",
+        "customerInfo": "Customer",
+        "deliveryInfo": "Delivery Information",
+        "items": "Items",
+        "notes": "Notes",
+        "cookingNote": "Cooking Note",
+        "giftNote": "Gift Note",
+        "subtotal": "Subtotal",
+        "total": "Total",
+        "orderedOn": "Ordered on",
+        "deleteOrder": "Delete Order"
+      }
+    },
+    "products": {
+      "title": "Products",
+      "subtitle": "Manage your products",
+      "addProduct": "Add Product",
+      "search": "Search products...",
+      "name": "Name",
+      "price": "Price",
+      "type": "Type",
+      "status": "Status",
+      "active": "Active",
+      "inactive": "Inactive",
+      "edit": "Edit",
+      "delete": "Delete",
+      "noProducts": "No products yet. Add some!",
+      "stats": {
+        "total": "Total",
+        "active": "Active",
+        "inactive": "Inactive",
+        "cookies": "Cookies",
+        "boxes": "Boxes"
+      },
+      "form": {
+        "addTitle": "Add Product",
+        "editTitle": "Edit Product",
+        "productImage": "Product Image",
+        "uploadImage": "Click to upload image",
+        "removeImage": "Remove image",
+        "nameLabel": "Name",
+        "priceLabel": "Price (DA)",
+        "description": "Description",
+        "flavour": "Flavour",
+        "allergens": "Allergens (comma-separated)",
+        "boxContents": "Box Contents",
+        "allergensPlaceholder": "e.g., gluten, dairy, eggs",
+        "typeLabel": "Type",
+        "cookie": "Cookie",
+        "box": "Box",
+        "activeLabel": "Active (visible in shop)",
+        "markAsNew": "Mark as New",
+        "cancel": "Cancel",
+        "save": "Save Changes",
+        "create": "Create Product",
+        "sold": "sold",
+        "active": "active",
+        "items": "Items",
+        "selectCookies": "Select Cookies",
+        "cookieQuantity": "Quantity",
+        "addCookie": "Add Cookie",
+        "removeCookie": "Remove",
+        "includedCookies": "Included Cookies"
+      },
+      "actions": "Actions"
+    },
+    "drop": {
+      "title": "Weekly Drop",
+      "subtitle": "Schedule your next cookie reveal with countdown",
+      "scheduleNew": "Schedule New Drop",
+      "selectCookie": "Select Cookie",
+      "chooseCookie": "Choose a cookie...",
+      "date": "Date",
+      "time": "Time",
+      "selectDate": "Select date",
+      "selectTime": "Select time",
+      "schedule": "Schedule Drop",
+      "preview": "Preview",
+      "countdownPreview": "Countdown Preview",
+      "selectDateTime": "Select a date and time to see the preview",
+      "scheduledFor": "Scheduled for",
+      "activeDrop": "Current Active Drop",
+      "noActiveDrop": "No Active Drop",
+      "noActiveDesc": "Schedule a new drop to see it here",
+      "scheduled": "Scheduled",
+      "revealed": "Revealed",
+      "cancelDrop": "Cancel Drop",
+      "dropInfo": "The drop will be visible on the home page with a countdown timer. When the time arrives, the product will be automatically revealed, activated, and marked as new.",
+      "dropLive": "🎉 Drop is Live!",
+      "revealNow": "Reveal Now",
+      "confirmReveal": "Are you sure you want to reveal this drop now? The product will be activated and marked as new.",
+      "revealedSuccess": "Drop revealed! The product is now active and marked as new in the shop."
+    },
+    "votes": {
+      "title": "Vote Management",
+      "subtitle": "Manage community vote candidates",
+      "showChart": "Show Chart",
+      "hideChart": "Hide Chart",
+      "reset": "Reset",
+      "voteResults": "Vote Results",
+      "totalVotes": "total votes",
+      "addFromProduct": "Add from Existing Products",
+      "selectCookie": "Select a cookie...",
+      "addToVote": "Add to Vote",
+      "quickAdd": {
+        "title": "Quick Add New Cookie",
+        "subtitle": "Create a new cookie and add it to vote instantly",
+        "button": "Quick Add Cookie",
+        "cookieImage": "Cookie Image",
+        "uploadImage": "Click to upload image",
+        "cookieName": "Cookie Name",
+        "description": "Description",
+        "price": "Price (DA)",
+        "flavour": "Flavour",
+        "allergens": "Allergens (comma-separated)",
+        "markAsNew": "Mark as New",
+        "active": "Active (visible in shop)",
+        "whatHappens": "What happens next:",
+        "step1": "Product created and added to Products list",
+        "step2": "Automatically added to Vote list",
+        "step3Active": "Will be visible in shop immediately",
+        "step3Inactive": "Will be hidden from shop until activated",
+        "cancel": "Cancel",
+        "create": "Create & Add to Vote",
+        "namePlaceholder": "e.g., Lemon Lavender",
+        "descPlaceholder": "Describe this cookie flavor...",
+        "flavourPlaceholder": "e.g., Lemon",
+        "allergensPlaceholder": "e.g., gluten, dairy, eggs"
+      },
+      "candidates": "Vote Candidates",
+      "cookie": "Cookie",
+      "votes": "Votes",
+      "noCandidates": "No vote candidates yet. Add some!",
+      "deleteConfirm": "Are you sure you want to delete this candidate?",
+      "resetConfirm": "Are you sure you want to reset all votes?"
+    },
+    "common": {
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "edit": "Edit",
+      "create": "Create",
+      "search": "Search",
+      "loading": "Loading...",
+      "error": "Something went wrong",
+      "success": "Success!",
+      "confirm": "Are you sure?"
+    },
+    "login": {
+      "title": "Admin Login",
+      "email": "Email",
+      "password": "Password",
+      "signIn": "Sign In",
+      "signingIn": "Signing in...",
+      "error": "Invalid credentials"
+    }
+  },
+  "brand": {
+    "name": "Magie Klayn",
+    "subtitle": "Body Splash",
+    "homeAria": "Magie Klayn — home"
+  },
+  "coffret": {
+    "eyebrow": "Coffret Edition",
+    "titleLine1": "The Discovery",
+    "titleLine2": "Coffret",
+    "subtitle": "Six miniature mists, one elegant case. The most elegant way to try the whole Magie Klayn color range — or to gift it.",
+    "cta": "View the Coffret"
+  },
+  "contact": {
+    "eyebrow": "Get In Touch",
+    "title": "Let's Talk",
+    "subtitle": "Questions about an order, a fragrance, or a partnership? We're here.",
+    "infoTitle": "Contact Information",
+    "emailLabel": "Email",
+    "phoneLabel": "Phone",
+    "hoursLabel": "Hours",
+    "hoursValue": "Sun – Thu, 9am – 6pm",
+    "formTitle": "Send a Message",
+    "nameLabel": "Name",
+    "namePlaceholder": "Your full name",
+    "emailFieldLabel": "Email",
+    "emailPlaceholder": "you@example.com",
+    "messageLabel": "Message",
+    "messagePlaceholder": "How can we help?",
+    "submit": "Send Message",
+    "success": "Thanks — we'll get back to you shortly.",
+    "ctaEyebrow": "Prefer Email?",
+    "ctaTitle": "Reach us directly, anytime.",
+    "ctaButton": "Email Us",
+    "errors": {
+      "nameRequired": "Please enter your name.",
+      "emailInvalid": "Please enter a valid email address.",
+      "messageRequired": "Your message should be at least 10 characters."
+    }
+  },
+  "about": {
+    "eyebrow": "Our Philosophy",
+    "titleLine1": "One Fragrance.",
+    "titleLine2": "One Mood.",
+    "titleLine3": "One Color.",
+    "description": "At Magie Klayn, fragrance is a feeling before it's a scent. Each mist is designed like a color — a mood you choose for the moment, the light, and the day's desire.",
+    "tagline": "The elegance that follows you everywhere.",
+    "exploreCollection": "Explore the collection",
+    "pageEyebrow": "About Us",
+    "pageTitleLine1": "The Story Behind",
+    "pageTitleLine2": "Every Bottle",
+    "pageIntro": "Magie Klayn was born from a simple idea: a fragrance should feel like choosing a mood, not just a scent.",
+    "valuesEyebrow": "What We Stand For",
+    "valuesTitle": "Our Values",
+    "value1Title": "Crafted With Care",
+    "value1Desc": "Every mist is formulated in small batches to preserve quality and character.",
+    "value2Title": "Color As Emotion",
+    "value2Desc": "Each fragrance is paired with a color that reflects the mood it was made to evoke.",
+    "value3Title": "Made To Last",
+    "value3Desc": "Long-lasting, skin- and hair-safe formulas designed for everyday wear.",
+    "findUsEyebrow": "Visit Us",
+    "findUsTitle": "Find Us In Store",
+    "findUsDesc": "Available at select stockists across the country — check our Stockists page for locations near you.",
+    "ctaTitle": "Ready to find your color?",
+    "ctaDesc": "Explore all eleven mists and find the one that matches your mood.",
+    "ctaButton": "Shop the Collection"
+  },
+  "notFound": {
+    "eyebrow": "Lost Scent",
+    "title": "This Page Has Evaporated",
+    "description": "The page you're looking for doesn't exist, or the mist has already faded. Let's get you back to something that lingers.",
+    "backHome": "Back to Home",
+    "browseShop": "Browse the Collection",
+    "code": "404",
+    "browseCollection": "Browse the Collection"
+  },
+  "faq": {
+    "eyebrow": "Questions & Answers",
+    "title": "Frequently Asked",
+    "subtitle": "Everything you need to know about our mists, orders, and delivery. Can't find your answer? Reach out — we reply fast.",
+    "contactCta": "Still have a question?",
+    "contactButton": "Contact Us",
+    "groups": {
+      "top": {
+        "label": "First Impressions",
+        "sublabel": "Top Notes",
+        "items": [
+          {
+            "q": "What is a scented mist, exactly?",
+            "a": "A scented mist is a lightweight fragrance spray made for both body and hair. It's less concentrated than a traditional perfume, so it layers beautifully without overwhelming, and it's safe for daily use on hair."
+          },
+          {
+            "q": "How many fragrances are in the collection?",
+            "a": "Eleven mists, each built around a distinct mood and color. From the softest morning scents to bolder evening ones, there's a version of you in every bottle."
+          },
+          {
+            "q": "How long does the scent last?",
+            "a": "Most customers notice a soft, radiant trail for 4 to 6 hours, longer on hair than on skin. For best results, mist onto clean skin or slightly damp hair."
+          }
+        ]
+      },
+      "heart": {
+        "label": "Orders & Delivery",
+        "sublabel": "Heart Notes",
+        "items": [
+          {
+            "q": "Which wilayas do you deliver to?",
+            "a": "We deliver across all 58 wilayas via Stop Desk or Home Delivery. Available options are shown automatically at checkout based on your address."
+          },
+          {
+            "q": "How long does delivery take?",
+            "a": "Stop Desk orders typically arrive within 2 to 4 business days. Home delivery may take slightly longer depending on your area."
+          },
+          {
+            "q": "Can I track my order?",
+            "a": "Yes. Once your order ships, you'll receive tracking details by phone or email so you can follow it every step of the way."
+          },
+          {
+            "q": "What payment methods do you accept?",
+            "a": "We currently accept cash on delivery for all orders, with card payment coming soon."
+          }
+        ]
+      },
+      "base": {
+        "label": "Care & Support",
+        "sublabel": "Base Notes",
+        "items": [
+          {
+            "q": "Can I build a custom box?",
+            "a": "Yes. Use Build Your Box to select a size and mix any mists you like into one coffret, perfect for gifting or trying several at once."
+          },
+          {
+            "q": "How should I store my mist?",
+            "a": "Keep bottles away from direct sunlight and extreme heat. Stored properly, an unopened mist keeps its full character for up to 24 months."
+          },
+          {
+            "q": "What if I'm not happy with my order?",
+            "a": "Reach out within 7 days of delivery and our team will make it right, whether that's an exchange or support finding your match."
+          }
+        ]
+      }
+    }
+  },
+  "shipping": {
+    "eyebrow": "Delivery & Boutiques",
+    "title": "Shipping & Pickup",
+    "subtitle": "Have your mist delivered to your door, or come smell it in person at one of our two boutiques.",
+
+    "homeTitle": "Home Delivery",
+    "homeDesc": "Delivered across Algeria in protective packaging, tracked from our workshop to your door.",
+    "homeMeta": "2–5 business days",
+
+    "pickupTitle": "Boutique Pickup",
+    "pickupDesc": "Order online and collect for free at our Algiers or Oran boutique — usually ready within 24 hours.",
+    "pickupMeta": "Ready in 24h",
+
+    "noticeLabel": "Please note:",
+    "noticeText": "Delivery times may vary during high-demand periods or in remote wilayas. You'll receive a tracking link by SMS and email as soon as your order ships.",
+
+    "storesEyebrow": "Visit Us",
+    "storesTitle": "Our Boutiques",
+    "storesSubtitle": "Magie Klayn is currently available in two cities. Come test the full collection in person.",
+
+    "addressLabel": "Address",
+    "hoursLabel": "Opening Hours",
+    "phoneLabel": "Phone",
+    "viewOnMap": "View on map",
+
+    "storeAlgiers": {
+      "badge": "Boutique",
+      "city": "Algiers",
+      "address": "12 Rue Didouche Mourad, Algiers 16000",
+      "hours": "Mon–Sat, 10:00 – 19:00",
+      "phone": "+213 21 00 00 00",
+      "phoneHref": "+21321000000",
+      "mapUrl": "https://maps.app.goo.gl/8Z4rURyqWBcNkdFN6"
+    },
+    "storeOran": {
+      "badge": "Boutique",
+      "city": "Oran",
+      "address": "8 Boulevard de l'ALN, Oran 31000",
+      "hours": "Mon–Sat, 10:00 – 19:00",
+      "phone": "+213 41 00 00 00",
+      "phoneHref": "+21341000000",
+      "mapUrl": "https://maps.app.goo.gl/7nTjBh27SqT7rgRR7"
+    },
+
+    "ctaEyebrow": "Questions?",
+    "ctaTitle": "Can't find what you're looking for?",
+    "ctaButton": "Contact Us"
+  }
+}

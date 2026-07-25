@@ -1,0 +1,97 @@
+"use client";
+
+import * as React from "react";
+import Link from "next/link";
+import { useTranslations } from "next-intl";
+
+export const Footer: React.FC = () => {
+  const t = useTranslations();
+
+  return (
+    <footer className="site-footer">
+      <div className="footer-top">
+        <div className="footer-brand">
+          <Link
+            href="/"
+            className="wordmark wordmark-footer"
+            aria-label={t("brand.homeAria")}
+          >
+            <span className="wordmark-mark" aria-hidden="true">
+              <svg viewBox="0 0 40 20" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M0 20 L10 0 L20 14 L30 0 L40 20"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinejoin="round"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </span>
+            <span className="wordmark-text">Magie Klayn</span>
+          </Link>
+          <p className="footer-tagline">{t("footer.tagline")}</p>
+          <div className="footer-social">
+            <a href="#" className="icon-circle" aria-label="Instagram">
+              <svg
+                viewBox="0 0 20 20"
+                width="15"
+                height="15"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+              >
+                <rect x="3" y="3" width="14" height="14" rx="4" />
+                <circle cx="10" cy="10" r="3.2" />
+                <circle
+                  cx="14"
+                  cy="6"
+                  r="0.6"
+                  fill="currentColor"
+                  stroke="none"
+                />
+              </svg>
+            </a>
+            <a href="#" className="icon-circle" aria-label="TikTok">
+              <svg
+                viewBox="0 0 20 20"
+                width="15"
+                height="15"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+              >
+                <path d="M11 3v9.2a2.6 2.6 0 1 1-2-2.53" />
+                <path d="M11 3c.3 1.9 1.7 3.3 3.5 3.5" />
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <div className="footer-links">
+          <div className="footer-col">
+            <h3 className="footer-col-title">{t("footer.shop.title")}</h3>
+            <Link href="/shop">{t("footer.shop.all")}</Link>
+            <Link href="/about">{t("footer.shop.about")}</Link>
+          </div>
+          <div className="footer-col">
+            <h3 className="footer-col-title">{t("footer.help.title")}</h3>
+            <Link href="/contact">{t("footer.help.contact")}</Link>
+            <Link href="/shipping">{t("footer.help.shipping")}</Link>
+            <Link href="/faq">{t("footer.help.faq")}</Link>
+          </div>
+        </div>
+      </div>
+
+      <div className="footer-bottom">
+        <p>
+          © {new Date().getFullYear()} Magie Klayn. {t("footer.rights")}.
+        </p>
+        <div className="footer-legal">
+          <Link href="/privacy">{t("footer.legal.privacy")}</Link>
+          <Link href="/terms">{t("footer.legal.terms")}</Link>
+        </div>
+      </div>
+    </footer>
+  );
+};
