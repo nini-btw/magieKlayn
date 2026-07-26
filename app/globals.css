@@ -1100,12 +1100,17 @@ img {
 .footer-brand {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: var(--space-sm);
+  align-items: center;
+  text-align: center;
 }
 
 .wordmark-footer {
-  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.wordmark-footer .wordmark-mark {
+  display: inline-flex;
 }
 
 .footer-tagline {
@@ -1400,14 +1405,14 @@ img {
 }
 
 .faq-answer {
-  display: grid;
-  transition: grid-template-rows var(--duration-base) var(--ease-luxury);
+  max-height: 0;
   overflow: hidden;
+  transition: max-height var(--duration-base) var(--ease-luxury);
 }
 
 .faq-answer-inner {
-  min-height: 0;
   overflow: hidden;
+  margin: 0;
   font-size: 0.92rem;
   line-height: 1.7;
   color: var(--color-text-secondary);

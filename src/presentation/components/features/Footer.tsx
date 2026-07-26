@@ -3,6 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { Logo } from "@/presentation/components/ui/Logo";
 
 export const Footer: React.FC = () => {
   const t = useTranslations();
@@ -17,16 +18,7 @@ export const Footer: React.FC = () => {
             aria-label={t("brand.homeAria")}
           >
             <span className="wordmark-mark" aria-hidden="true">
-              <svg viewBox="0 0 40 20" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M0 20 L10 0 L20 14 L30 0 L40 20"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.6"
-                  strokeLinejoin="round"
-                  strokeLinecap="round"
-                />
-              </svg>
+              <Logo />
             </span>
             <span className="wordmark-text">Magie Klayn</span>
           </Link>

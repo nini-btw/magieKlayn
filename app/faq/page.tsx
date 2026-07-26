@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
@@ -13,6 +13,7 @@ const GROUP_KEYS = ["top", "heart", "base"] as const;
 export default function FaqPage() {
   const t = useTranslations();
   const [openId, setOpenId] = useState<string | null>(null);
+  const answerRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   function toggle(id: string) {
     setOpenId((prev) => (prev === id ? null : id));
@@ -57,9 +58,14 @@ export default function FaqPage() {
                         </button>
                         <div
                           id={`faq-answer-${id}`}
+                          ref={(el) => {
+                            answerRefs.current[id] = el;
+                          }}
                           className="faq-answer"
                           style={{
-                            gridTemplateRows: isOpen ? "1fr" : "0fr",
+                            maxHeight: isOpen
+                              ? `${answerRefs.current[id]?.scrollHeight ?? 500}px`
+                              : "0px",
                           }}
                         >
                           <p className="faq-answer-inner">{item.a}</p>

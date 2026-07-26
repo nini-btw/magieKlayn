@@ -6,6 +6,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { toggleCart } from "@/presentation/store/ui/ui.slice";
 import { selectTotalItemCount } from "@/presentation/store/cart/cart.slice";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { Logo } from "@/presentation/components/ui/Logo";
 import { useTranslations } from "next-intl";
 
 export const Header: React.FC = () => {
@@ -30,16 +31,7 @@ export const Header: React.FC = () => {
         <div className="nav-center">
           <Link href="/" className="wordmark" aria-label={t("brand.homeAria")}>
             <span className="wordmark-mark" aria-hidden="true">
-              <svg viewBox="0 0 40 20" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M0 20 L10 0 L20 14 L30 0 L40 20"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.6"
-                  strokeLinejoin="round"
-                  strokeLinecap="round"
-                />
-              </svg>
+              <Logo />
             </span>
             <span className="wordmark-text">Magie Klayn</span>
             <span className="wordmark-sub">Body Splash</span>
