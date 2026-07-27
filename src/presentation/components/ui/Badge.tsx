@@ -11,12 +11,16 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
 
 export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
   ({ className, variant = "default", ...props }, ref) => {
+    // Variant keys kept as-is (Crumbleivable naming) so existing call sites
+    // don't break. There's no second accent color in this brand, so "pink"
+    // now just means "solid emphasis" — worth renaming to "accent" project-wide
+    // when there's time, but not required for this pass.
     const variants: Record<BadgeVariant, string> = {
-      default: "bg-[#F0E6D6] text-[#5C3D2E]",
-      pink: "bg-[#F4538A] text-white",
-      outline: "border border-[#E8D5C0] text-[#5C3D2E]",
-      soldOut: "bg-[#A07850] text-white",
-      new: "bg-[#F4538A] text-white",
+      default: "bg-bg-soft text-ink",
+      pink: "bg-ink text-white",
+      outline: "border border-line text-ink",
+      soldOut: "bg-line text-ink-soft",
+      new: "border border-ink text-ink bg-white",
     };
 
     return (
@@ -25,12 +29,12 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
         className={cn(
           "inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest",
           variants[variant],
-          className
+          className,
         )}
         {...props}
       />
     );
-  }
+  },
 );
 
 Badge.displayName = "Badge";

@@ -2,102 +2,106 @@
 
 import * as React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useDispatch } from "react-redux";
 import { motion } from "framer-motion";
-import { CheckIcon } from "lucide-react";
-import type { Product, CookiePiece, CookieBox } from "@/domain/entities/product";
+import type { Product } from "@/domain/entities/product";
 import { Badge } from "@/presentation/components/ui/Badge";
 import { Button } from "@/presentation/components/ui/Button";
 import { QuantityStepper } from "@/presentation/components/ui/QuantityStepper";
 import { addItem } from "@/presentation/store/cart/cart.slice";
 import { addToast } from "@/presentation/store/ui/ui.slice";
 import { formatPrice } from "@/presentation/lib/utils";
+import { getLiquidStyle } from "@/presentation/lib/colors";
 import { fadeInUp } from "@/presentation/lib/animations";
-import { useTranslations } from 'next-intl';
-
-// Map product slugs to image filenames (same as ProductCard)
-const getProductImage = (slug: string): string => {
-  const imageMap: Record<string, string> = {
-    chocoShips: "/images/chocoShips.png",
-    mm: "/images/mm.png",
-    pistash: "/images/pistash.png",
-    viola: "/images/viola.png",
-    peanut: "/images/peanut.png",
-    ben10: "/images/ben10.png",
-    lotus: "/images/lotus.png",
-    strawbery: "/images/strawbery.png",
-
-    // boxes
-    bueno: "/images/bueno.png",
-    kinder: "/images/kinder.png",
-    tiramisu: "/images/tiramisu.png",
-  };
-  return imageMap[slug] || "/images/bueno.png";
-};
+import { useTranslations } from "next-intl";
 
 /**
  * Product detail component (client-side interactivity)
+ *
+ * Single product type in this brand (fragrance) — no cookie/box branching.
+ * Visual defaults to the on-brand `.bottle` illustration, colored from
+ * `product.colorHex`, per DESIGN-SYSTEM.md: "color comes from the product
+ * itself." Falls back to a real photo only if `product.images` has one.
  */
 export const ProductDetail: React.FC<{ product: Product }> = ({ product }) => {
   const dispatch = useDispatch();
   const t = useTranslations();
   const [quantity, setQuantity] = React.useState(1);
-  const isCookie = product.type === "cookie";
-  const cookie = isCookie ? (product as CookiePiece) : null;
-  const box = !isCookie ? (product as CookieBox) : null;
 
-  // Get the main image for this product
-  const mainImage = product.images?.[0] || getProductImage(product.slug);
+  const hasPhoto = product.images.length > 0;
 
   const handleAddToCart = () => {
-    if (isCookie && cookie?.isSoldOut) {
-      dispatch(
-        addToast({
-          message: t("shop.soldOut"),
-          type: "error",
-        })
-      );
+    if (product.isSoldOut) {
+      dispatch(addToast({ message: t("shop.soldOut"), type: "error" }));
       return;
     }
 
     // Serialize product to avoid Redux non-serializable value errors
-    // Convert Date objects to ISO strings
     const serializedProduct = {
       ...product,
-      createdAt: product.createdAt ? new Date(product.createdAt).toISOString() : null,
-      updatedAt: product.updatedAt ? new Date(product.updatedAt).toISOString() : null,
+      createdAt: product.createdAt
+        ? new Date(product.createdAt).toISOString()
+        : null,
+      updatedAt: product.updatedAt
+        ? new Date(product.updatedAt).toISOString()
+        : null,
     };
 
-    // Cast to unknown first to bypass type checking, then to Product
-    dispatch(addItem({ product: serializedProduct as unknown as Product, quantity }));
+    dispatch(
+      addItem({ product: serializedProduct as unknown as Product, quantity }),
+    );
     dispatch(
       addToast({
         message: `${quantity}x ${product.name} ${t("product.added")}`,
         type: "success",
-      })
+      }),
     );
     setQuantity(1);
   };
 
   return (
-    <div data-testid="product-detail" className="my-4 grid gap-12 lg:grid-cols-2">
-      {/* Images */}
+    <div
+      data-testid="product-detail"
+      className="my-4 grid gap-12 lg:grid-cols-2"
+    >
+      {/* Visual */}
       <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5 }}
-        className="space-y-4"
       >
-        {/* Main Image */}
-        <div className="relative aspect-square overflow-hidden rounded-3xl bg-pink-50">
-          <Image src={mainImage} alt={product.name} fill className="object-cover" priority />
-          {isCookie && cookie?.isNew && (
-            <div className="absolute top-4 left-4">
+        <div className="product-detail-visual">
+          {hasPhoto ? (
+            <Image
+              src={product.images[0]}
+              alt={product.name}
+              fill
+              className="object-cover"
+              priority
+            />
+          ) : (
+            <div
+              className="bottle bottle-lg"
+              style={getLiquidStyle(product.colorHex)}
+            >
+              <div className="bottle-cap" />
+              <div className="bottle-shoulder" />
+              <div className="bottle-label">
+                <span className="bottle-label-brand">Magie Klayn</span>
+                <span className="bottle-label-name">{product.name}</span>
+                <span className="bottle-label-sub">{product.sizeMl}ml</span>
+              </div>
+            </div>
+          )}
+
+          {product.isNew && (
+            <div className="product-detail-badge">
               <Badge variant="new">{t("shop.new")}</Badge>
             </div>
           )}
-          {isCookie && cookie?.isSoldOut && (
-            <div className="absolute top-4 left-4">
+          {product.isSoldOut && (
+            <div className="product-detail-badge">
               <Badge variant="soldOut">{t("shop.soldOut")}</Badge>
             </div>
           )}
@@ -105,85 +109,63 @@ export const ProductDetail: React.FC<{ product: Product }> = ({ product }) => {
       </motion.div>
 
       {/* Details */}
-      <motion.div variants={fadeInUp} initial="initial" animate="animate" className="space-y-6">
-        {/* Type badge */}
-        <div>
-          <Badge variant="outline" className="mb-4">
-            {isCookie ? t("shop.filters.cookies") : t("shop.filters.boxes")}
-          </Badge>
-          <h1 className="font-display text-brown-900 text-4xl sm:text-5xl">{product.name}</h1>
-        </div>
+      <motion.div
+        variants={fadeInUp}
+        initial="initial"
+        animate="animate"
+        className="space-y-6"
+      >
+        {/* Breadcrumb — sits above the name, as requested */}
+        <nav className="breadcrumb" aria-label="Breadcrumb">
+          <Link href="/shop">{t("shop.title")}</Link>
+          <span className="breadcrumb-separator">/</span>
+          <span className="breadcrumb-current">{product.name}</span>
+        </nav>
+
+        <h1 className="section-title">{product.name}</h1>
 
         {/* Price */}
-        <p className="text-brown-900 text-3xl font-extrabold tabular-nums">
+        <p className="text-[var(--color-text)] text-3xl font-extrabold tabular-nums">
           {formatPrice(product.price)}
         </p>
 
         {/* Description */}
-        <p className="text-brown-700 text-lg leading-relaxed">{product.description}</p>
+        <p className="section-description max-w-none text-lg">
+          {product.description}
+        </p>
 
-        {/* Cookie-specific info */}
-        {isCookie && cookie && (
-          <>
-            {/* Flavour */}
-            {cookie.flavour && (
-              <div>
-                <h3 className="text-brown-400 mb-2 text-xs font-bold tracking-widest uppercase">
-                  {t("product.flavour")}
-                </h3>
-                <p className="text-brown-700 text-lg font-medium">{cookie.flavour}</p>
-              </div>
-            )}
-            
-            {/* Allergens */}
-            {cookie.allergens.length > 0 && (
-              <div>
-                <h3 className="text-brown-400 mb-3 text-xs font-bold tracking-widest uppercase">
-                  {t("product.allergens")}
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {cookie.allergens.map((allergen) => (
-                    <span
-                      key={allergen}
-                      className="bg-sand text-brown-700 rounded-full px-3 py-1 text-xs font-medium"
-                    >
-                      {allergen.charAt(0).toUpperCase() + allergen.slice(1)}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-          </>
-        )}
-
-        {/* Box-specific info */}
-        {!isCookie && box && box.includedCookies?.length > 0 && (
-          <div className="bg-pink-50/50 rounded-2xl p-5">
-            <h3 className="text-brown-400 mb-4 text-xs font-bold tracking-widest uppercase">
-              {t("product.boxContents")}
-            </h3>
-            <ul className="space-y-3">
-              {box.includedCookies.map((item, index) => (
-                <li key={index} className="text-brown-700 flex items-center gap-3">
-                  <div className="bg-pink-100 rounded-full p-1">
-                    <CheckIcon className="h-4 w-4 text-pink-500" />
-                  </div>
-                  <span className="font-medium">{item.quantity}x</span>
-                  <span className="text-brown-800">{item.productName || "Cookie"}</span>
-                </li>
+        {/* Fragrance notes */}
+        {product.notes.length > 0 && (
+          <div>
+            <h3 className="eyebrow">{t("product.notes")}</h3>
+            <div className="note-chip-list">
+              {product.notes.map((note) => (
+                <span key={note} className="note-chip">
+                  {note}
+                </span>
               ))}
-            </ul>
+            </div>
           </div>
         )}
 
+        {/* Specs */}
+        <div className="product-detail-specs">
+          <div>
+            <div className="product-detail-spec-label">{t("product.size")}</div>
+            <div className="product-detail-spec-value">{product.sizeMl}ml</div>
+          </div>
+        </div>
+
         {/* Quantity & Add to Cart */}
-        <div className="border-brown-100 space-y-4 border-t pt-6">
+        <div className="border-[var(--color-border)] space-y-4 border-t pt-6">
           <div className="flex items-center gap-4">
-            <span className="text-brown-700 text-sm font-semibold">{t("product.quantity")}:</span>
+            <span className="text-[var(--color-text)] text-sm font-semibold">
+              {t("product.quantity")}:
+            </span>
             <QuantityStepper
               value={quantity}
               onChange={setQuantity}
-              disabled={isCookie && cookie?.isSoldOut}
+              disabled={product.isSoldOut}
             />
           </div>
 
@@ -192,15 +174,15 @@ export const ProductDetail: React.FC<{ product: Product }> = ({ product }) => {
             size="lg"
             fullWidth
             onClick={handleAddToCart}
-            disabled={isCookie && cookie?.isSoldOut}
+            disabled={product.isSoldOut}
           >
-            {isCookie && cookie?.isSoldOut ? t("shop.soldOut") : t("shop.addToCart")}
+            {product.isSoldOut ? t("shop.soldOut") : t("shop.addToCart")}
           </Button>
         </div>
 
         {/* Note */}
-        <p className="text-brown-400 text-sm">
-          {t("build.completeSelection")}. {t("common.free")} {t("common.delivery")}.
+        <p className="text-[var(--color-text-secondary)] text-sm">
+          {t("common.free")} {t("common.delivery")}.
         </p>
       </motion.div>
     </div>

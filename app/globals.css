@@ -48,14 +48,6 @@
    Reset
    ========================================================================== */
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
 html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
@@ -1662,4 +1654,82 @@ img {
   .store-grid {
     grid-template-columns: 1fr;
   }
+}
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: var(--space-sm);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+.breadcrumb a {
+  transition: opacity var(--duration-base) var(--ease-luxury);
+}
+.breadcrumb a:hover {
+  opacity: 0.6;
+}
+.breadcrumb-separator {
+  color: var(--color-border);
+}
+.breadcrumb-current {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.product-detail-visual {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  border-radius: var(--radius-card);
+  background-color: var(--color-bg-soft);
+  overflow: hidden;
+}
+.product-detail-visual .bottle-lg {
+  --w: min(30vw, 280px);
+}
+.product-detail-badge {
+  position: absolute;
+  top: var(--space-md);
+  left: var(--space-md);
+  z-index: 2;
+}
+
+.note-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+.note-chip {
+  background-color: var(--color-bg-soft);
+  color: var(--color-text);
+  border-radius: 999px;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.product-detail-specs {
+  display: flex;
+  gap: var(--space-lg);
+  flex-wrap: wrap;
+}
+.product-detail-spec-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  margin-bottom: 2px;
+}
+.product-detail-spec-value {
+  font-size: 0.95rem;
+  color: var(--color-text);
+  font-weight: 600;
 }

@@ -69,16 +69,16 @@
     },
     "features": {
       "fresh": {
-        "title": "Fresh Daily",
-        "desc": "Baked fresh every morning with premium ingredients"
+        "title": "Small Batch",
+        "desc": "Every mist is formulated in small batches to preserve quality and character"
       },
       "delivery": {
-        "title": "Fast Delivery",
-        "desc": "Same-day delivery available for local orders"
+        "title": "Nationwide Delivery",
+        "desc": "Delivered to all 58 wilayas via Stop Desk or Home Delivery"
       },
       "custom": {
-        "title": "Custom Boxes",
-        "desc": "Build your perfect cookie box"
+        "title": "Build Your Coffret",
+        "desc": "Mix and match mists into your own gift box"
       }
     },
     "featured": {
@@ -90,7 +90,7 @@
     },
     "vote": {
       "title": "Bring It Back!",
-      "subtitle": "Vote for your favorite retired flavors",
+      "subtitle": "Vote for your favorite retired mists",
       "cta": "Cast Your Vote",
       "nextDrop": "Next Drop In"
     },
@@ -116,12 +116,12 @@
     }
   },
   "shop": {
-    "title": "Our Cookies",
-    "subtitle": "Handcrafted with love",
+    "eyebrow": "Shop the Collection",
+    "title": "Our Fragrances",
+    "subtitle": "Eleven mists, eleven moods — find the one that matches yours.",
     "filters": {
       "all": "All",
-      "cookies": "Cookies",
-      "boxes": "Boxes"
+      "new": "New Arrivals"
     },
     "sort": {
       "name": "Name",
@@ -139,8 +139,10 @@
     "noProducts": "No products found"
   },
   "product": {
+    "notes": "Notes",
+    "size": "Size",
     "backToShop": "Back to Shop",
-    "flavour": "Flavour",
+    "scent": "Scent",
     "allergens": "Allergens",
     "boxContents": "What's Inside",
     "quantity": "Quantity",
@@ -152,7 +154,7 @@
   },
   "build": {
     "title": "Build Your Box",
-    "subtitle": "Create your perfect cookie selection",
+    "subtitle": "Mix and match mists into your own coffret",
     "selectSize": "Choose Box Size",
     "boxOf4": "Box of 4",
     "boxOf6": "Box of 6",
@@ -165,11 +167,11 @@
     "emptyBox": "Your box is empty",
     "addToCart": "Add Box to Cart",
     "completeSelection": "Please complete your selection",
-    "pieces": "pieces"
+    "pieces": "bottles"
   },
   "vote": {
     "title": "Bring It Back!",
-    "subtitle": "Vote for your favorite retired flavors. The most popular cookies might make a comeback!",
+    "subtitle": "Vote for your favorite retired mists. The most popular fragrances might make a comeback!",
     "badge": "Community Vote",
     "votes": "votes",
     "vote": "Vote",
@@ -206,8 +208,6 @@
     "homeDelivery": "Home Delivery",
     "selectDelivery": "Select delivery",
     "noWilayas": "Delivery zones not available. Please contact support.",
-    "cookingNote": "Cooking Note (optional)",
-    "cookingNotePlaceholder": "Any special cooking instructions?",
     "giftNote": "Gift Note (optional)",
     "giftNotePlaceholder": "Add a personal message...",
     "placeOrder": "Place Order",
@@ -323,7 +323,6 @@
         "deliveryInfo": "Delivery Information",
         "items": "Items",
         "notes": "Notes",
-        "cookingNote": "Cooking Note",
         "giftNote": "Gift Note",
         "subtotal": "Subtotal",
         "total": "Total",
@@ -349,8 +348,8 @@
         "total": "Total",
         "active": "Active",
         "inactive": "Inactive",
-        "cookies": "Cookies",
-        "boxes": "Boxes"
+        "bottles": "Bottles",
+        "coffrets": "Coffrets"
       },
       "form": {
         "addTitle": "Add Product",
@@ -361,13 +360,13 @@
         "nameLabel": "Name",
         "priceLabel": "Price (DA)",
         "description": "Description",
-        "flavour": "Flavour",
+        "scent": "Scent",
         "allergens": "Allergens (comma-separated)",
         "boxContents": "Box Contents",
-        "allergensPlaceholder": "e.g., gluten, dairy, eggs",
+        "allergensPlaceholder": "e.g., alcohol, essential oils",
         "typeLabel": "Type",
-        "cookie": "Cookie",
-        "box": "Box",
+        "bottle": "Bottle",
+        "coffret": "Coffret",
         "activeLabel": "Active (visible in shop)",
         "markAsNew": "Mark as New",
         "cancel": "Cancel",
@@ -376,20 +375,20 @@
         "sold": "sold",
         "active": "active",
         "items": "Items",
-        "selectCookies": "Select Cookies",
-        "cookieQuantity": "Quantity",
-        "addCookie": "Add Cookie",
-        "removeCookie": "Remove",
-        "includedCookies": "Included Cookies"
+        "selectBottles": "Select Bottles",
+        "bottleQuantity": "Quantity",
+        "addBottle": "Add Bottle",
+        "removeBottle": "Remove",
+        "includedBottles": "Included Bottles"
       },
       "actions": "Actions"
     },
     "drop": {
       "title": "Weekly Drop",
-      "subtitle": "Schedule your next cookie reveal with countdown",
+      "subtitle": "Schedule your next fragrance reveal with countdown",
       "scheduleNew": "Schedule New Drop",
-      "selectCookie": "Select Cookie",
-      "chooseCookie": "Choose a cookie...",
+      "selectFragrance": "Select Fragrance",
+      "chooseFragrance": "Choose a fragrance...",
       "date": "Date",
       "time": "Time",
       "selectDate": "Select date",
@@ -420,18 +419,18 @@
       "voteResults": "Vote Results",
       "totalVotes": "total votes",
       "addFromProduct": "Add from Existing Products",
-      "selectCookie": "Select a cookie...",
+      "selectFragrance": "Select a fragrance...",
       "addToVote": "Add to Vote",
       "quickAdd": {
-        "title": "Quick Add New Cookie",
-        "subtitle": "Create a new cookie and add it to vote instantly",
-        "button": "Quick Add Cookie",
-        "cookieImage": "Cookie Image",
+        "title": "Quick Add New Fragrance",
+        "subtitle": "Create a new fragrance and add it to vote instantly",
+        "button": "Quick Add Fragrance",
+        "fragranceImage": "Fragrance Image",
         "uploadImage": "Click to upload image",
-        "cookieName": "Cookie Name",
+        "fragranceName": "Fragrance Name",
         "description": "Description",
         "price": "Price (DA)",
-        "flavour": "Flavour",
+        "scent": "Scent",
         "allergens": "Allergens (comma-separated)",
         "markAsNew": "Mark as New",
         "active": "Active (visible in shop)",
@@ -442,13 +441,13 @@
         "step3Inactive": "Will be hidden from shop until activated",
         "cancel": "Cancel",
         "create": "Create & Add to Vote",
-        "namePlaceholder": "e.g., Lemon Lavender",
-        "descPlaceholder": "Describe this cookie flavor...",
-        "flavourPlaceholder": "e.g., Lemon",
-        "allergensPlaceholder": "e.g., gluten, dairy, eggs"
+        "namePlaceholder": "e.g., Amber Bloom",
+        "descPlaceholder": "Describe this fragrance...",
+        "flavourPlaceholder": "e.g., Citrus & Bergamot",
+        "allergensPlaceholder": "e.g., alcohol, essential oils"
       },
       "candidates": "Vote Candidates",
-      "cookie": "Cookie",
+      "fragrance": "Fragrance",
       "votes": "Votes",
       "noCandidates": "No vote candidates yet. Add some!",
       "deleteConfirm": "Are you sure you want to delete this candidate?",

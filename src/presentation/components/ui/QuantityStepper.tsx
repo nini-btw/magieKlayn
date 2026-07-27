@@ -36,16 +36,16 @@ export const QuantityStepper: React.FC<QuantityStepperProps> = ({
   return (
     <div
       className={cn(
-        "inline-flex items-center gap-0 bg-[#F0E6D6] rounded-full overflow-hidden border border-[#E8D5C0]",
-        disabled && "opacity-50"
+        "inline-flex items-center gap-0 bg-bg-soft rounded-full overflow-hidden border border-line",
+        disabled && "opacity-50",
       )}
     >
       <button
         onClick={decrement}
         disabled={disabled || value <= min}
         className={cn(
-          "flex items-center justify-center text-[#5C3D2E] hover:bg-[#FFF0F5] transition-colors disabled:cursor-not-allowed cursor-pointer",
-          isSmall ? "w-6 h-6" : "w-10 h-10"
+          "flex items-center justify-center text-ink hover:bg-white transition-colors disabled:cursor-not-allowed cursor-pointer",
+          isSmall ? "w-6 h-6" : "w-10 h-10",
         )}
         aria-label="Decrease quantity"
       >
@@ -63,16 +63,20 @@ export const QuantityStepper: React.FC<QuantityStepperProps> = ({
           <line x1="5" y1="12" x2="19" y2="12" />
         </svg>
       </button>
-      <span className={cn(
-        "text-center font-bold text-[#2C1810]",
-        isSmall ? "w-6 text-xs" : "w-10"
-      )}>{value}</span>
+      <span
+        className={cn(
+          "text-center font-semibold text-ink",
+          isSmall ? "w-6 text-xs" : "w-10",
+        )}
+      >
+        {value}
+      </span>
       <button
         onClick={increment}
         disabled={disabled || value >= max}
         className={cn(
-          "flex items-center justify-center text-[#F4538A] hover:bg-[#FFF0F5] transition-colors disabled:cursor-not-allowed cursor-pointer",
-          isSmall ? "w-6 h-6" : "w-10 h-10"
+          "flex items-center justify-center text-ink hover:bg-white transition-colors disabled:cursor-not-allowed cursor-pointer",
+          isSmall ? "w-6 h-6" : "w-10 h-10",
         )}
         aria-label="Increase quantity"
       >

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Comfortaa, Noto_Kufi_Arabic } from "next/font/google";
-import { cookies } from 'next/headers';
+import { cookies } from "next/headers";
 import { Providers } from "./providers";
 import "./globals.css";
 import { locales, defaultLocale } from "../i18n.config";
@@ -22,15 +22,15 @@ const notoKufiArabic = Noto_Kufi_Arabic({
 export const metadata: Metadata = {
   metadataBase: new URL("http://localhost:3000"),
   title: {
-    template: "%s · Crumbleivable!",
-    default: "Crumbleivable! — Chewy American Cookies in Wahran",
+    template: "%s · Magie Klayn",
+    default: "Magie Klayn — Fragrances de Luxe à Oran",
   },
   description:
-    "Chewy, gooey American-style cookies delivered to your door in Wahran (Oran), Algeria. Order online, no account needed.",
+    "Découvrez Magie Klayn, une maison de parfums de luxe livrée directement chez vous à Oran, Algérie. Commandez en ligne, sans compte requis.",
   openGraph: {
     type: "website",
     locale: "fr_DZ",
-    siteName: "Crumbleivable!",
+    siteName: "Magie Klayn",
     images: [
       {
         url: "/og-default.jpg",
@@ -47,15 +47,16 @@ export const metadata: Metadata = {
 async function getLocaleAndMessages() {
   // Read locale from cookie
   const cookieStore = await cookies();
-  const localeCookie = cookieStore.get('NEXT_LOCALE')?.value;
-  
+  const localeCookie = cookieStore.get("NEXT_LOCALE")?.value;
+
   const validLocales = locales as readonly string[];
-  const locale = localeCookie && validLocales.includes(localeCookie) 
-    ? localeCookie 
-    : defaultLocale;
-  
+  const locale =
+    localeCookie && validLocales.includes(localeCookie)
+      ? localeCookie
+      : defaultLocale;
+
   const messages = (await import(`../messages/${locale}.json`)).default;
-  
+
   return { locale, messages };
 }
 
@@ -65,16 +66,18 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const { locale, messages } = await getLocaleAndMessages();
-  const isRTL = locale === 'ar';
+  const isRTL = locale === "ar";
 
   return (
     <html
       lang={locale}
-      dir={isRTL ? 'rtl' : 'ltr'}
+      dir={isRTL ? "rtl" : "ltr"}
       className={`${comfortaa.variable} ${notoKufiArabic.variable}`}
     >
-      <body className="font-body bg-[#FDF6EE] text-[#2C1810] min-h-screen">
-        <Providers locale={locale} messages={messages}>{children}</Providers>
+      <body className="font-body bg-white text-[#1A1A1A] min-h-screen">
+        <Providers locale={locale} messages={messages}>
+          {children}
+        </Providers>
       </body>
     </html>
   );

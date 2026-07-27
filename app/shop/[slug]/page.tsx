@@ -44,7 +44,11 @@ export async function generateMetadata({
 /**
  * Product detail page
  */
-export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function ProductPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   // Unwrap the Promise
   const { slug } = await params;
   const product = await getProductBySlug(slug);
@@ -55,23 +59,6 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
   return (
     <div className="min-h-screen">
-      {/* Breadcrumb */}
-      <div className="bg-sand/30 border-brown-100 border-b">
-        <div className="container-site py-4">
-          <nav className="text-brown-400 flex items-center gap-2 text-sm">
-            <Link href="/" className="hover:text-brown-700 transition-colors">
-              Home
-            </Link>
-            <ChevronRightIcon className="h-4 w-4" />
-            <Link href="/shop" className="hover:text-brown-700 transition-colors">
-              Shop
-            </Link>
-            <ChevronRightIcon className="h-4 w-4" />
-            <span className="text-brown-700">{product.name}</span>
-          </nav>
-        </div>
-      </div>
-
       {/* Product Detail */}
       <section className="section">
         <div className="container-site">

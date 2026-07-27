@@ -4,20 +4,19 @@ import * as React from "react";
 import { useState, useRef, useEffect } from "react";
 import { XIcon, UploadIcon } from "lucide-react";
 import { Button } from "@/presentation/components/ui/Button";
-import { Select } from "@/presentation/components/ui/Select";
-import type { Product } from "@/domain/entities/product";
-import { isCookiePiece } from "@/domain/entities/product";
 
 export type ProductFormData = {
   name: string;
   slug: string;
   description: string;
   price: number;
-  type: "cookie" | "box";
+  /** Fragrance notes, e.g. ["Vanille", "Musc blanc", "Fleur d'oranger"] */
+  notes: string[];
+  /** Signature liquid color for the `.bottle` illustration, e.g. "#D0223A" */
+  colorHex: string;
+  sizeMl: number;
   isActive: boolean;
   images: string[];
-  flavour?: string;
-  allergens?: string[];
   isNew?: boolean;
   isSoldOut?: boolean;
 };
@@ -29,7 +28,6 @@ type ProductFormProps = {
   isSubmitting: boolean;
   mode: "product" | "vote";
   t: (key: string) => string;
-  onTypeChange?: (type: "cookie" | "box") => void;
 };
 
 export function ProductForm({
@@ -39,7 +37,6 @@ export function ProductForm({
   isSubmitting,
   mode,
   t,
-  onTypeChange,
 }: ProductFormProps) {
   const isVoteMode = mode === "vote";
 
@@ -47,12 +44,12 @@ export function ProductForm({
     name: "",
     slug: "",
     description: "",
-    price: 150,
-    type: "cookie",
+    price: 1500,
+    notes: [],
+    colorHex: "#D0223A",
+    sizeMl: 50,
     isActive: isVoteMode ? false : true,
     images: [],
-    flavour: "",
-    allergens: [],
     isNew: true,
     isSoldOut: false,
     ...initialData,
@@ -121,7 +118,7 @@ export function ProductForm({
     <form onSubmit={handleSubmit} className="space-y-4">
       {/* Image Upload */}
       <div>
-        <label className="mb-2 block text-xs font-bold tracking-widest text-[#A07850] uppercase">
+        <label className="mb-2 block text-xs font-bold tracking-widest text-[var(--color-text-secondary)] uppercase">
           {t("admin.products.form.productImage")}
         </label>
         <input
@@ -134,14 +131,14 @@ export function ProductForm({
 
         <div className="flex gap-3">
           {formData.images[0] && (
-            <div className="group relative h-32 w-32 flex-shrink-0 overflow-hidden rounded-2xl border-2 border-[#F4538A]">
+            <div className="group relative h-32 w-32 flex-shrink-0 overflow-hidden rounded-2xl border-2 border-[var(--color-text)]">
               <img
                 src={formData.images[0]}
                 alt="Preview"
                 className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105"
               />
               <div className="absolute inset-0 rounded-2xl bg-black/0 transition-colors duration-200 group-hover:bg-black/25" />
-              <span className="absolute bottom-1.5 left-1.5 rounded-full bg-[#F4538A] px-1.5 py-0.5 text-[10px] font-semibold text-white shadow">
+              <span className="absolute bottom-1.5 left-1.5 rounded-full bg-[var(--color-text)] px-1.5 py-0.5 text-[10px] font-semibold text-white shadow">
                 Main
               </span>
               <button
@@ -158,15 +155,17 @@ export function ProductForm({
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={isUploading}
-            className="flex h-32 flex-1 cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-[#E8D5C0] transition-colors hover:border-[#F4538A] hover:bg-[#FFF0F5] disabled:opacity-50"
+            className="flex h-32 flex-1 cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-[var(--color-border)] transition-colors hover:border-[var(--color-text)] hover:bg-[var(--color-bg-soft)] disabled:opacity-50"
           >
             {isUploading ? (
-              <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#F4538A] border-t-transparent" />
+              <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--color-text)] border-t-transparent" />
             ) : (
               <>
-                <UploadIcon className="h-8 w-8 text-[#A07850]" />
-                <span className="text-sm text-[#A07850]">
-                  {formData.images[0] ? "Replace image" : t("admin.products.form.uploadImage")}
+                <UploadIcon className="h-8 w-8 text-[var(--color-text-secondary)]" />
+                <span className="text-sm text-[var(--color-text-secondary)]">
+                  {formData.images[0]
+                    ? "Replace image"
+                    : t("admin.products.form.uploadImage")}
                 </span>
               </>
             )}
@@ -176,7 +175,7 @@ export function ProductForm({
 
       {/* Name */}
       <div>
-        <label className="mb-2 block text-xs font-bold tracking-widest text-[#A07850] uppercase">
+        <label className="mb-2 block text-xs font-bold tracking-widest text-[var(--color-text-secondary)] uppercase">
           {t("admin.products.form.nameLabel")} *
         </label>
         <input
@@ -184,127 +183,167 @@ export function ProductForm({
           required
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          className="w-full rounded-2xl border-2 border-[#E8D5C0] bg-white px-4 py-3 text-[#2C1810] focus:border-[#F4538A] focus:ring-2 focus:ring-[#F4538A]/20 focus:outline-none"
+          className="w-full rounded-2xl border-2 border-[var(--color-border)] bg-white px-4 py-3 text-[var(--color-text)] focus:border-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-text)]/10 focus:outline-none"
         />
       </div>
 
-      {/* Price */}
-      <div>
-        <label className="mb-2 block text-xs font-bold tracking-widest text-[#A07850] uppercase">
-          {t("admin.products.form.priceLabel")} *
-        </label>
-        <input
-          type="number"
-          required
-          min={0}
-          value={formData.price}
-          onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
-          onWheel={(e) => e.currentTarget.blur()}
-          className="w-full rounded-2xl border-2 border-[#E8D5C0] bg-white px-4 py-3 text-[#2C1810] focus:border-[#F4538A] focus:ring-2 focus:ring-[#F4538A]/20 focus:outline-none"
-        />
+      {/* Price & Size */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <label className="mb-2 block text-xs font-bold tracking-widest text-[var(--color-text-secondary)] uppercase">
+            {t("admin.products.form.priceLabel")} *
+          </label>
+          <input
+            type="number"
+            required
+            min={0}
+            value={formData.price}
+            onChange={(e) =>
+              setFormData({ ...formData, price: Number(e.target.value) })
+            }
+            onWheel={(e) => e.currentTarget.blur()}
+            className="w-full rounded-2xl border-2 border-[var(--color-border)] bg-white px-4 py-3 text-[var(--color-text)] focus:border-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-text)]/10 focus:outline-none"
+          />
+        </div>
+
+        <div>
+          <label className="mb-2 block text-xs font-bold tracking-widest text-[var(--color-text-secondary)] uppercase">
+            {t("admin.products.form.sizeLabel")} *
+          </label>
+          <input
+            type="number"
+            required
+            min={0}
+            value={formData.sizeMl}
+            onChange={(e) =>
+              setFormData({ ...formData, sizeMl: Number(e.target.value) })
+            }
+            onWheel={(e) => e.currentTarget.blur()}
+            className="w-full rounded-2xl border-2 border-[var(--color-border)] bg-white px-4 py-3 text-[var(--color-text)] focus:border-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-text)]/10 focus:outline-none"
+          />
+        </div>
       </div>
 
       {/* Description */}
       <div>
-        <label className="mb-2 block text-xs font-bold tracking-widest text-[#A07850] uppercase">
+        <label className="mb-2 block text-xs font-bold tracking-widest text-[var(--color-text-secondary)] uppercase">
           {t("admin.products.form.description")} *
         </label>
         <textarea
           required
           value={formData.description}
-          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, description: e.target.value })
+          }
           rows={3}
-          className="w-full resize-none rounded-2xl border-2 border-[#E8D5C0] bg-white px-4 py-3 text-[#2C1810] focus:border-[#F4538A] focus:ring-2 focus:ring-[#F4538A]/20 focus:outline-none"
+          className="w-full resize-none rounded-2xl border-2 border-[var(--color-border)] bg-white px-4 py-3 text-[var(--color-text)] focus:border-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-text)]/10 focus:outline-none"
         />
       </div>
 
-      {/* Flavour & Allergens (only for cookies) */}
-      {formData.type === "cookie" && (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <label className="mb-2 block text-xs font-bold tracking-widest text-[#A07850] uppercase">
-              {t("admin.products.form.flavour")}
-            </label>
+      {/* Signature color & Notes */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <label className="mb-2 block text-xs font-bold tracking-widest text-[var(--color-text-secondary)] uppercase">
+            {t("admin.products.form.colorLabel")}
+          </label>
+          <div className="flex items-center gap-3">
             <input
-              type="text"
-              value={formData.flavour}
-              onChange={(e) => setFormData({ ...formData, flavour: e.target.value })}
-              className="w-full rounded-2xl border-2 border-[#E8D5C0] bg-white px-4 py-3 text-[#2C1810] focus:border-[#F4538A] focus:ring-2 focus:ring-[#F4538A]/20 focus:outline-none"
-            />
-          </div>
-
-          <div>
-            <label className="mb-2 block text-xs font-bold tracking-widest text-[#A07850] uppercase">
-              {t("admin.products.form.allergens")}
-            </label>
-            <input
-              type="text"
-              defaultValue={formData.allergens?.join(", ") || ""}
-              onBlur={(e) =>
-                setFormData({
-                  ...formData,
-                  allergens: e.target.value
-                    .split(",")
-                    .map((s) => s.trim())
-                    .filter(Boolean),
-                })
+              type="color"
+              value={formData.colorHex}
+              onChange={(e) =>
+                setFormData({ ...formData, colorHex: e.target.value })
               }
-              placeholder={t("admin.products.form.allergensPlaceholder")}
-              className="w-full rounded-2xl border-2 border-[#E8D5C0] bg-white px-4 py-3 text-[#2C1810] focus:border-[#F4538A] focus:ring-2 focus:ring-[#F4538A]/20 focus:outline-none"
+              className="h-11 w-11 cursor-pointer rounded-xl border-2 border-[var(--color-border)] bg-white p-1"
+            />
+            <input
+              type="text"
+              value={formData.colorHex}
+              onChange={(e) =>
+                setFormData({ ...formData, colorHex: e.target.value })
+              }
+              className="w-full rounded-2xl border-2 border-[var(--color-border)] bg-white px-4 py-3 text-[var(--color-text)] uppercase focus:border-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-text)]/10 focus:outline-none"
             />
           </div>
         </div>
-      )}
 
-      {/* Type */}
-      <div>
-        <label className="mb-2 block text-xs font-bold tracking-widest text-[#A07850] uppercase">
-          {t("admin.products.form.typeLabel")} *
-        </label>
-        <Select
-          value={formData.type}
-          onChange={(value) => setFormData({ ...formData, type: value as "cookie" | "box" })}
-          options={[
-            { value: "cookie", label: t("admin.products.form.cookie") },
-            { value: "box", label: t("admin.products.form.box") },
-          ]}
-          placeholder={t("admin.products.form.typeLabel")}
-          size="md"
-          variant="default"
-          className="w-full"
-        />
+        <div>
+          <label className="mb-2 block text-xs font-bold tracking-widest text-[var(--color-text-secondary)] uppercase">
+            {t("admin.products.form.notesLabel")}
+          </label>
+          <input
+            type="text"
+            defaultValue={formData.notes?.join(", ") || ""}
+            onBlur={(e) =>
+              setFormData({
+                ...formData,
+                notes: e.target.value
+                  .split(",")
+                  .map((s) => s.trim())
+                  .filter(Boolean),
+              })
+            }
+            placeholder={t("admin.products.form.notesPlaceholder")}
+            className="w-full rounded-2xl border-2 border-[var(--color-border)] bg-white px-4 py-3 text-[var(--color-text)] focus:border-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-text)]/10 focus:outline-none"
+          />
+        </div>
       </div>
 
       {/* Checkboxes */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <label className="flex cursor-pointer items-center gap-3 rounded-2xl border-2 border-[#E8D5C0] p-3 transition-colors hover:border-[#F4538A]/50">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <label className="flex cursor-pointer items-center gap-3 rounded-2xl border-2 border-[var(--color-border)] p-3 transition-colors hover:border-[var(--color-text)]/50">
           <input
             type="checkbox"
             checked={formData.isActive}
-            onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-            className="h-4 w-4 rounded border-2 border-[#E8D5C0] text-[#F4538A] focus:ring-[#F4538A]"
+            onChange={(e) =>
+              setFormData({ ...formData, isActive: e.target.checked })
+            }
+            className="h-4 w-4 rounded border-2 border-[var(--color-border)] text-[var(--color-text)] focus:ring-[var(--color-text)]"
             data-testid="product-toggle"
           />
-          <span className="text-sm text-[#2C1810]">{t("admin.products.form.activeLabel")}</span>
+          <span className="text-sm text-[var(--color-text)]">
+            {t("admin.products.form.activeLabel")}
+          </span>
         </label>
 
         {!isVoteMode && (
-          <label className="flex cursor-pointer items-center gap-3 rounded-2xl border-2 border-[#E8D5C0] p-3 transition-colors hover:border-[#F4538A]/50">
-            <input
-              type="checkbox"
-              checked={formData.isNew}
-              onChange={(e) => setFormData({ ...formData, isNew: e.target.checked })}
-              className="h-4 w-4 rounded border-2 border-[#E8D5C0] text-[#F4538A] focus:ring-[#F4538A]"
-            />
-            <span className="text-sm text-[#2C1810]">{t("admin.products.form.markAsNew")}</span>
-          </label>
+          <>
+            <label className="flex cursor-pointer items-center gap-3 rounded-2xl border-2 border-[var(--color-border)] p-3 transition-colors hover:border-[var(--color-text)]/50">
+              <input
+                type="checkbox"
+                checked={formData.isNew}
+                onChange={(e) =>
+                  setFormData({ ...formData, isNew: e.target.checked })
+                }
+                className="h-4 w-4 rounded border-2 border-[var(--color-border)] text-[var(--color-text)] focus:ring-[var(--color-text)]"
+              />
+              <span className="text-sm text-[var(--color-text)]">
+                {t("admin.products.form.markAsNew")}
+              </span>
+            </label>
+
+            <label className="flex cursor-pointer items-center gap-3 rounded-2xl border-2 border-[var(--color-border)] p-3 transition-colors hover:border-[var(--color-text)]/50">
+              <input
+                type="checkbox"
+                checked={formData.isSoldOut}
+                onChange={(e) =>
+                  setFormData({ ...formData, isSoldOut: e.target.checked })
+                }
+                className="h-4 w-4 rounded border-2 border-[var(--color-border)] text-[var(--color-text)] focus:ring-[var(--color-text)]"
+              />
+              <span className="text-sm text-[var(--color-text)]">
+                {t("admin.products.form.markAsSoldOut")}
+              </span>
+            </label>
+          </>
         )}
       </div>
 
       {/* Vote mode info box */}
       {isVoteMode && (
-        <div className="rounded-xl bg-[#FFF0F5] p-3 text-sm text-[#5C3D2E]">
-          <p className="mb-1 font-medium">{t("admin.votes.quickAdd.whatHappens")}</p>
+        <div className="rounded-xl bg-[var(--color-bg-soft)] p-3 text-sm text-[var(--color-text)]">
+          <p className="mb-1 font-medium">
+            {t("admin.votes.quickAdd.whatHappens")}
+          </p>
           <ul className="list-inside list-disc space-y-1">
             <li>{t("admin.votes.quickAdd.step1")}</li>
             <li>{t("admin.votes.quickAdd.step2")}</li>
@@ -319,16 +358,24 @@ export function ProductForm({
 
       {/* Actions */}
       <div className="flex gap-3 pt-4">
-        <Button type="button" variant="ghost" onClick={onCancel} className="flex-1">
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={onCancel}
+          className="flex-1"
+        >
           {t("common.cancel")}
         </Button>
         <Button
           type="submit"
+          variant="primary"
           isLoading={isSubmitting || isUploading}
-          className="flex-1 bg-[#F4538A] hover:bg-[#D63A72]"
+          className="flex-1"
           data-testid="save-product-button"
         >
-          {initialData?.name ? t("admin.products.form.save") : t("admin.products.form.create")}
+          {initialData?.name
+            ? t("admin.products.form.save")
+            : t("admin.products.form.create")}
         </Button>
       </div>
     </form>

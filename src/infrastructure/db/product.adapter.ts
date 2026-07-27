@@ -3,8 +3,8 @@
  * @module infrastructure/db/product-adapter
  */
 
-import { eq, desc, sql, and } from "drizzle-orm";
-import type { Product, CookiePiece, CookieBox } from "@/domain/entities/product";
+import { eq, desc, sql } from "drizzle-orm";
+import type { Product } from "@/domain/entities/product";
 import type { IProductRepository } from "@/domain/ports/repositories";
 import { db, mockProducts } from "./client";
 import { products } from "./schema";
@@ -43,9 +43,14 @@ export class ProductRepository implements IProductRepository {
     return result.map(this.mapToEntity);
   }
 
-  async getAllActivePaginated(limit: number, offset: number): Promise<Product[]> {
+  async getAllActivePaginated(
+    limit: number,
+    offset: number,
+  ): Promise<Product[]> {
     if (isMockMode) {
-      return mockProducts.filter((p) => p.isActive).slice(offset, offset + limit);
+      return mockProducts
+        .filter((p) => p.isActive)
+        .slice(offset, offset + limit);
     }
 
     const result = await db
@@ -65,16 +70,18 @@ export class ProductRepository implements IProductRepository {
     }
 
     const result = await db
-      .select({ count: sql<number>`count(*)` })
+      .select({
+        count: sql<number>`count(*)`,
+      })
       .from(products)
       .where(eq(products.isActive, true));
 
-    return result[0]?.count || 0;
+    return Number(result[0]?.count ?? 0);
   }
 
   async getBySlug(slug: string): Promise<Product | null> {
     if (isMockMode) {
-      return mockProducts.find((p) => p.slug === slug) || null;
+      return mockProducts.find((p) => p.slug === slug) ?? null;
     }
 
     const result = await db
@@ -88,7 +95,7 @@ export class ProductRepository implements IProductRepository {
 
   async getById(id: string): Promise<Product | null> {
     if (isMockMode) {
-      return mockProducts.find((p) => p.id === id) || null;
+      return mockProducts.find((p) => p.id === id) ?? null;
     }
 
     const result = await db
@@ -100,43 +107,16 @@ export class ProductRepository implements IProductRepository {
     return result[0] ? this.mapToEntity(result[0]) : null;
   }
 
-  async getAllCookies(): Promise<CookiePiece[]> {
-    if (isMockMode) {
-      return mockProducts.filter((p): p is CookiePiece => p.type === "cookie" && p.isActive);
-    }
-
-    const result = await db
-      .select()
-      .from(products)
-      .where(and(eq(products.type, "cookie"), eq(products.isActive, true)));
-
-    return result.map(this.mapToEntity) as CookiePiece[];
-  }
-
-  async getAllBoxes(): Promise<CookieBox[]> {
-    if (isMockMode) {
-      return mockProducts.filter((p): p is CookieBox => p.type === "box" && p.isActive);
-    }
-
-    const result = await db
-      .select()
-      .from(products)
-      .where(and(eq(products.type, "box"), eq(products.isActive, true)));
-
-    return result.map(this.mapToEntity) as CookieBox[];
-  }
-
   async create(
-    product: Omit<Product, "id" | "createdAt" | "updatedAt">
+    product: Omit<Product, "id" | "createdAt" | "updatedAt">,
   ): Promise<Product> {
     if (isMockMode) {
-      const newProduct = {
+      return {
         ...product,
-        id: `prod-${Date.now()}`,
+        id: crypto.randomUUID(),
         createdAt: new Date(),
         updatedAt: new Date(),
-      } as Product;
-      return newProduct;
+      };
     }
 
     const result = await db
@@ -145,15 +125,14 @@ export class ProductRepository implements IProductRepository {
         name: product.name,
         slug: product.slug,
         description: product.description,
+        notes: product.notes,
         price: product.price,
+        colorHex: product.colorHex, // <-- was missing
+        sizeMl: product.sizeMl,
+        images: product.images,
         isActive: product.isActive,
-        type: product.type,
-        images: product.images || [],
-        allergens: product.type === "cookie" ? (product as CookiePiece).allergens || [] : undefined,
-        includedCookies: product.type === "box" ? (product as CookieBox).includedCookies || [] : undefined,
-        isNew: product.type === "cookie" ? (product as CookiePiece).isNew ?? false : undefined,
-        isSoldOut: product.type === "cookie" ? (product as CookiePiece).isSoldOut ?? false : undefined,
-        flavour: product.type === "cookie" ? (product as CookiePiece).flavour : undefined,
+        isNew: product.isNew,
+        isSoldOut: product.isSoldOut,
       })
       .returning();
 
@@ -162,9 +141,17 @@ export class ProductRepository implements IProductRepository {
 
   async update(id: string, product: Partial<Product>): Promise<Product> {
     if (isMockMode) {
-      const index = mockProducts.findIndex((p) => p.id === id);
-      if (index === -1) throw new Error("Product not found");
-      return mockProducts[index];
+      const existing = mockProducts.find((p) => p.id === id);
+
+      if (!existing) {
+        throw new Error("Product not found");
+      }
+
+      return {
+        ...existing,
+        ...product,
+        updatedAt: new Date(),
+      };
     }
 
     const result = await db
@@ -176,61 +163,57 @@ export class ProductRepository implements IProductRepository {
       .where(eq(products.id, id))
       .returning();
 
-    if (!result[0]) throw new Error("Product not found");
+    if (!result[0]) {
+      throw new Error("Product not found");
+    }
+
     return this.mapToEntity(result[0]);
   }
 
   async toggleActive(id: string): Promise<void> {
     const product = await this.getById(id);
-    if (!product) return;
 
-    if (isMockMode) return;
+    if (!product || isMockMode) {
+      return;
+    }
 
     await db
       .update(products)
-      .set({ isActive: !product.isActive, updatedAt: new Date() })
+      .set({
+        isActive: !product.isActive,
+        updatedAt: new Date(),
+      })
       .where(eq(products.id, id));
   }
 
   async delete(id: string): Promise<void> {
-    if (isMockMode) return;
+    if (isMockMode) {
+      return;
+    }
 
     await db.delete(products).where(eq(products.id, id));
   }
 
   /**
-   * Map database record to domain entity
+   * Map database row to domain entity
    */
   private mapToEntity(row: typeof products.$inferSelect): Product {
-    const base = {
+    return {
       id: row.id,
       name: row.name,
       slug: row.slug,
       description: row.description,
-      price: row.price, // Price as-is (no conversion)
+      notes: row.notes ?? [],
+      price: row.price,
+      colorHex: row.colorHex, // <-- was missing
+      sizeMl: row.sizeMl,
+      images: row.images ?? [],
       isActive: row.isActive,
-      type: row.type,
-      images: row.images || [],
-      createdAt: new Date(row.createdAt),
-      updatedAt: new Date(row.updatedAt),
+      isNew: row.isNew,
+      isSoldOut: row.isSoldOut,
+      createdAt: row.createdAt,
+      updatedAt: row.updatedAt,
     };
-
-    if (row.type === "cookie") {
-      return {
-        ...base,
-        type: "cookie",
-        flavour: row.flavour || "",
-        allergens: row.allergens || [],
-        isNew: row.isNew ?? false,
-        isSoldOut: row.isSoldOut ?? false,
-      } as CookiePiece;
-    } else {
-      return {
-        ...base,
-        type: "box",
-        includedCookies: row.includedCookies || [],
-      } as CookieBox;
-    }
   }
 }
 

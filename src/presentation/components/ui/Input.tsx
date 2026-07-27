@@ -3,8 +3,7 @@
 import * as React from "react";
 import { cn } from "@/presentation/lib/utils";
 
-export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {
+export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
   helperText?: string;
@@ -19,7 +18,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="text-xs font-bold uppercase tracking-widest text-[#5C3D2E] block"
+            className="text-[0.78rem] font-semibold uppercase tracking-[0.06em] text-ink-soft block"
           >
             {label}
           </label>
@@ -28,26 +27,25 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           ref={ref}
           id={inputId}
           className={cn(
-            "w-full bg-white border border-[#E8D5C0] rounded-2xl px-4 py-3.5 text-[#2C1810] placeholder:text-[#A07850] focus:outline-none focus:border-[#F77BAD] focus:ring-2 focus:ring-[#FFF0F5] transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed",
-            error && "border-red-400 focus:border-red-400 focus:ring-red-100",
-            className
+            "w-full bg-white border border-line rounded-2xl px-4 py-3.5 text-ink placeholder:text-ink-soft focus:outline-none focus:border-ink focus:ring-2 focus:ring-bg-soft transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed",
+            error && "border-danger focus:border-danger focus:ring-danger-bg",
+            className,
           )}
           {...props}
         />
         {error ? (
-          <p className="text-red-500 text-xs font-medium">{error}</p>
+          <p className="text-danger text-xs font-medium">{error}</p>
         ) : helperText ? (
-          <p className="text-[#A07850] text-xs">{helperText}</p>
+          <p className="text-ink-soft text-xs">{helperText}</p>
         ) : null}
       </div>
     );
-  }
+  },
 );
 
 Input.displayName = "Input";
 
-export interface TextareaProps
-  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string;
   error?: string;
   helperText?: string;
@@ -62,7 +60,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         {label && (
           <label
             htmlFor={textareaId}
-            className="text-xs font-bold uppercase tracking-widest text-[#5C3D2E] block"
+            className="text-[0.78rem] font-semibold uppercase tracking-[0.06em] text-ink-soft block"
           >
             {label}
           </label>
@@ -71,20 +69,20 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           ref={ref}
           id={textareaId}
           className={cn(
-            "w-full bg-white border border-[#E8D5C0] rounded-2xl px-4 py-3.5 text-[#2C1810] placeholder:text-[#A07850] focus:outline-none focus:border-[#F77BAD] focus:ring-2 focus:ring-[#FFF0F5] transition-all duration-150 resize-none min-h-[100px] disabled:opacity-60",
-            error && "border-red-400 focus:border-red-400 focus:ring-red-100",
-            className
+            "w-full bg-white border border-line rounded-2xl px-4 py-3.5 text-ink placeholder:text-ink-soft focus:outline-none focus:border-ink focus:ring-2 focus:ring-bg-soft transition-all duration-150 resize-none min-h-[100px] disabled:opacity-60",
+            error && "border-danger focus:border-danger focus:ring-danger-bg",
+            className,
           )}
           {...props}
         />
         {error ? (
-          <p className="text-red-500 text-xs font-medium">{error}</p>
+          <p className="text-danger text-xs font-medium">{error}</p>
         ) : helperText ? (
-          <p className="text-[#A07850] text-xs">{helperText}</p>
+          <p className="text-ink-soft text-xs">{helperText}</p>
         ) : null}
       </div>
     );
-  }
+  },
 );
 
 Textarea.displayName = "Textarea";

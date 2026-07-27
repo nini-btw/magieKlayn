@@ -1,87 +1,68 @@
 /**
- * Product entity definitions
+ * Product entity definitions — Magie Klayn
  * @module domain/entities/product
+ *
+ * Mirrors `infrastructure/db/schema.ts` (`products` table) 1:1.
+ *
+ * A product represents a single fragrance bottle.
+ * There are no product subtypes (cookie, box, etc.).
+ *
+ * Gift packaging (Luxury Coffret) is an order-level option and
+ * therefore does not belong to this entity.
  */
 
-/**
- * Base product interface shared by all product types
- */
 export interface Product {
+  /** Unique product identifier */
   id: string;
+
+  /** Display name */
   name: string;
+
+  /** URL slug */
   slug: string;
+
+  /** Product description */
   description: string;
-  price: number; // Price as-is (no conversion)
-  isActive: boolean;
-  type: ProductType;
+
+  /**
+   * Fragrance notes
+   * Example:
+   * ["Vanille", "Musc Blanc", "Fleur d'Oranger"]
+   */
+  notes: string[];
+
+  /** Price in Algerian Dinar (DA) */
+  price: number;
+
+  /**
+   * Signature bottle/liquid color
+   * Example: "#D0223A"
+   */
+  colorHex: string;
+
+  /** Bottle size in milliliters */
+  sizeMl: number;
+
+  /** Product gallery */
   images: string[];
+
+  /** Visible in the shop */
+  isActive: boolean;
+
+  /** Display "New" badge */
+  isNew: boolean;
+
+  /** Cannot currently be purchased */
+  isSoldOut: boolean;
+
   createdAt: Date;
   updatedAt: Date;
 }
 
 /**
- * Product type discriminator
- */
-export type ProductType = "cookie" | "box";
-
-/**
- * Cookie piece - individual cookie sold separately
- */
-export interface CookiePiece extends Product {
-  type: "cookie";
-  flavour: string;
-  allergens: Allergen[];
-  isNew?: boolean;
-  isSoldOut?: boolean;
-}
-
-/**
- * Pre-made cookie box containing multiple cookies
- */
-export interface CookieBox extends Product {
-  type: "box";
-  includedCookies: BoxItem[];
-}
-
-/**
- * Item within a cookie box
- */
-export interface BoxItem {
-  productId: string;
-  productName: string;
-  productImage?: string;
-  quantity: number;
-}
-
-/**
- * Allergen types for cookies
- */
-export type Allergen =
-  | "gluten"
-  | "dairy"
-  | "eggs"
-  | "nuts"
-  | "peanuts"
-  | "soy"
-  | "sesame";
-
-/**
- * Product with additional badge information for UI display
+ * UI helper type.
+ * Not stored in the database.
  */
 export interface ProductWithBadge extends Product {
   badge?: string;
-}
-
-/**
- * Type guard to check if product is a cookie
- */
-export function isCookiePiece(product: Product): product is CookiePiece {
-  return product.type === "cookie";
-}
-
-/**
- * Type guard to check if product is a box
- */
-export function isCookieBox(product: Product): product is CookieBox {
-  return product.type === "box";
 }

@@ -3,17 +3,11 @@
 import * as React from "react";
 import { cn } from "@/presentation/lib/utils";
 
-export type ButtonVariant =
-  | "primary"
-  | "ghost"
-  | "outline"
-  | "text"
-  | "danger";
+export type ButtonVariant = "primary" | "ghost" | "outline" | "text" | "danger";
 
 export type ButtonSize = "sm" | "md" | "lg";
 
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
   size?: ButtonSize;
   isLoading?: boolean;
@@ -32,20 +26,22 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       disabled,
       ...props
     },
-    ref
+    ref,
   ) => {
     const baseStyles =
-      "inline-flex items-center justify-center gap-2 font-bold tracking-wide rounded-full transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F4538A] focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer";
+      "inline-flex items-center justify-center gap-2 font-semibold tracking-[0.03em] rounded-full transition-all duration-[400ms] ease-[cubic-bezier(0.16,1,0.3,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer";
 
     const variants: Record<ButtonVariant, string> = {
+      // Solid ink fill — the site's one strong CTA treatment (matches .btn-primary)
       primary:
-        "bg-[#F4538A] hover:bg-[#D63A72] active:bg-[#D63A72] text-white hover:shadow-[0_8px_24px_rgba(244,83,138,0.4)] active:scale-[0.97]",
-      ghost:
-        "border-2 border-[#F4538A] text-[#F4538A] hover:bg-[#FFF0F5] active:bg-[#FFD6E7]",
-      outline:
-        "border-2 border-[#E8D5C0] text-[#5C3D2E] hover:border-[#F4538A] hover:text-[#F4538A]",
-      text: "text-[#F4538A] hover:text-[#D63A72] underline underline-offset-2",
-      danger: "bg-red-50 text-red-600 hover:bg-red-100",
+        "bg-ink text-white shadow-soft hover:shadow-soft-hover hover:-translate-y-0.5 active:translate-y-0",
+      // Outline that inverts to solid ink on hover (matches .btn-secondary)
+      outline: "border-2 border-ink text-ink hover:bg-ink hover:text-white",
+      // Quiet outline, doesn't invert — for lower-emphasis secondary actions
+      ghost: "border border-line text-ink hover:bg-bg-soft hover:border-ink",
+      // Underlined text link, matches .text-link (opacity dip on hover, no color shift)
+      text: "text-ink underline underline-offset-4 decoration-1 hover:opacity-60",
+      danger: "bg-danger-bg text-danger hover:opacity-90",
     };
 
     const sizes: Record<ButtonSize, string> = {
@@ -62,7 +58,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           variants[variant],
           sizes[size],
           fullWidth && "w-full",
-          className
+          className,
         )}
         disabled={disabled || isLoading}
         {...props}
@@ -96,7 +92,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         )}
       </button>
     );
-  }
+  },
 );
 
 Button.displayName = "Button";
