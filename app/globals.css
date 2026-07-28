@@ -35,7 +35,7 @@
   --space-lg: 3rem;
   --space-xl: 5rem;
   --space-2xl: 7vw;
-
+  --radius-main: 12px;
   --radius-card: 20px;
   --ease-luxury: cubic-bezier(0.16, 1, 0.3, 1);
   --duration-base: 0.4s;
@@ -1686,7 +1686,7 @@ img {
   align-items: center;
   justify-content: center;
   aspect-ratio: 1;
-  border-radius: var(--radius-card);
+  border-radius: var(--radius-main);
   background-color: var(--color-bg-soft);
   overflow: hidden;
 }

@@ -63,7 +63,7 @@ export const ProductDetail: React.FC<{ product: Product }> = ({ product }) => {
   return (
     <div
       data-testid="product-detail"
-      className="my-4 grid gap-12 lg:grid-cols-2"
+      className="mx-auto my-4 grid max-w-[1440px] gap-12 px-[var(--space-md)] py-[var(--space-lg)] sm:px-[var(--space-lg)] lg:grid-cols-2 lg:px-[var(--space-2xl)]"
     >
       {/* Visual */}
       <motion.div
@@ -71,20 +71,31 @@ export const ProductDetail: React.FC<{ product: Product }> = ({ product }) => {
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="product-detail-visual">
+        {/*
+          Photos already have their own white product-shot background, so a
+          solid full-strength colorHex behind them (e.g. pure black) reads as
+          a broken frame. Real photos get a soft tint instead; the fallback
+          illustration — designed to sit directly on the color — keeps the
+          full colorHex.
+        */}
+        <div
+          className="product-detail-visual"
+          style={{
+            backgroundColor: hasPhoto
+              ? `color-mix(in srgb, ${product.colorHex} 14%, white)`
+              : product.colorHex,
+          }}
+        >
           {hasPhoto ? (
             <Image
               src={product.images[0]}
               alt={product.name}
               fill
-              className="object-cover"
+              className="object-contain p-4"
               priority
             />
           ) : (
-            <div
-              className="bottle bottle-lg"
-              style={getLiquidStyle(product.colorHex)}
-            >
+            <div className="bottle bottle-lg">
               <div className="bottle-cap" />
               <div className="bottle-shoulder" />
               <div className="bottle-label">
@@ -170,11 +181,15 @@ export const ProductDetail: React.FC<{ product: Product }> = ({ product }) => {
           </div>
 
           <Button
-            variant="primary"
             size="lg"
             fullWidth
             onClick={handleAddToCart}
             disabled={product.isSoldOut}
+            className={`!border-2 ${
+              product.isSoldOut
+                ? "!border-[var(--color-border)] !bg-[var(--color-bg-soft)] !text-[var(--color-text-secondary)]"
+                : "!border-[var(--color-text)] !bg-[var(--color-text)] !text-[var(--color-white)] hover:!bg-transparent hover:!text-[var(--color-text)]"
+            }`}
           >
             {product.isSoldOut ? t("shop.soldOut") : t("shop.addToCart")}
           </Button>
