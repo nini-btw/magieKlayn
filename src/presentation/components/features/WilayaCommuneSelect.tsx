@@ -4,7 +4,11 @@ import * as React from "react";
 import { Select } from "@/presentation/components/ui/Select";
 import { formatPrice } from "@/presentation/lib/utils";
 import { cn } from "@/presentation/lib/utils";
-import type { DeliveryZone, DeliveryType, DeliverySelection } from "@/domain/entities/delivery";
+import type {
+  DeliveryZone,
+  DeliveryType,
+  DeliverySelection,
+} from "@/domain/entities/delivery";
 import { getDeliveryFee } from "@/domain/entities/delivery";
 import { StoreIcon, HomeIcon } from "lucide-react";
 
@@ -14,12 +18,18 @@ interface WilayaCommuneSelectProps {
   t: (key: string) => string;
 }
 
-export function WilayaCommuneSelect({ onChange, error, t }: WilayaCommuneSelectProps) {
+export function WilayaCommuneSelect({
+  onChange,
+  error,
+  t,
+}: WilayaCommuneSelectProps) {
   const [wilayas, setWilayas] = React.useState<DeliveryZone[]>([]);
   const [communes, setCommunes] = React.useState<DeliveryZone[]>([]);
   const [selectedWilaya, setSelectedWilaya] = React.useState<string>("");
   const [selectedCommune, setSelectedCommune] = React.useState<string>("");
-  const [selectedType, setSelectedType] = React.useState<DeliveryType | null>(null);
+  const [selectedType, setSelectedType] = React.useState<DeliveryType | null>(
+    null,
+  );
   const [loadingWilayas, setLoadingWilayas] = React.useState(true);
   const [loadingCommunes, setLoadingCommunes] = React.useState(false);
 
@@ -32,7 +42,9 @@ export function WilayaCommuneSelect({ onChange, error, t }: WilayaCommuneSelectP
         if (result.success) {
           setWilayas(result.data);
           if (result.data.length === 0) {
-            console.warn("[WilayaCommuneSelect] No wilayas found in database. Run: npx ts-node scripts/seed-delivery-zones.ts");
+            console.warn(
+              "[WilayaCommuneSelect] No wilayas found in database. Run: npx ts-node scripts/seed-delivery-zones.ts",
+            );
           }
         } else {
           console.error("[WilayaCommuneSelect] API error:", result.error);
@@ -58,7 +70,9 @@ export function WilayaCommuneSelect({ onChange, error, t }: WilayaCommuneSelectP
     async function fetchCommunes() {
       setLoadingCommunes(true);
       try {
-        const response = await fetch(`/api/delivery/communes/${selectedWilaya}`);
+        const response = await fetch(
+          `/api/delivery/communes/${selectedWilaya}`,
+        );
         const result = await response.json();
         if (result.success) {
           setCommunes(result.data);
@@ -92,7 +106,9 @@ export function WilayaCommuneSelect({ onChange, error, t }: WilayaCommuneSelectP
     const selectedZone = communes.find((c) => c.id === selectedCommune);
     if (!selectedZone) return;
 
-    const selectedWilayaData = wilayas.find((w) => w.wilayaCode === selectedWilaya);
+    const selectedWilayaData = wilayas.find(
+      (w) => w.wilayaCode === selectedWilaya,
+    );
 
     setSelectedType(type);
     const fee = getDeliveryFee(selectedZone, type);
@@ -101,7 +117,8 @@ export function WilayaCommuneSelect({ onChange, error, t }: WilayaCommuneSelectP
       type,
       fee,
       wilayaCode: selectedZone.wilayaCode,
-      wilayaName: selectedWilayaData?.wilayaNameAscii || selectedZone.wilayaNameAscii,
+      wilayaName:
+        selectedWilayaData?.wilayaNameAscii || selectedZone.wilayaNameAscii,
       communeName: selectedZone.communeNameAscii,
     });
   };
@@ -123,9 +140,10 @@ export function WilayaCommuneSelect({ onChange, error, t }: WilayaCommuneSelectP
   // Show message if no wilayas available
   if (!loadingWilayas && wilayas.length === 0) {
     return (
-      <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl">
-        <p className="text-sm text-amber-800">
-          {t("checkout.noWilayas") || "Delivery zones not available. Please contact support."}
+      <div className="p-4 bg-[var(--color-bg-soft)] border border-[var(--color-border)] rounded-[var(--radius-card)]">
+        <p className="text-sm text-[var(--color-text-secondary)]">
+          {t("checkout.noWilayas") ||
+            "Delivery zones not available. Please contact support."}
         </p>
       </div>
     );
@@ -143,8 +161,8 @@ export function WilayaCommuneSelect({ onChange, error, t }: WilayaCommuneSelectP
           loadingWilayas
             ? t("common.loading") || "Loading..."
             : wilayas.length === 0
-            ? t("checkout.noWilayas") || "No wilayas available"
-            : t("checkout.selectWilaya") || "Select wilaya"
+              ? t("checkout.noWilayas") || "No wilayas available"
+              : t("checkout.selectWilaya") || "Select wilaya"
         }
         className={cn(error && "border-red-500")}
       />
@@ -152,7 +170,13 @@ export function WilayaCommuneSelect({ onChange, error, t }: WilayaCommuneSelectP
 
       {/* Commune Select */}
       {selectedWilaya && (
-        <div className={loadingCommunes || communes.length === 0 ? "opacity-50 pointer-events-none" : ""}>
+        <div
+          className={
+            loadingCommunes || communes.length === 0
+              ? "opacity-50 pointer-events-none"
+              : ""
+          }
+        >
           <Select
             value={selectedCommune}
             onChange={handleCommuneChange}
@@ -166,11 +190,10 @@ export function WilayaCommuneSelect({ onChange, error, t }: WilayaCommuneSelectP
           />
         </div>
       )}
-
       {/* Delivery Type Selection */}
       {selectedZone && (
         <div className="space-y-3">
-          <label className="block text-sm font-medium text-[#5C3D2E]">
+          <label className="block text-sm font-medium text-[var(--color-text)]">
             {t("checkout.deliveryType") || "Delivery Type"}
           </label>
           <div className="grid grid-cols-2 gap-3">
@@ -180,37 +203,37 @@ export function WilayaCommuneSelect({ onChange, error, t }: WilayaCommuneSelectP
                 type="button"
                 onClick={() => handleTypeSelect("stop_desk")}
                 className={cn(
-                  "relative flex flex-col items-center p-4 rounded-2xl border-2 transition-all duration-200 cursor-pointer",
+                  "relative flex flex-col items-center p-4 rounded-[var(--radius-card)] border-2 transition-all duration-[var(--duration-base)] ease-[var(--ease-luxury)] cursor-pointer",
                   selectedType === "stop_desk"
-                    ? "border-[#F4538A] bg-[#FFF0F5]"
-                    : "border-[#E8D5C0] bg-white hover:border-[#F4538A]/50"
+                    ? "border-[var(--color-text)] bg-[var(--color-bg-soft)]"
+                    : "border-[var(--color-border)] bg-[var(--color-white)] hover:border-[var(--color-text)]/50",
                 )}
               >
                 <StoreIcon
                   className={cn(
                     "w-8 h-8 mb-2",
                     selectedType === "stop_desk"
-                      ? "text-[#F4538A]"
-                      : "text-[#A07850]"
+                      ? "text-[var(--color-text)]"
+                      : "text-[var(--color-text-secondary)]",
                   )}
                 />
                 <span
                   className={cn(
                     "font-medium text-sm",
                     selectedType === "stop_desk"
-                      ? "text-[#F4538A]"
-                      : "text-[#5C3D2E]"
+                      ? "text-[var(--color-text)]"
+                      : "text-[var(--color-text-secondary)]",
                   )}
                 >
                   {t("checkout.stopDesk") || "Stop Desk"}
                 </span>
-                <span className="text-xs text-[#A07850] mt-1">
+                <span className="text-xs text-[var(--color-text-secondary)] mt-1">
                   {formatPrice(selectedZone.stopDeskFee)}
                 </span>
                 {selectedType === "stop_desk" && (
-                  <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[#F4538A] flex items-center justify-center">
+                  <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[var(--color-text)] flex items-center justify-center">
                     <svg
-                      className="w-3 h-3 text-white"
+                      className="w-3 h-3 text-[var(--color-white)]"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -233,37 +256,37 @@ export function WilayaCommuneSelect({ onChange, error, t }: WilayaCommuneSelectP
                 type="button"
                 onClick={() => handleTypeSelect("home")}
                 className={cn(
-                  "relative flex flex-col items-center p-4 rounded-2xl border-2 transition-all duration-200 cursor-pointer",
+                  "relative flex flex-col items-center p-4 rounded-[var(--radius-card)] border-2 transition-all duration-[var(--duration-base)] ease-[var(--ease-luxury)] cursor-pointer",
                   selectedType === "home"
-                    ? "border-[#F4538A] bg-[#FFF0F5]"
-                    : "border-[#E8D5C0] bg-white hover:border-[#F4538A]/50"
+                    ? "border-[var(--color-text)] bg-[var(--color-bg-soft)]"
+                    : "border-[var(--color-border)] bg-[var(--color-white)] hover:border-[var(--color-text)]/50",
                 )}
               >
                 <HomeIcon
                   className={cn(
                     "w-8 h-8 mb-2",
                     selectedType === "home"
-                      ? "text-[#F4538A]"
-                      : "text-[#A07850]"
+                      ? "text-[var(--color-text)]"
+                      : "text-[var(--color-text-secondary)]",
                   )}
                 />
                 <span
                   className={cn(
                     "font-medium text-sm",
                     selectedType === "home"
-                      ? "text-[#F4538A]"
-                      : "text-[#5C3D2E]"
+                      ? "text-[var(--color-text)]"
+                      : "text-[var(--color-text-secondary)]",
                   )}
                 >
                   {t("checkout.homeDelivery") || "Home Delivery"}
                 </span>
-                <span className="text-xs text-[#A07850] mt-1">
+                <span className="text-xs text-[var(--color-text-secondary)] mt-1">
                   {formatPrice(selectedZone.homeFee)}
                 </span>
                 {selectedType === "home" && (
-                  <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[#F4538A] flex items-center justify-center">
+                  <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[var(--color-text)] flex items-center justify-center">
                     <svg
-                      className="w-3 h-3 text-white"
+                      className="w-3 h-3 text-[var(--color-white)]"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"

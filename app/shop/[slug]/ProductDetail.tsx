@@ -12,18 +12,9 @@ import { QuantityStepper } from "@/presentation/components/ui/QuantityStepper";
 import { addItem } from "@/presentation/store/cart/cart.slice";
 import { addToast } from "@/presentation/store/ui/ui.slice";
 import { formatPrice } from "@/presentation/lib/utils";
-import { getLiquidStyle } from "@/presentation/lib/colors";
 import { fadeInUp } from "@/presentation/lib/animations";
 import { useTranslations } from "next-intl";
 
-/**
- * Product detail component (client-side interactivity)
- *
- * Single product type in this brand (fragrance) — no cookie/box branching.
- * Visual defaults to the on-brand `.bottle` illustration, colored from
- * `product.colorHex`, per DESIGN-SYSTEM.md: "color comes from the product
- * itself." Falls back to a real photo only if `product.images` has one.
- */
 export const ProductDetail: React.FC<{ product: Product }> = ({ product }) => {
   const dispatch = useDispatch();
   const t = useTranslations();

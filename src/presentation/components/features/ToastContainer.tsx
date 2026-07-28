@@ -3,7 +3,12 @@
 import * as React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
-import { XIcon, CheckCircleIcon, AlertCircleIcon, InfoIcon } from "lucide-react";
+import {
+  XIcon,
+  CheckCircleIcon,
+  AlertCircleIcon,
+  InfoIcon,
+} from "lucide-react";
 import { selectToasts, removeToast } from "@/presentation/store/ui/ui.slice";
 import { toastSlide } from "@/presentation/lib/animations";
 
@@ -11,9 +16,9 @@ import { toastSlide } from "@/presentation/lib/animations";
  * Toast icon mapping
  */
 const toastIcons = {
-  success: <CheckCircleIcon className="h-5 w-5 text-green-500" />,
-  error: <AlertCircleIcon className="h-5 w-5 text-red-500" />,
-  info: <InfoIcon className="h-5 w-5 text-blue-500" />,
+  success: <CheckCircleIcon className="h-5 w-5 text-[#2f9488]" />,
+  error: <AlertCircleIcon className="h-5 w-5 text-[#c0392b]" />,
+  info: <InfoIcon className="h-5 w-5 text-white/70" />,
 };
 
 /**
@@ -44,13 +49,13 @@ export const ToastContainer: React.FC = () => {
             initial="initial"
             animate="animate"
             exit="exit"
-            className="bg-brown-900 flex min-w-[280px] items-center gap-3 rounded-2xl px-5 py-3.5 text-sm font-medium text-white shadow-2xl"
+            className="flex min-w-[280px] items-center gap-3 rounded-[var(--radius-card)] bg-[var(--color-text)] px-5 py-3.5 text-sm font-medium text-[var(--color-white)] shadow-[var(--shadow-card)]"
           >
             {toast.type && toastIcons[toast.type]}
             <span className="flex-1">{toast.message}</span>
             <button
               onClick={() => dispatch(removeToast(toast.id))}
-              className="rounded-full p-1 transition-colors hover:bg-white/10"
+              className="rounded-full p-1 transition-colors duration-[var(--duration-base)] ease-[var(--ease-luxury)] hover:bg-white/10"
             >
               <XIcon className="h-4 w-4" />
             </button>

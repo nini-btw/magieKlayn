@@ -3,7 +3,7 @@
 /* ==========================================================================
    Tailwind <-> design-system bridge
    Keeps Tailwind's core utilities (used by ui/ primitives like Button)
-   pointed at the Magie Klayn palette instead of the old cookie theme.
+   pointed at the Magie Klayn palette instead of the old theme.
    ========================================================================== */
 @theme inline {
   --color-background: var(--color-bg);
@@ -44,39 +44,37 @@
   --shadow-card: 0 16px 36px -22px rgba(29, 29, 29, 0.22);
 }
 
-/* ==========================================================================
-   Reset
-   ========================================================================== */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
 
-html {
-  scroll-behavior: smooth;
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-}
+  body {
+    font-family: var(--font-body);
+    color: var(--color-text);
+    background-color: var(--color-bg);
+    overflow-x: hidden;
+  }
 
-body {
-  font-family: var(--font-body);
-  color: var(--color-text);
-  background-color: var(--color-bg);
-  overflow-x: hidden;
-}
-
-a {
-  text-decoration: none;
-  color: inherit;
-}
-button {
-  font-family: inherit;
-  cursor: pointer;
-  border: none;
-  background: none;
-}
-ul {
-  list-style: none;
-}
-img {
-  max-width: 100%;
-  display: block;
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+  button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    background: none;
+  }
+  ul {
+    list-style: none;
+  }
+  img {
+    max-width: 100%;
+    display: block;
+  }
 }
 
 .sr-only {

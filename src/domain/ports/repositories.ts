@@ -3,10 +3,14 @@
  * @module domain/ports/repositories
  */
 
-import type { CookiePiece, CookieBox, Product } from "../entities/product";
-import type { Order, CreateOrderPayload, OrderFilters, WilayaOrderStats } from "../entities/order";
-import type { VoteCandidate } from "../entities/vote";
-import type { WeeklyDrop } from "../entities/drop";
+import type { Product } from "../entities/product";
+import type {
+  Order,
+  CreateOrderPayload,
+  OrderFilters,
+  WilayaOrderStats,
+} from "../entities/order";
+
 import type { DeliveryZone } from "../entities/delivery";
 
 /**
@@ -44,19 +48,11 @@ export interface IProductRepository {
   getById(id: string): Promise<Product | null>;
 
   /**
-   * Get all cookie pieces
-   */
-  getAllCookies(): Promise<CookiePiece[]>;
-
-  /**
-   * Get all boxes
-   */
-  getAllBoxes(): Promise<CookieBox[]>;
-
-  /**
    * Create new product
    */
-  create(product: Omit<Product, "id" | "createdAt" | "updatedAt">): Promise<Product>;
+  create(
+    product: Omit<Product, "id" | "createdAt" | "updatedAt">,
+  ): Promise<Product>;
 
   /**
    * Update product
@@ -119,86 +115,6 @@ export interface IOrderRepository {
   delete(id: string): Promise<void>;
 }
 
-/**
- * Vote repository interface
- */
-export interface IVoteRepository {
-  /**
-   * Get all active vote candidates
-   */
-  getAllActive(): Promise<VoteCandidate[]>;
-
-  /**
-   * Get candidate by ID
-   */
-  getById(id: string): Promise<VoteCandidate | null>;
-
-  /**
-   * Check if voter has already voted for candidate
-   */
-  hasVoted(candidateId: string, voterFingerprint: string): Promise<boolean>;
-
-  /**
-   * Increment vote count for candidate
-   */
-  vote(candidateId: string, voterFingerprint?: string): Promise<void>;
-
-  /**
-   * Create new candidate (admin)
-   */
-  create(
-    candidate: Omit<VoteCandidate, "id" | "voteCount" | "createdAt">
-  ): Promise<VoteCandidate>;
-
-  /**
-   * Delete candidate (admin)
-   */
-  delete(id: string): Promise<void>;
-
-  /**
-   * Reset all votes (admin)
-   */
-  resetAll(): Promise<void>;
-
-  /**
-   * Toggle candidate active status
-   */
-  toggleActive(id: string): Promise<void>;
-}
-
-/**
- * Drop repository interface
- */
-export interface IDropRepository {
-  /**
-   * Get current active drop
-   */
-  getCurrent(): Promise<WeeklyDrop | null>;
-
-  /**
-   * Create new drop schedule
-   */
-  create(drop: Omit<WeeklyDrop, "id" | "createdAt">): Promise<WeeklyDrop>;
-
-  /**
-   * Mark drop as revealed
-   */
-  markRevealed(id: string): Promise<void>;
-
-  /**
-   * Cancel drop
-   */
-  cancel(id: string): Promise<void>;
-
-  /**
-   * Get all drops
-   */
-  getAll(): Promise<WeeklyDrop[]>;
-}
-
-/**
- * Delivery repository interface
- */
 export interface IDeliveryRepository {
   /**
    * Get all distinct wilayas (provinces)

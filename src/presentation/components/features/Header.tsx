@@ -46,24 +46,6 @@ export const Header: React.FC = () => {
           <LanguageSwitcher />
 
           <button
-            className="icon-circle"
-            aria-label={t("common.search")}
-            data-testid="search-button"
-          >
-            <svg
-              viewBox="0 0 20 20"
-              width="16"
-              height="16"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.6"
-            >
-              <circle cx="8.5" cy="8.5" r="6.5" />
-              <line x1="13.3" y1="13.3" x2="18" y2="18" />
-            </svg>
-          </button>
-
-          <button
             onClick={() => dispatch(toggleCart())}
             className="icon-circle"
             style={{ position: "relative" }}

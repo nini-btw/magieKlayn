@@ -5,7 +5,7 @@
  * Mirrors `infrastructure/db/schema.ts` (`products` table) 1:1.
  *
  * A product represents a single fragrance bottle.
- * There are no product subtypes (cookie, box, etc.).
+ * There are no product subtypes (, box, etc.).
  *
  * Gift packaging (Luxury Coffret) is an order-level option and
  * therefore does not belong to this entity.

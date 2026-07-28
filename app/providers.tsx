@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { Provider as ReduxProvider, useDispatch } from "react-redux";
-import { NextIntlClientProvider } from 'next-intl';
+import { NextIntlClientProvider } from "next-intl";
 import { store, type RootState } from "@/presentation/store";
 import { hydrateCart } from "@/presentation/store/cart/cart.slice";
 import { Header } from "@/presentation/components/features/Header";
@@ -68,11 +68,12 @@ function CartPersistenceProvider() {
             updatedAt: safeDate(item.product?.updatedAt),
           },
         }));
-        dispatch(hydrateCart({
-          items,
-          cookingNote: parsed.cookingNote || null,
-          giftNote: parsed.giftNote || null,
-        }));
+        dispatch(
+          hydrateCart({
+            items,
+            giftNote: parsed.giftNote || null,
+          }),
+        );
       }
     } catch {
       // ignore corrupted storage

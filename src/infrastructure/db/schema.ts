@@ -8,7 +8,7 @@
  * it's an order-level packaging choice. A customer with exactly 4 products
  * in their cart can opt to have them packaged as a "luxury coffret" for an
  * extra fee. This is enforced at the domain/cart-rules layer (like
- * Crumbleivable's MIN_COOKIES check), not as a DB constraint — the DB just
+ * Crumbleivable's  check), not as a DB constraint — the DB just
  * stores the choice once the domain layer has validated it's allowed.
  */
 
@@ -53,7 +53,7 @@ export const packagingTypeEnum = pgEnum("packaging_type", [
 
 /**
  * Products table (fragrances)
- * Single product type in this brand — no cookie/box-style type split needed.
+ * Single product type in this brand — no /box-style type split needed.
  */
 export const products = pgTable("products", {
   id: uuid("id").primaryKey().defaultRandom(),

@@ -10,9 +10,6 @@ import { closeCart, selectCartOpen } from "@/presentation/store/ui/ui.slice";
 import {
   selectCartItems,
   selectCartTotal,
-  selectCanCheckout,
-  selectCookiesNeeded,
-  selectCartProgress,
   removeItem,
   updateQuantity,
 } from "@/presentation/store/cart/cart.slice";
@@ -20,7 +17,30 @@ import { QuantityStepper } from "@/presentation/components/ui/QuantityStepper";
 import { Button } from "@/presentation/components/ui/Button";
 import { formatPrice } from "@/presentation/lib/utils";
 import { slideInRight, fadeOverlay } from "@/presentation/lib/animations";
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
+
+/**
+ * Product visual: real photo on a soft tint of its signature color.
+ * Falls back to a solid-color placeholder swatch if no photo exists yet.
+ */
+const ProductThumb: React.FC<{
+  image?: string;
+  colorHex: string;
+  name: string;
+}> = ({ image, colorHex, name }) => (
+  <div
+    className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-[var(--radius-main)]"
+    style={{
+      background: image
+        ? `color-mix(in srgb, ${colorHex} 14%, white)`
+        : colorHex,
+    }}
+  >
+    {image && (
+      <Image src={image} alt={name} fill className="object-contain p-2" />
+    )}
+  </div>
+);
 
 export const CartDrawer: React.FC = () => {
   const dispatch = useDispatch();
@@ -28,9 +48,6 @@ export const CartDrawer: React.FC = () => {
   const isOpen = useSelector(selectCartOpen);
   const items = useSelector(selectCartItems);
   const total = useSelector(selectCartTotal);
-  const canCheckout = useSelector(selectCanCheckout);
-  const cookiesNeeded = useSelector(selectCookiesNeeded);
-  const progress = useSelector(selectCartProgress);
 
   React.useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -46,25 +63,6 @@ export const CartDrawer: React.FC = () => {
     };
   }, [isOpen, dispatch]);
 
-  const getProductImage = (slug: string) => {
-    const imageMap: Record<string, string> = {
-      chocoShips: "/images/chocoShips.png",
-      mm: "/images/mm.png",
-      pistash: "/images/pistash.png",
-      viola: "/images/viola.png",
-      peanut: "/images/peanut.png",
-      ben10: "/images/ben10.png",
-      lotus: "/images/lotus.png",
-      strawbery: "/images/strawbery.png",
-
-      // boxes
-      bueno: "/images/bueno.png",
-      kinder: "/images/kinder.png",
-      tiramisu: "/images/tiramisu.png",
-    };
-    return imageMap[slug] || "/images/bueno.png";
-  };
-
   if (!isOpen) return null;
 
   return (
@@ -76,7 +74,7 @@ export const CartDrawer: React.FC = () => {
             initial="initial"
             animate="animate"
             exit="exit"
-            className="absolute inset-0 bg-[#2C1810]/40 backdrop-blur-sm"
+            className="absolute inset-0 bg-[var(--color-text)]/40 backdrop-blur-sm"
             onClick={() => dispatch(closeCart())}
           />
 
@@ -85,46 +83,46 @@ export const CartDrawer: React.FC = () => {
             initial="initial"
             animate="animate"
             exit="exit"
-            className="absolute top-0 right-0 bottom-0 flex w-full max-w-md flex-col bg-[#FDF6EE] shadow-2xl"
+            className="absolute top-0 right-0 bottom-0 flex w-full max-w-md flex-col bg-[var(--color-white)] shadow-[var(--shadow-soft)]"
           >
-            <div className="flex items-center justify-between border-b border-[#E8D5C0] p-5">
-              <h2 className="font-display text-2xl text-[#2C1810]">{t("cart.title")}</h2>
+            <div className="flex items-center justify-between border-b border-[var(--color-border)] p-5">
+              <h2 className="font-display text-2xl text-[var(--color-text)]">
+                {t("cart.title")}
+              </h2>
               <button
                 onClick={() => dispatch(closeCart())}
-                className="cursor-pointer rounded-full p-2 transition-colors hover:bg-[#FFF0F5]"
+                className="cursor-pointer rounded-full p-2 transition-colors duration-[var(--duration-base)] ease-[var(--ease-luxury)] hover:bg-[var(--color-bg-soft)]"
                 aria-label="Close cart"
               >
-                <XIcon className="h-5 w-5 text-[#5C3D2E]" />
+                <XIcon className="h-5 w-5 text-[var(--color-text)]" />
               </button>
             </div>
 
             <div className="flex-1 space-y-4 overflow-y-auto p-5">
               {items.length === 0 ? (
                 <div className="flex h-full flex-col items-center justify-center text-center">
-                  <ShoppingBagIcon className="mb-4 h-16 w-16 text-[#E8D5C0]" />
-                  <p className="text-[#A07850]">{t("cart.empty")}</p>
-                  <p className="mt-1 text-sm text-[#A07850]">{t("home.features.fresh.desc")}</p>
+                  <ShoppingBagIcon className="mb-4 h-16 w-16 text-[var(--color-border)]" />
+                  <p className="text-[var(--color-text-secondary)]">
+                    {t("cart.empty")}
+                  </p>
                 </div>
               ) : (
                 items.map((item) => (
                   <div
                     key={item.product.id}
-                    className="flex gap-4 rounded-2xl border border-[#E8D5C0] bg-white p-3"
+                    className="flex gap-4 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-white)] p-3"
                   >
-                    <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-[#FFF0F5]">
-                      <Image
-                        src={getProductImage(item.product.slug)}
-                        alt={item.product.name}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
+                    <ProductThumb
+                      image={item.product.images?.[0]}
+                      colorHex={item.product.colorHex}
+                      name={item.product.name}
+                    />
 
                     <div className="min-w-0 flex-1">
-                      <h4 className="truncate text-sm font-bold text-[#2C1810]">
+                      <h4 className="truncate text-sm font-bold text-[var(--color-text)]">
                         {item.product.name}
                       </h4>
-                      <p className="mt-0.5 text-xs text-[#A07850]">
+                      <p className="mt-0.5 text-xs text-[var(--color-text-secondary)]">
                         {formatPrice(item.product.price)}
                       </p>
 
@@ -136,13 +134,13 @@ export const CartDrawer: React.FC = () => {
                               updateQuantity({
                                 productId: item.product.id,
                                 quantity: qty,
-                              })
+                              }),
                             )
                           }
                         />
                         <button
                           onClick={() => dispatch(removeItem(item.product.id))}
-                          className="cursor-pointer p-2 text-[#A07850] transition-colors hover:text-red-500"
+                          className="cursor-pointer p-2 text-[var(--color-text-secondary)] transition-colors duration-[var(--duration-base)] ease-[var(--ease-luxury)] hover:text-red-500"
                           aria-label="Remove item"
                         >
                           <Trash2Icon className="h-4 w-4" />
@@ -154,36 +152,19 @@ export const CartDrawer: React.FC = () => {
               )}
             </div>
 
-            {!canCheckout && items.length > 0 && (
-              <div className="mx-5 mb-3 rounded-2xl border border-[#FFD6E7] bg-[#FFF0F5] p-4">
-                <p data-testid="cookies-needed" className="text-center text-sm font-medium text-[#5C3D2E]">
-                  {t("build.completeSelection")}: {cookiesNeeded} 🍪
-                </p>
-                <div className="mt-2 h-2 overflow-hidden rounded-full bg-[#FFD6E7]">
-                  <motion.div
-                    className="h-full rounded-full bg-[#F4538A]"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${progress}%` }}
-                    transition={{ duration: 0.5, ease: "easeOut" }}
-                  />
-                </div>
-              </div>
-            )}
-
-            <div className="space-y-3 border-t border-[#E8D5C0] p-5">
-              <div className="flex justify-between text-lg font-bold text-[#2C1810]">
+            <div className="space-y-3 border-t border-[var(--color-border)] p-5">
+              <div className="flex justify-between text-lg font-bold text-[var(--color-text)]">
                 <span>{t("common.total")}</span>
                 <span>{formatPrice(total)}</span>
               </div>
               <Link href="/cart" onClick={() => dispatch(closeCart())}>
                 <Button
-                  variant="primary"
                   fullWidth
-                  disabled={!canCheckout && items.length > 0}
-                  className="cursor-pointer"
+                  disabled={items.length === 0}
+                  className="!border-2 !border-[var(--color-text)] !bg-[var(--color-text)] !text-[var(--color-white)] hover:!bg-transparent hover:!text-[var(--color-text)] disabled:!bg-[var(--color-bg-soft)] disabled:!border-[var(--color-border)] disabled:!text-[var(--color-text-secondary)] cursor-pointer transition-colors duration-[var(--duration-base)] ease-[var(--ease-luxury)]"
                   data-testid="checkout-button"
                 >
-                  {canCheckout ? t("cart.checkout") : `${t("build.completeSelection")} (${cookiesNeeded})`}
+                  {t("cart.checkout")}
                 </Button>
               </Link>
             </div>

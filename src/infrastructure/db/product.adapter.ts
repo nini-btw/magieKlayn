@@ -6,21 +6,14 @@
 import { eq, desc, sql } from "drizzle-orm";
 import type { Product } from "@/domain/entities/product";
 import type { IProductRepository } from "@/domain/ports/repositories";
-import { db, mockProducts } from "./client";
+import { db } from "./client";
 import { products } from "./schema";
-
-// Check if we're in mock mode
-const isMockMode = !db;
 
 /**
  * Product repository implementation using Drizzle ORM
  */
 export class ProductRepository implements IProductRepository {
   async getAll(): Promise<Product[]> {
-    if (isMockMode) {
-      return mockProducts;
-    }
-
     const result = await db
       .select()
       .from(products)
@@ -30,10 +23,6 @@ export class ProductRepository implements IProductRepository {
   }
 
   async getAllActive(): Promise<Product[]> {
-    if (isMockMode) {
-      return mockProducts.filter((p) => p.isActive);
-    }
-
     const result = await db
       .select()
       .from(products)
@@ -47,12 +36,6 @@ export class ProductRepository implements IProductRepository {
     limit: number,
     offset: number,
   ): Promise<Product[]> {
-    if (isMockMode) {
-      return mockProducts
-        .filter((p) => p.isActive)
-        .slice(offset, offset + limit);
-    }
-
     const result = await db
       .select()
       .from(products)
@@ -65,10 +48,6 @@ export class ProductRepository implements IProductRepository {
   }
 
   async getActiveCount(): Promise<number> {
-    if (isMockMode) {
-      return mockProducts.filter((p) => p.isActive).length;
-    }
-
     const result = await db
       .select({
         count: sql<number>`count(*)`,
@@ -80,10 +59,6 @@ export class ProductRepository implements IProductRepository {
   }
 
   async getBySlug(slug: string): Promise<Product | null> {
-    if (isMockMode) {
-      return mockProducts.find((p) => p.slug === slug) ?? null;
-    }
-
     const result = await db
       .select()
       .from(products)
@@ -94,10 +69,6 @@ export class ProductRepository implements IProductRepository {
   }
 
   async getById(id: string): Promise<Product | null> {
-    if (isMockMode) {
-      return mockProducts.find((p) => p.id === id) ?? null;
-    }
-
     const result = await db
       .select()
       .from(products)
@@ -110,15 +81,6 @@ export class ProductRepository implements IProductRepository {
   async create(
     product: Omit<Product, "id" | "createdAt" | "updatedAt">,
   ): Promise<Product> {
-    if (isMockMode) {
-      return {
-        ...product,
-        id: crypto.randomUUID(),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-    }
-
     const result = await db
       .insert(products)
       .values({
@@ -127,7 +89,7 @@ export class ProductRepository implements IProductRepository {
         description: product.description,
         notes: product.notes,
         price: product.price,
-        colorHex: product.colorHex, // <-- was missing
+        colorHex: product.colorHex,
         sizeMl: product.sizeMl,
         images: product.images,
         isActive: product.isActive,
@@ -140,20 +102,6 @@ export class ProductRepository implements IProductRepository {
   }
 
   async update(id: string, product: Partial<Product>): Promise<Product> {
-    if (isMockMode) {
-      const existing = mockProducts.find((p) => p.id === id);
-
-      if (!existing) {
-        throw new Error("Product not found");
-      }
-
-      return {
-        ...existing,
-        ...product,
-        updatedAt: new Date(),
-      };
-    }
-
     const result = await db
       .update(products)
       .set({
@@ -173,8 +121,8 @@ export class ProductRepository implements IProductRepository {
   async toggleActive(id: string): Promise<void> {
     const product = await this.getById(id);
 
-    if (!product || isMockMode) {
-      return;
+    if (!product) {
+      throw new Error("Product not found");
     }
 
     await db
@@ -187,10 +135,6 @@ export class ProductRepository implements IProductRepository {
   }
 
   async delete(id: string): Promise<void> {
-    if (isMockMode) {
-      return;
-    }
-
     await db.delete(products).where(eq(products.id, id));
   }
 
@@ -205,7 +149,7 @@ export class ProductRepository implements IProductRepository {
       description: row.description,
       notes: row.notes ?? [],
       price: row.price,
-      colorHex: row.colorHex, // <-- was missing
+      colorHex: row.colorHex,
       sizeMl: row.sizeMl,
       images: row.images ?? [],
       isActive: row.isActive,

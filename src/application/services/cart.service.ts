@@ -6,11 +6,7 @@
 import type { Product } from "@/domain/entities/product";
 import type { CartItem } from "@/domain/entities/order";
 import {
-  totalCookieCount,
-  canCheckout,
-  cookiesNeeded,
   calculateCartTotal,
-  getCartProgress,
   findCartItem,
   getTotalItemCount,
 } from "@/domain/rules/cart.rules";
@@ -31,19 +27,21 @@ export class CartService {
   /**
    * Add product to cart
    */
-  addItem(currentItems: CartItem[], product: Product, quantity: number = 1): CartOperationResult {
+  addItem(
+    currentItems: CartItem[],
+    product: Product,
+    quantity: number = 1,
+  ): CartOperationResult {
     const existingItem = findCartItem(currentItems, product.id);
 
     let newItems: CartItem[];
     if (existingItem) {
-      // Update quantity if already in cart
       newItems = currentItems.map((item) =>
         item.product.id === product.id
           ? { ...item, quantity: item.quantity + quantity }
-          : item
+          : item,
       );
     } else {
-      // Add new item
       newItems = [...currentItems, { product, quantity }];
     }
 
@@ -67,7 +65,9 @@ export class CartService {
       };
     }
 
-    const newItems = currentItems.filter((item) => item.product.id !== productId);
+    const newItems = currentItems.filter(
+      (item) => item.product.id !== productId,
+    );
     return {
       success: true,
       items: newItems,
@@ -81,7 +81,7 @@ export class CartService {
   updateQuantity(
     currentItems: CartItem[],
     productId: string,
-    quantity: number
+    quantity: number,
   ): CartOperationResult {
     if (quantity < 1) {
       return this.removeItem(currentItems, productId);
@@ -97,7 +97,7 @@ export class CartService {
     }
 
     const newItems = currentItems.map((item) =>
-      item.product.id === productId ? { ...item, quantity } : item
+      item.product.id === productId ? { ...item, quantity } : item,
     );
 
     return {
@@ -123,11 +123,7 @@ export class CartService {
   getCartSummary(items: CartItem[]) {
     return {
       itemCount: getTotalItemCount(items),
-      cookieCount: totalCookieCount(items),
       totalAmount: calculateCartTotal(items),
-      canCheckout: canCheckout(items),
-      cookiesNeeded: cookiesNeeded(items),
-      progress: getCartProgress(items),
     };
   }
 }

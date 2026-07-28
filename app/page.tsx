@@ -6,41 +6,8 @@ import Link from "next/link";
 import HeroSection from "./HeroSection";
 import { useTranslations } from "next-intl";
 import type { Product } from "@/domain/entities/product";
-
-// TODO: replace with a real per-product color once your product schema has
-// one (e.g. product.accentColor). This palette just cycles so every card
-// gets a plausible bottle color, matching the reference design's look.
-const BOTTLE_PALETTE: { liquid: string; liquidDeep: string; label: string }[] =
-  [
-    { liquid: "#C43A63", liquidDeep: "#9C2A4C", label: "#1D1D1D" },
-    { liquid: "#E8C9DC", liquidDeep: "#DBAFC9", label: "#1D1D1D" },
-    { liquid: "#D0223A", liquidDeep: "#A3172C", label: "#FFFFFF" },
-    { liquid: "#7A1F2B", liquidDeep: "#57141F", label: "#FFFFFF" },
-    { liquid: "#7A3E9E", liquidDeep: "#5C2C7A", label: "#FFFFFF" },
-    { liquid: "#2FB6A8", liquidDeep: "#1F9488", label: "#1D1D1D" },
-    { liquid: "#F7F1E7", liquidDeep: "#EDE3D2", label: "#1D1D1D" },
-    { liquid: "#1B1B1B", liquidDeep: "#000000", label: "#FFFFFF" },
-  ];
-
-const COFFRET_COLORS = [
-  "#8E2A46",
-  "#C81E3A",
-  "#5C2C7A",
-  "#EFAE7D",
-  "#A98AE0",
-  "#8E2A46",
-];
-const STORY_SWATCHES = [
-  "#C43A63",
-  "#D0223A",
-  "#EFAE7D",
-  "#F4CE55",
-  "#A98AE0",
-  "#7A3E9E",
-  "#2FB6A8",
-  "#1B1B1B",
-  "#E8C9DC",
-];
+import { getLuminance } from "@/presentation/lib/color";
+import Image from "next/image";
 
 export default function HomePage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -71,14 +38,25 @@ export default function HomePage() {
     console.log("newsletter signup:", email);
   }
 
+  // Featured product for the hero: prefer an isNew fragrance, fall back to
+  // the first active one. No hardcoded placeholder — if there are no
+  // products yet, the hero renders its own empty state.
+  const featuredProduct = products.find((p) => p.isNew) || products[0] || null;
+
   const tickerNames = products.map((p) => p.name);
-  // duplicate the list so the CSS scroll animation loops seamlessly
   const tickerItems =
     tickerNames.length > 0 ? [...tickerNames, ...tickerNames] : [];
 
+  // Story-section swatches are the brand's real bottle colors, not a
+  // second hardcoded palette — every fragrance currently in the shop,
+  // deduplicated, capped to fill the 3x3 grid.
+  const storySwatches = Array.from(
+    new Set(products.map((p) => p.colorHex)),
+  ).slice(0, 9);
+
   return (
     <>
-      <HeroSection />
+      <HeroSection featuredProduct={featuredProduct} loading={loading} />
 
       {tickerItems.length > 0 && (
         <section className="ticker" aria-label={t("home.ticker.aria")}>
@@ -116,21 +94,23 @@ export default function HomePage() {
           </div>
         ) : products.length > 0 ? (
           <div className="product-grid">
-            {products.map((product, index) => {
-              const palette = BOTTLE_PALETTE[index % BOTTLE_PALETTE.length];
+            {products.map((product) => {
+              const liquidDeep = `color-mix(in srgb, ${product.colorHex} 70%, black)`;
+              const labelColor =
+                getLuminance(product.colorHex) > 0.6 ? "#1D1D1D" : "#FFFFFF";
               return (
                 <Link
-                  href={`/shop/${product.id}`}
+                  href={`/shop/${product.slug}`}
                   key={product.id}
                   className="product-card"
                 >
-                  <div
+                  {/*  <div
                     className="bottle"
                     style={
                       {
-                        "--liquid": palette.liquid,
-                        "--liquid-deep": palette.liquidDeep,
-                        "--label-color": palette.label,
+                        "--liquid": product.colorHex,
+                        "--liquid-deep": liquidDeep,
+                        "--label-color": labelColor,
                       } as React.CSSProperties
                     }
                   >
@@ -139,6 +119,15 @@ export default function HomePage() {
                     <span className="bottle-label">
                       <span className="bottle-label-name">{product.name}</span>
                     </span>
+                  </div> */}
+                  <div className="relative aspect-[4/5] w-full shrink-0 overflow-hidden bg-[var(--color-bg-soft)]">
+                    <Image
+                      src={product.images[0]}
+                      alt={product.name}
+                      fill
+                      className={`object-cover transition-opacity duration-700 ease-[var(--ease-luxury)] `}
+                      sizes="(max-width: 700px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                    />
                   </div>
                   <h3 className="product-name">{product.name}</h3>
                   <p className="product-meta">
@@ -161,39 +150,10 @@ export default function HomePage() {
         )}
       </section>
 
-      <section className="coffret" id="coffret">
-        <div className="coffret-visual">
-          <div className="coffret-box">
-            <span className="coffret-lid" />
-            <div className="coffret-row">
-              {COFFRET_COLORS.map((c, i) => (
-                <span
-                  key={i}
-                  className="mini-bottle"
-                  style={{ "--liquid": c } as React.CSSProperties}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-        <div className="coffret-text">
-          <p className="eyebrow">{t("coffret.eyebrow")}</p>
-          <h2 className="section-title">
-            {t("coffret.titleLine1")}
-            <br />
-            {t("coffret.titleLine2")}
-          </h2>
-          <p className="section-description">{t("coffret.subtitle")}</p>
-          <Link href="/coffrets" className="btn btn-primary">
-            {t("coffret.cta")}
-          </Link>
-        </div>
-      </section>
-
       <section className="story" id="about">
         <div className="story-inner">
           <div className="story-swatches" aria-hidden="true">
-            {STORY_SWATCHES.map((c, i) => (
+            {storySwatches.map((c, i) => (
               <span key={i} style={{ "--c": c } as React.CSSProperties} />
             ))}
           </div>

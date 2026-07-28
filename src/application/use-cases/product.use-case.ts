@@ -3,7 +3,7 @@
  * @module application/use-cases/product
  */
 
-import type { Product, CookiePiece, CookieBox } from "@/domain/entities/product";
+import type { Product } from "@/domain/entities/product";
 import type { IProductRepository } from "@/domain/ports/repositories";
 
 /**
@@ -29,35 +29,13 @@ export class GetProductBySlugUseCase {
 }
 
 /**
- * Get all cookies use case
- */
-export class GetAllCookiesUseCase {
-  constructor(private productRepo: IProductRepository) {}
-
-  async execute(): Promise<CookiePiece[]> {
-    return this.productRepo.getAllCookies();
-  }
-}
-
-/**
- * Get all boxes use case
- */
-export class GetAllBoxesUseCase {
-  constructor(private productRepo: IProductRepository) {}
-
-  async execute(): Promise<CookieBox[]> {
-    return this.productRepo.getAllBoxes();
-  }
-}
-
-/**
  * Create product use case (admin)
  */
 export class CreateProductUseCase {
   constructor(private productRepo: IProductRepository) {}
 
   async execute(
-    product: Omit<Product, "id" | "createdAt" | "updatedAt">
+    product: Omit<Product, "id" | "createdAt" | "updatedAt">,
   ): Promise<Product> {
     return this.productRepo.create(product);
   }

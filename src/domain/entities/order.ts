@@ -17,6 +17,11 @@ export type OrderStatus =
   | "cancelled";
 
 /**
+ * Packaging type — coffret decision made at checkout, order-level
+ */
+export type PackagingType = "standard" | "luxury_coffret";
+
+/**
  * Order entity
  */
 export interface Order {
@@ -24,11 +29,12 @@ export interface Order {
   fullName: string;
   phone: string;
   address: string;
-  cookingNote?: string;
   giftNote?: string;
   items: OrderItem[];
   status: OrderStatus;
   totalAmount: number;
+  packagingType: PackagingType;
+  coffretFee?: number;
   // Delivery details
   deliveryZoneId: string;
   deliveryType?: "stop_desk" | "home";
@@ -48,10 +54,10 @@ export interface OrderItem {
   id: string;
   orderId: string;
   productId: string;
-  productType: "cookie" | "box";
   productName: string;
   productSlug: string;
   productImage?: string;
+  productColorHex?: string;
   quantity: number;
   priceSnapshot: number;
 }
@@ -77,7 +83,6 @@ export interface CustomerInfo {
  * Optional notes for the order
  */
 export interface OrderNotes {
-  cookingNote?: string;
   giftNote?: string;
 }
 
@@ -88,6 +93,8 @@ export interface CreateOrderPayload {
   customer: CustomerInfo;
   notes: OrderNotes;
   items: CartItem[];
+  packagingType?: PackagingType;
+  coffretFee?: number;
   deliveryZoneId: string;
   deliveryType: "stop_desk" | "home";
   deliveryFee: number;

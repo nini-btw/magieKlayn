@@ -3,16 +3,11 @@
  * @module application/use-cases/order
  */
 
-import type {
-  Order,
-  CreateOrderPayload,
-  CartItem,
-} from "@/domain/entities/order";
+import type { Order, CreateOrderPayload } from "@/domain/entities/order";
 import type {
   IOrderRepository,
   INotificationService,
 } from "@/domain/ports/repositories";
-import { canCheckout } from "@/domain/rules/cart.rules";
 
 /**
  * Result type for order creation
@@ -29,7 +24,7 @@ export interface CreateOrderResult {
 export class CreateOrderUseCase {
   constructor(
     private orderRepo: IOrderRepository,
-    private notificationService: INotificationService
+    private notificationService: INotificationService,
   ) {}
 
   /**
@@ -37,14 +32,6 @@ export class CreateOrderUseCase {
    */
   async execute(payload: CreateOrderPayload): Promise<CreateOrderResult> {
     try {
-      // Validate cart minimum
-      if (!canCheckout(payload.items)) {
-        return {
-          success: false,
-          error: "Minimum 3 cookies required for checkout",
-        };
-      }
-
       // Create order in database
       const order = await this.orderRepo.create(payload);
 
@@ -92,7 +79,7 @@ export class UpdateOrderStatusUseCase {
    */
   async execute(
     orderId: string,
-    status: Order["status"]
+    status: Order["status"],
   ): Promise<{ success: boolean; error?: string }> {
     try {
       await this.orderRepo.updateStatus(orderId, status);

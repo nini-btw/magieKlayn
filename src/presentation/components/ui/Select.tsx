@@ -28,9 +28,9 @@ const sizeClasses: Record<NonNullable<SelectProps["size"]>, string> = {
 
 const variantClasses: Record<NonNullable<SelectProps["variant"]>, string> = {
   default:
-    "bg-white border-[var(--color-border)] hover:border-[var(--color-text)]/50",
+    "bg-white border-[var(--color-text)]/20 hover:border-[var(--color-text)]/50",
   outline:
-    "bg-transparent border-[var(--color-border)] hover:border-[var(--color-text)]",
+    "bg-transparent border-[var(--color-text)]/30 hover:border-[var(--color-text)]",
   filled:
     "bg-[var(--color-bg-soft)] border-transparent hover:bg-[var(--color-border)]",
 };
@@ -77,9 +77,10 @@ export const Select: React.FC<SelectProps> = ({
         aria-haspopup="listbox"
         aria-expanded={isOpen}
         className={cn(
-          "flex w-full cursor-pointer items-center justify-between rounded-full border-2 transition-all duration-[var(--duration-base)] ease-[var(--ease-luxury)]",
+          "flex w-full cursor-pointer items-center justify-between rounded-full border transition-all duration-[var(--duration-base)] ease-[var(--ease-luxury)]",
           sizeClasses[size],
           variantClasses[variant],
+          selectedOption && !isOpen && "border-[var(--color-text)]",
           isOpen &&
             "border-[var(--color-text)] ring-2 ring-[var(--color-text)]/10",
         )}
@@ -105,9 +106,9 @@ export const Select: React.FC<SelectProps> = ({
       {isOpen && (
         <div
           role="listbox"
-          className="absolute top-full right- left-0 z-50 mt-2 overflow-hidden rounded-2xl border border-[var(--color-border)] bg-white shadow-[var(--shadow-card)]"
+          className="absolute top-full left-0 right-0 z-50 mt-2 max-h-64 overflow-hidden rounded-2xl border border-[var(--color-border)] bg-white shadow-[var(--shadow-card)]"
         >
-          <div className=" overflow-y-auto py-1">
+          <div className="max-h-64 overflow-y-auto py-1">
             {options.map((option) => {
               const isSelected = value === option.value;
               return (
@@ -120,14 +121,19 @@ export const Select: React.FC<SelectProps> = ({
                     onChange(option.value);
                     setIsOpen(false);
                   }}
-                  className={
-                    "flex w-full cursor-pointer items-center justify-between px-4 py-2.5 text-left bg-black"
-                  }
+                  className={cn(
+                    "flex w-full cursor-pointer items-center justify-between px-4 py-2.5 text-left transition-colors duration-[var(--duration-base)] ease-[var(--ease-luxury)]",
+                    isSelected
+                      ? "bg-[var(--color-bg-soft)]"
+                      : "bg-white hover:bg-[var(--color-bg-soft)]",
+                  )}
                 >
-                  <span className="text-sm font-medium m-2">
+                  <span className="text-sm font-medium text-[var(--color-text)]">
                     {option.label}
                   </span>
-                  {isSelected && <CheckIcon className="h-4 w-4 shrink-0" />}
+                  {isSelected && (
+                    <CheckIcon className="h-4 w-4 shrink-0 text-[var(--color-text)]" />
+                  )}
                 </button>
               );
             })}
