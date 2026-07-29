@@ -2,102 +2,47 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
-import type { Product } from "@/domain/entities/product";
-import { getLuminance } from "@/presentation/lib/color";
 
-interface HeroSectionProps {
-  featuredProduct: Product | null;
-  loading: boolean;
-}
-
-export default function HeroSection({
-  featuredProduct,
-  loading,
-}: HeroSectionProps) {
+/**
+ * Hero now uses two fixed marketing images instead of a per-product photo:
+ * - MagieKalynPhone.png  -> small screens
+ * - HeroWithBox.png      -> larger screens
+ *
+ * No more featuredProduct/loading dependency, no colorHex-derived tint —
+ * this is a static brand image, so the hero no longer needs product data
+ * at all. Content is stripped down to just the CTA(s), centered.
+ */
+export default function HeroSection() {
   const t = useTranslations();
 
-  const liquidDeep = featuredProduct
-    ? `color-mix(in srgb, ${featuredProduct.colorHex} 70%, black)`
-    : "var(--color-border)";
-  const labelColor = featuredProduct
-    ? getLuminance(featuredProduct.colorHex) > 0.6
-      ? "#1D1D1D"
-      : "#FFFFFF"
-    : "#1D1D1D";
-
   return (
-    <section className="hero" id="top">
-      <div className="hero-white">
-        <p className="eyebrow">{t("home.hero.eyebrow")}</p>
-        <h1 className="hero-headline">
-          {t("home.hero.headlineLine1")}
-          <br />
-          {t("home.hero.headlineLine2")}
-          <br />
-          {t("home.hero.headlineLine3")}
-        </h1>
-        <p className="hero-description">{t("home.hero.description")}</p>
-        <div className="cta-group">
-          <Link href="/shop" className="btn btn-primary">
-            {t("home.hero.discoverCollection")}
-          </Link>
-          <Link href="/about" className="btn btn-secondary">
-            {t("home.hero.ourStory")}
-          </Link>
-        </div>
-      </div>
+    <section className="hero-full" id="top">
+      {/* Mobile hero image */}
+      <Image
+        src="https://gaquniefolcmosxhctmg.supabase.co/storage/v1/object/public/magieKlayn/MagieKalynPhone.png"
+        alt="Magie Klayn"
+        fill
+        priority
+        sizes="100vw"
+        className="hero-full-image block md:hidden"
+      />
 
-      <div className="hero-color">
-        <span className="hero-bubble bubble-1" aria-hidden="true" />
-        <span className="hero-bubble bubble-2" aria-hidden="true" />
-        <span className="hero-bubble bubble-3" aria-hidden="true" />
-        <span className="hero-bubble bubble-4" aria-hidden="true" />
-        <span className="hero-bubble bubble-5" aria-hidden="true" />
+      {/* Desktop hero image */}
+      <Image
+        src="https://gaquniefolcmosxhctmg.supabase.co/storage/v1/object/public/magieKlayn/HeroWithBox.png"
+        alt="Magie Klayn"
+        fill
+        priority
+        sizes="100vw"
+        className="hero-full-image hidden md:block"
+      />
 
-        {featuredProduct && (
-          <p className="hero-color-tag">{featuredProduct.name}</p>
-        )}
-
-        {loading || !featuredProduct ? (
-          <div
-            className="bottle bottle-lg"
-            style={
-              {
-                "--liquid": "var(--color-border)",
-                "--liquid-deep": "var(--color-bg-soft)",
-              } as React.CSSProperties
-            }
-          />
-        ) : (
-          <div
-            className="bottle bottle-lg"
-            style={
-              {
-                "--liquid": featuredProduct.colorHex,
-                "--liquid-deep": liquidDeep,
-                "--label-color": labelColor,
-              } as React.CSSProperties
-            }
-          >
-            <span className="bottle-cap" />
-            <span className="bottle-shoulder" />
-            <span className="bottle-label">
-              <span className="bottle-label-brand">Magie Klayn</span>
-              <span className="bottle-label-name">{featuredProduct.name}</span>
-              <span className="bottle-label-sub">
-                {featuredProduct.sizeMl}ml
-              </span>
-            </span>
-          </div>
-        )}
-      </div>
-
-      <div className="scroll-indicator">
-        <span className="mouse-shape" aria-hidden="true">
-          <span className="mouse-wheel" />
-        </span>
-        <span className="scroll-text">{t("home.hero.scroll")}</span>
+      <div className="hero-full-content hero-full-content--centered">
+        <Link href="/shop" className="btn hero-full-cta">
+          {t("home.hero.discoverCollection")}
+        </Link>
       </div>
     </section>
   );

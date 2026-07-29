@@ -6,8 +6,9 @@ import Link from "next/link";
 import HeroSection from "./HeroSection";
 import { useTranslations } from "next-intl";
 import type { Product } from "@/domain/entities/product";
-import { getLuminance } from "@/presentation/lib/color";
-import Image from "next/image";
+import DiscoverySection from "@/presentation/components/features/DiscoverySection";
+import CollectionVisual from "./CollectionVisual";
+import StoryGlowField from "./StoryGlowField";
 
 export default function HomePage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -56,8 +57,7 @@ export default function HomePage() {
 
   return (
     <>
-      <HeroSection featuredProduct={featuredProduct} loading={loading} />
-
+      <HeroSection />
       {tickerItems.length > 0 && (
         <section className="ticker" aria-label={t("home.ticker.aria")}>
           <div className="ticker-track">
@@ -70,96 +70,32 @@ export default function HomePage() {
           </div>
         </section>
       )}
+      <section className="collection-home" id="collection">
+        <div className="collection-inner">
+          <div className="section-head collection-text">
+            <p className="eyebrow">{t("home.featured.eyebrow")}</p>
+            <h2 className="section-title">
+              {t("home.featured.titleLine1")}
+              <br />
+              {t("home.featured.titleLine2")}
+            </h2>
+            <p className="section-description">{t("home.featured.subtitle")}</p>
+            <Link href="/shop" className="btn btn-primary">
+              {t("about.exploreCollection")}
+            </Link>
+          </div>
 
-      <section className="collection" id="collection">
-        <div className="section-head">
-          <p className="eyebrow">{t("home.featured.eyebrow")}</p>
-          <h2 className="section-title">
-            {t("home.featured.titleLine1")}
-            <br />
-            {t("home.featured.titleLine2")}
-          </h2>
-          <p className="section-description">{t("home.featured.subtitle")}</p>
+          <CollectionVisual products={products} />
         </div>
-
-        {loading ? (
-          <div
-            style={{
-              textAlign: "center",
-              padding: "3rem 0",
-              color: "var(--color-text-secondary)",
-            }}
-          >
-            {t("common.loading")}
-          </div>
-        ) : products.length > 0 ? (
-          <div className="product-grid">
-            {products.map((product) => {
-              const liquidDeep = `color-mix(in srgb, ${product.colorHex} 70%, black)`;
-              const labelColor =
-                getLuminance(product.colorHex) > 0.6 ? "#1D1D1D" : "#FFFFFF";
-              return (
-                <Link
-                  href={`/shop/${product.slug}`}
-                  key={product.id}
-                  className="product-card"
-                >
-                  {/*  <div
-                    className="bottle"
-                    style={
-                      {
-                        "--liquid": product.colorHex,
-                        "--liquid-deep": liquidDeep,
-                        "--label-color": labelColor,
-                      } as React.CSSProperties
-                    }
-                  >
-                    <span className="bottle-cap" />
-                    <span className="bottle-shoulder" />
-                    <span className="bottle-label">
-                      <span className="bottle-label-name">{product.name}</span>
-                    </span>
-                  </div> */}
-                  <div className="relative aspect-[4/5] w-full shrink-0 overflow-hidden bg-[var(--color-bg-soft)]">
-                    <Image
-                      src={product.images[0]}
-                      alt={product.name}
-                      fill
-                      className={`object-cover transition-opacity duration-700 ease-[var(--ease-luxury)] `}
-                      sizes="(max-width: 700px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                    />
-                  </div>
-                  <h3 className="product-name">{product.name}</h3>
-                  <p className="product-meta">
-                    {t("home.featured.productMeta")}
-                  </p>
-                </Link>
-              );
-            })}
-          </div>
-        ) : (
-          <div
-            style={{
-              textAlign: "center",
-              padding: "3rem 0",
-              color: "var(--color-text-secondary)",
-            }}
-          >
-            {t("shop.noProducts")}
-          </div>
-        )}
       </section>
-
+      <DiscoverySection products={products} />
       <section className="story" id="about">
+        <StoryGlowField products={products} />
+
         <div className="story-inner">
-          <div className="story-swatches" aria-hidden="true">
-            {storySwatches.map((c, i) => (
-              <span key={i} style={{ "--c": c } as React.CSSProperties} />
-            ))}
-          </div>
           <div className="story-text">
             <p className="eyebrow">{t("about.eyebrow")}</p>
-            <h2 className="section-title">
+            <h2 className="section-title mb-2">
               {t("about.titleLine1")}
               <br />
               {t("about.titleLine2")}
@@ -169,13 +105,12 @@ export default function HomePage() {
             <p className="section-description">
               {t("about.description")} <em>{t("about.tagline")}</em>
             </p>
-            <Link href="/shop" className="text-link">
-              {t("about.exploreCollection")} →
+            <Link href="/about" className="btn btn-secondary story-cta">
+              {t("about.cta")}
             </Link>
           </div>
         </div>
       </section>
-
       <section className="newsletter">
         <div className="newsletter-inner">
           <h2 className="section-title newsletter-title">

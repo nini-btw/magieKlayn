@@ -54,6 +54,13 @@
     "openCart": "Open cart"
   },
   "home": {
+    "discovery": {
+      "aria": "Discover our fragrances",
+      "eyebrow": "Sélection",
+      "title": "À découvrir",
+      "subtitle": "Trois parfums, choisis pour vous à chaque visite.",
+      "cta": "Découvrir"
+    },
     "hero": {
       "eyebrow": "Scented Mist — Body & Hair",
       "headlineLine1": "Every Color",
@@ -514,6 +521,8 @@
     }
   },
   "about": {
+    "cta": "Discover our story",
+
     "eyebrow": "Our Philosophy",
     "titleLine1": "One Fragrance.",
     "titleLine2": "One Mood.",

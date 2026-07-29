@@ -64,6 +64,15 @@ export function truncate(text: string, maxLength: number): string {
  */
 export function generatePlaceholder(width: number, height: number): string {
   return `data:image/svg+xml;base64,${Buffer.from(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}"><rect fill="#FDF6EE" width="${width}" height="${height}"/></svg>`
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}"><rect fill="#FDF6EE" width="${width}" height="${height}"/></svg>`,
   ).toString("base64")}`;
+}
+
+// @/presentation/lib/utils.ts (add this)
+export function getLuminance(hex: string): number {
+  const clean = hex.replace("#", "");
+  const r = parseInt(clean.substring(0, 2), 16) / 255;
+  const g = parseInt(clean.substring(2, 4), 16) / 255;
+  const b = parseInt(clean.substring(4, 6), 16) / 255;
+  return 0.299 * r + 0.587 * g + 0.114 * b;
 }
