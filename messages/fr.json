@@ -1,17 +1,20 @@
 {
   "metadata": {
-    "title": "Crumbleivable - Cookies Fraîchement Cuits",
-    "description": "Commandez des cookies fraîchement cuits, irrésistibles pour livraison ou retrait. Créez votre propre boîte ou choisissez parmi nos favoris."
+    "title": "Magie Klayn — Brume Parfumée pour le Corps & les Cheveux",
+    "description": "Quatorze brumes, quatorze humeurs. Un voile parfumé qui vous correspond à chaque instant — du matin le plus doux à la nuit la plus audacieuse."
   },
   "nav": {
     "home": "Accueil",
     "shop": "Boutique",
-    "build": "Créer Votre Boîte",
-    "vote": "Voter",
+    "build": "Composez Votre Coffret",
+    "vote": "Vote",
     "cart": "Panier",
     "admin": "Admin",
     "login": "Connexion",
-    "logout": "Déconnexion"
+    "logout": "Déconnexion",
+    "collection": "Collection",
+    "coffrets": "Coffrets",
+    "about": "À Propos"
   },
   "common": {
     "close": "Fermer",
@@ -27,15 +30,15 @@
     "remove": "Retirer",
     "search": "Rechercher",
     "loading": "Chargement...",
-    "error": "Une erreur s'est produite",
+    "error": "Une erreur est survenue",
     "success": "Succès !",
     "tryAgain": "Réessayer",
     "confirm": "Êtes-vous sûr ?",
     "yes": "Oui",
     "no": "Non",
-    "submit": "Soumettre",
+    "submit": "Envoyer",
     "continue": "Continuer",
-    "viewAll": "Voir Tout",
+    "viewAll": "Tout Voir",
     "seeMore": "Voir Plus",
     "show": "Afficher",
     "hide": "Masquer",
@@ -46,180 +49,215 @@
     "total": "Total",
     "subtotal": "Sous-total",
     "delivery": "Livraison",
-    "free": "Gratuite",
-    "currency": "DA"
+    "free": "Gratuit",
+    "currency": "DA",
+    "openCart": "Ouvrir le panier"
   },
   "home": {
+    "discovery": {
+      "aria": "Découvrez nos parfums",
+      "eyebrow": "Sélection",
+      "title": "À Découvrir",
+      "subtitle": "Trois parfums, choisis pour vous à chaque visite.",
+      "cta": "Découvrir"
+    },
     "hero": {
-      "badge": "Cuits Frais Quotidiennement",
-      "title": "Fraîchement Cuits,",
-      "highlight": "Irrésistibles",
-      "subtitle": "De bons cookies, bonne humeur ! Commandez des cookies fraîchement cuits pour livraison ou retrait.",
-      "shopNow": "Acheter",
-      "buildBox": "Créer Votre Boîte",
-      "days": "Jours",
-      "hours": "Heures",
-      "mins": "Mins",
-      "secs": "Secs"
+      "eyebrow": "Brume Parfumée — Corps & Cheveux",
+      "headlineLine1": "Chaque Couleur",
+      "headlineLine2": "Raconte Une",
+      "headlineLine3": "Histoire",
+      "description": "Quatorze brumes, quatorze humeurs. Un voile parfumé qui vous correspond à chaque instant — du matin le plus doux à la nuit la plus audacieuse.",
+      "discoverCollection": "Découvrir la Collection",
+      "ourStory": "Notre Histoire",
+      "bodySplashLabel": "Brume Parfumée",
+      "scroll": "Défiler",
+      "shopNow": "Acheter Maintenant",
+      "buildBox": "Composez Votre Coffret"
     },
     "features": {
       "fresh": {
-        "title": "Frais Quotidiennement",
-        "desc": "Cuits frais chaque matin avec des ingrédients premium"
+        "title": "Petits Lots",
+        "desc": "Chaque brume est formulée en petits lots pour préserver sa qualité et son caractère"
       },
       "delivery": {
-        "title": "Livraison Rapide",
-        "desc": "Livraison le jour même disponible pour les commandes locales"
+        "title": "Livraison Nationale",
+        "desc": "Livré dans les 58 wilayas via Stop Desk ou livraison à domicile"
       },
       "custom": {
-        "title": "Boîtes Personnalisées",
-        "desc": "Créez votre boîte de cookies parfaite"
+        "title": "Composez Votre Coffret",
+        "desc": "Mélangez les brumes pour créer votre propre coffret cadeau"
       }
     },
     "featured": {
-      "title": "Favoris des Fans",
-      "subtitle": "Nos cookies les plus appréciés"
+      "eyebrow": "La Collection",
+      "titleLine1": "Quatorze Brumes.",
+      "titleLine2": "Quatorze Humeurs.",
+      "subtitle": "Chaque flacon porte sa propre couleur, comme une émotion que vous choisissez pour l'instant présent. Trouvez la vôtre.",
+      "productMeta": "Brume Parfumée · Corps & Cheveux"
     },
     "vote": {
-      "title": "Faites-le Revenir !",
-      "subtitle": "Votez pour vos saveurs préférées qui ne sont plus disponibles",
-      "cta": "Voter Maintenant",
-      "nextDrop": "Prochain Drop Dans"
+      "title": "Faites-la Revenir !",
+      "subtitle": "Votez pour vos brumes retirées préférées",
+      "cta": "Votez Maintenant",
+      "nextDrop": "Prochaine Sortie Dans"
     },
     "countdown": {
-      "badge": "Prochain Drop Dans",
+      "badge": "Prochaine Sortie Dans",
       "title": "Quelque chose ",
       "highlight": "arrive",
       "subtitle": "Une création secrète est sur le point d'être révélée.",
-      "productSuffix": "dans :",
-      "hint": "Édition limitée · Soyez prêts",
-      "noDrop": "Aucune sortie prévue"
+      "productSuffix": "sort dans :",
+      "hint": "Édition limitée · Soyez prêt",
+      "noDrop": "Aucune sortie prévue pour le moment"
     },
     "newsletter": {
-      "title": "Recevez des Mises à Jour Sucrées",
-      "subtitle": "Abonnez-vous pour des offres exclusives et des annonces de nouvelles saveurs",
-      "placeholder": "Entrez votre email",
+      "title": "Restez Dans La Lumière",
+      "subtitle": "Nouveautés, éditions limitées et histoires de couleurs — directement dans votre boîte mail.",
+      "emailLabel": "Adresse e-mail",
+      "placeholder": "Votre adresse e-mail",
       "button": "S'abonner",
-      "success": "Merci de vous être abonné !"
+      "success": "Merci pour votre inscription !"
+    },
+    "ticker": {
+      "aria": "Nos parfums"
     }
   },
   "shop": {
-    "title": "Nos Cookies",
-    "subtitle": "Faits à la main avec amour",
+    "eyebrow": "Découvrez la Collection",
+    "title": "Nos Parfums",
+    "subtitle": "Quatorze brumes, quatorze humeurs — trouvez celle qui vous ressemble.",
     "filters": {
       "all": "Tout",
-      "cookies": "Cookies",
-      "boxes": "Boîtes"
+      "new": "Nouveautés"
     },
     "sort": {
       "name": "Nom",
-      "popular": "Plus Populaire",
+      "popular": "Les Plus Populaires",
       "priceLow": "Prix : Croissant",
       "priceHigh": "Prix : Décroissant",
-      "newest": "Plus Récent",
+      "newest": "Nouveautés",
       "nameAsc": "Nom : A-Z",
       "nameDesc": "Nom : Z-A"
     },
     "addToCart": "Ajouter au Panier",
     "soldOut": "Épuisé",
     "new": "Nouveau",
-    "viewDetails": "Voir Détails",
+    "viewDetails": "Voir les Détails",
     "noProducts": "Aucun produit trouvé"
   },
   "product": {
+    "notes": "Notes",
+    "size": "Format",
     "backToShop": "Retour à la Boutique",
-    "flavour": "Saveur",
+    "scent": "Parfum",
     "allergens": "Allergènes",
-    "boxContents": "Contenu de la Boîte",
+    "boxContents": "Contenu du Coffret",
     "quantity": "Quantité",
     "addToCart": "Ajouter au Panier",
     "added": "Ajouté au Panier !",
-    "related": "Vous Pourriez Aussi Aimer",
+    "related": "Vous Aimerez Aussi",
     "description": "Description",
-    "ingredients": "Ingrédients",
-    "boxContents": "Contenu de la Boîte"
+    "ingredients": "Ingrédients"
   },
   "build": {
-    "title": "Créer Votre Boîte",
-    "subtitle": "Créez votre sélection de cookies parfaite",
-    "selectSize": "Choisir la Taille de la Boîte",
-    "boxOf4": "Boîte de 4",
-    "boxOf6": "Boîte de 6",
-    "boxOf12": "Boîte de 12",
+    "title": "Composez Votre Coffret",
+    "subtitle": "Mélangez les brumes pour créer votre propre coffret",
+    "selectSize": "Choisissez la Taille du Coffret",
+    "boxOf4": "Coffret de 4",
+    "boxOf6": "Coffret de 6",
+    "boxOf12": "Coffret de 12",
     "selected": "Sélectionné",
     "of": "sur",
     "add": "Ajouter",
     "remove": "Retirer",
-    "yourBox": "Votre Boîte",
-    "emptyBox": "Votre boîte est vide",
-    "addToCart": "Ajouter la Boîte au Panier",
+    "yourBox": "Votre Coffret",
+    "emptyBox": "Votre coffret est vide",
+    "addToCart": "Ajouter le Coffret au Panier",
     "completeSelection": "Veuillez compléter votre sélection",
-    "pieces": "pièces"
+    "pieces": "flacons"
   },
   "vote": {
-    "title": "Faites-le Revenir !",
-    "subtitle": "Votez pour vos saveurs préférées qui ne sont plus disponibles. Les cookies les plus populaires pourraient faire leur retour !",
-    "badge": "Vote Communautaire",
+    "title": "Faites-la Revenir !",
+    "subtitle": "Votez pour vos brumes retirées préférées. Les parfums les plus plébiscités pourraient bien faire leur retour !",
+    "badge": "Vote de la Communauté",
     "votes": "votes",
     "vote": "Voter",
     "voted": "Voté !",
     "totalVotes": "votes au total",
-    "noCandidates": "Pas encore de candidats au vote. Revenez bientôt !",
+    "noCandidates": "Aucun candidat au vote pour le moment. Revenez bientôt !",
     "candidates": "candidats"
   },
   "cart": {
     "title": "Votre Panier",
     "subtitle": "Vérifiez votre commande",
     "empty": "Votre panier est vide",
-    "continueShopping": "Continuer les Achats",
+    "continueShopping": "Continuer mes Achats",
     "qty": "Qté",
     "remove": "Retirer",
-    "orderSummary": "Résumé de la Commande",
-    "checkout": "Passer la Commande",
-    "note": "Demandes spéciales ? Ajoutez-les lors de la commande",
+    "orderSummary": "Récapitulatif de la Commande",
+    "checkout": "Passer à la Caisse",
+    "note": "Une demande particulière ? Ajoutez-la lors du paiement",
     "clearCart": "Vider le Panier"
   },
   "checkout": {
-    "title": "Commander",
-    "subtitle": "Complétez votre commande",
-    "contactInfo": "Informations de Contact",
+    "title": "Paiement",
+    "subtitle": "Finalisez votre commande",
+    "contactInfo": "Coordonnées",
     "fullName": "Nom Complet",
     "phone": "Numéro de Téléphone",
     "address": "Adresse de Livraison",
     "wilaya": "Wilaya",
-    "selectWilaya": "Sélectionnez la wilaya",
+    "selectWilaya": "Sélectionnez une wilaya",
     "commune": "Commune",
-    "selectCommune": "Sélectionnez la commune",
+    "selectCommune": "Sélectionnez une commune",
     "deliveryType": "Type de Livraison",
-    "stopDesk": "Point Relais",
+    "stopDesk": "Stop Desk",
     "homeDelivery": "Livraison à Domicile",
-    "selectDelivery": "Sélectionnez la livraison",
-    "noWilayas": "Zones de livraison non disponibles. Veuillez contacter le support.",
-    "cookingNote": "Note de Cuisson (optionnel)",
-    "cookingNotePlaceholder": "Des instructions de cuisson spéciales ?",
-    "giftNote": "Note Cadeau (optionnel)",
+    "selectDelivery": "Sélectionnez une livraison",
+    "noWilayas": "Zones de livraison indisponibles. Veuillez contacter le support.",
+    "giftNote": "Message Cadeau (facultatif)",
     "giftNotePlaceholder": "Ajoutez un message personnel...",
     "placeOrder": "Passer la Commande",
-    "processing": "Traitement...",
+    "processing": "Traitement en cours...",
     "success": "Commande passée avec succès !",
-    "required": "Requis",
+    "required": "Obligatoire",
     "orderDetails": "Détails de la Commande"
   },
   "footer": {
-    "tagline": "Cookies fraîchement cuits livrés à votre porte",
+    "tagline": "Les Brumes Comme Parfum",
     "quickLinks": "Liens Rapides",
     "contact": "Contact",
     "followUs": "Suivez-nous",
-    "rights": "Tous droits réservés"
+    "rights": "Tous droits réservés",
+    "shop": {
+      "title": "Boutique",
+      "all": "Tous les parfums",
+      "about": "À propos"
+    },
+    "about": {
+      "title": "À Propos",
+      "story": "Notre histoire",
+      "stockists": "Points de vente"
+    },
+    "help": {
+      "title": "Aide",
+      "contact": "Contact",
+      "shipping": "Livraison",
+      "faq": "FAQ"
+    },
+    "legal": {
+      "privacy": "Confidentialité",
+      "terms": "Conditions"
+    }
   },
   "admin": {
     "sidebar": {
       "dashboard": "Tableau de Bord",
       "orders": "Commandes",
       "products": "Produits",
-      "weeklyDrop": "Drop Hebdomadaire",
+      "weeklyDrop": "Sortie Hebdomadaire",
       "votes": "Votes",
-      "signOut": "Déconnexion",
+      "signOut": "Se Déconnecter",
       "language": "Langue"
     },
     "topbar": {
@@ -228,21 +266,21 @@
     "dashboard": {
       "title": "Tableau de Bord",
       "subtitle": "Aperçu des performances de votre boutique",
-      "totalOrders": "Total Commandes",
-      "revenue": "Revenus",
+      "totalOrders": "Total des Commandes",
+      "revenue": "Chiffre d'Affaires",
       "mostOrdered": "Le Plus Commandé",
       "mostVoted": "Le Plus Voté",
       "recentOrders": "Commandes Récentes",
-      "noOrders": "Pas encore de commandes",
-      "viewAll": "Voir Tout",
+      "noOrders": "Aucune commande pour le moment",
+      "viewAll": "Tout Voir",
       "manageProducts": "Gérer les Produits",
-      "scheduleDrop": "Planifier un Drop",
+      "scheduleDrop": "Planifier une Sortie",
       "viewVotes": "Voir les Votes"
     },
     "orders": {
       "title": "Commandes",
-      "subtitle": "Gérer les commandes clients",
-      "orderId": "N° Commande",
+      "subtitle": "Gérez les commandes clients",
+      "orderId": "N° de Commande",
       "customer": "Client",
       "total": "Total",
       "status": "Statut",
@@ -250,17 +288,17 @@
       "actions": "Actions",
       "view": "Voir",
       "delete": "Supprimer",
-      "noOrders": "Pas encore de commandes",
-      "topWilayas": "Wilayas Principales",
+      "noOrders": "Aucune commande pour le moment",
+      "topWilayas": "Principales Wilayas",
       "wilaya": "Wilaya",
       "commune": "Commune",
       "deliveryType": "Type de Livraison",
       "filters": "Filtres",
       "allWilayas": "Toutes les Wilayas",
       "allStatuses": "Tous les Statuts",
-      "selectWilaya": "Sélectionner une wilaya",
-      "selectStatus": "Sélectionner un statut",
-      "selectDate": "Sélectionner une date",
+      "selectWilaya": "Sélectionnez une wilaya",
+      "selectStatus": "Sélectionnez un statut",
+      "selectDate": "Sélectionnez une date",
       "startDate": "Date de Début",
       "endDate": "Date de Fin",
       "clearFilters": "Effacer les Filtres",
@@ -268,22 +306,22 @@
       "orders": "commandes",
       "noData": "Aucune donnée disponible",
       "deliveryTypes": {
-        "stop_desk": "Point de Retrait",
+        "stop_desk": "Stop Desk",
         "home": "Livraison à Domicile"
       },
       "statusLabels": {
         "pending": "En Attente",
-        "confirmed": "Confirmé",
+        "confirmed": "Confirmée",
         "preparing": "En Préparation",
-        "ready": "Prêt",
-        "delivered": "Livré",
-        "cancelled": "Annulé"
+        "ready": "Prête",
+        "delivered": "Livrée",
+        "cancelled": "Annulée"
       },
       "stats": {
-        "total": "Total Commandes",
-        "revenue": "Revenus",
+        "total": "Total des Commandes",
+        "revenue": "Chiffre d'Affaires",
         "pending": "En Attente",
-        "delivered": "Livré"
+        "delivered": "Livrées"
       },
       "orderDetails": {
         "title": "Détails de la Commande",
@@ -292,8 +330,7 @@
         "deliveryInfo": "Informations de Livraison",
         "items": "Articles",
         "notes": "Notes",
-        "cookingNote": "Note de Cuisson",
-        "giftNote": "Note Cadeau",
+        "giftNote": "Message Cadeau",
         "subtotal": "Sous-total",
         "total": "Total",
         "orderedOn": "Commandé le",
@@ -302,7 +339,7 @@
     },
     "products": {
       "title": "Produits",
-      "subtitle": "Gérer vos produits",
+      "subtitle": "Gérez vos produits",
       "addProduct": "Ajouter un Produit",
       "search": "Rechercher des produits...",
       "name": "Nom",
@@ -313,114 +350,113 @@
       "inactive": "Inactif",
       "edit": "Modifier",
       "delete": "Supprimer",
-      "noProducts": "Pas encore de produits. Ajoutez-en !",
+      "noProducts": "Aucun produit pour le moment. Ajoutez-en !",
       "stats": {
         "total": "Total",
         "active": "Actifs",
         "inactive": "Inactifs",
-        "cookies": "Cookies",
-        "boxes": "Boîtes"
+        "bottles": "Flacons",
+        "coffrets": "Coffrets"
       },
       "form": {
         "addTitle": "Ajouter un Produit",
         "editTitle": "Modifier le Produit",
         "productImage": "Image du Produit",
-        "uploadImage": "Cliquez pour télécharger une image",
-        "removeImage": "Supprimer l'image",
+        "uploadImage": "Cliquez pour téléverser une image",
+        "removeImage": "Retirer l'image",
         "nameLabel": "Nom",
         "priceLabel": "Prix (DA)",
         "description": "Description",
-        "flavour": "Saveur",
+        "scent": "Parfum",
         "allergens": "Allergènes (séparés par des virgules)",
-        "boxContents": "Contenu de la Boîte",
-        "allergensPlaceholder": "ex., gluten, produits laitiers, œufs",
+        "boxContents": "Contenu du Coffret",
+        "allergensPlaceholder": "ex. alcool, huiles essentielles",
         "typeLabel": "Type",
-        "cookie": "Cookie",
-        "box": "Boîte",
-        "activeLabel": "Actif (visible en boutique)",
-        "markAsNew": "Marquer comme Nouveau",
+        "bottle": "Flacon",
+        "coffret": "Coffret",
+        "activeLabel": "Actif (visible dans la boutique)",
+        "markAsNew": "Marquer comme Nouveauté",
         "cancel": "Annuler",
-        "save": "Enregistrer",
-        "create": "Créer",
+        "save": "Enregistrer les Modifications",
+        "create": "Créer le Produit",
         "sold": "vendus",
         "active": "actif",
         "items": "Articles",
-        "selectCookies": "Sélectionner les cookies",
-        "cookieQuantity": "Quantité",
-        "addCookie": "Ajouter un cookie",
-        "removeCookie": "Supprimer",
-        "includedCookies": "Cookies inclus",
-        "boxContents": "Contenu de la Boîte"
+        "selectBottles": "Sélectionner les Flacons",
+        "bottleQuantity": "Quantité",
+        "addBottle": "Ajouter un Flacon",
+        "removeBottle": "Retirer",
+        "includedBottles": "Flacons Inclus"
       },
       "actions": "Actions"
     },
     "drop": {
-      "title": "Drop Hebdomadaire",
-      "subtitle": "Planifiez votre prochaine révélation de cookie avec compte à rebours",
-      "scheduleNew": "Planifier un Nouveau Drop",
-      "selectCookie": "Sélectionner un Cookie",
-      "chooseCookie": "Choisissez un cookie...",
+      "title": "Sortie Hebdomadaire",
+      "subtitle": "Planifiez la révélation de votre prochain parfum avec compte à rebours",
+      "scheduleNew": "Planifier une Nouvelle Sortie",
+      "selectFragrance": "Sélectionner un Parfum",
+      "chooseFragrance": "Choisissez un parfum...",
       "date": "Date",
       "time": "Heure",
-      "selectDate": "Sélectionner une date",
-      "selectTime": "Sélectionner une heure",
-      "schedule": "Planifier le Drop",
+      "selectDate": "Sélectionnez une date",
+      "selectTime": "Sélectionnez une heure",
+      "schedule": "Planifier la Sortie",
       "preview": "Aperçu",
       "countdownPreview": "Aperçu du Compte à Rebours",
-      "selectDateTime": "Sélectionnez une date et heure pour voir l'aperçu",
-      "scheduledFor": "Planifié pour",
-      "activeDrop": "Drop Actif Actuel",
-      "noActiveDrop": "Pas de Drop Actif",
-      "noActiveDesc": "Planifiez un nouveau drop pour le voir ici",
-      "scheduled": "Planifié",
-      "revealed": "Révélé",
-      "cancelDrop": "Annuler le Drop",
-      "dropInfo": "Le drop sera visible sur la page d'accueil avec un compte à rebours. Quand l'heure arrivera, le produit sera automatiquement révélé, activé et marqué comme nouveau.",
-      "dropLive": "🎉 Le Drop est en Direct !",
+      "selectDateTime": "Sélectionnez une date et une heure pour voir l'aperçu",
+      "scheduledFor": "Planifiée pour",
+      "activeDrop": "Sortie Active Actuelle",
+      "noActiveDrop": "Aucune Sortie Active",
+      "noActiveDesc": "Planifiez une nouvelle sortie pour la voir ici",
+      "scheduled": "Planifiée",
+      "revealed": "Révélée",
+      "cancelDrop": "Annuler la Sortie",
+      "dropInfo": "La sortie sera visible sur la page d'accueil avec un compte à rebours. Une fois l'heure atteinte, le produit sera automatiquement révélé, activé et marqué comme nouveauté.",
+      "dropLive": "🎉 La Sortie est en Ligne !",
       "revealNow": "Révéler Maintenant",
-      "confirmReveal": "Êtes-vous sûr de vouloir révéler ce drop maintenant? Le produit sera activé et marqué comme nouveau.",
-      "revealedSuccess": "Drop révélé! Le produit est maintenant actif et marqué comme nouveau dans la boutique."
+      "confirmReveal": "Êtes-vous sûr de vouloir révéler cette sortie maintenant ? Le produit sera activé et marqué comme nouveauté.",
+      "revealedSuccess": "Sortie révélée ! Le produit est maintenant actif et marqué comme nouveauté dans la boutique."
     },
     "votes": {
       "title": "Gestion des Votes",
-      "subtitle": "Gérer les candidats au vote communautaire",
+      "subtitle": "Gérez les candidats au vote de la communauté",
       "showChart": "Afficher le Graphique",
       "hideChart": "Masquer le Graphique",
       "reset": "Réinitialiser",
       "voteResults": "Résultats du Vote",
       "totalVotes": "votes au total",
       "addFromProduct": "Ajouter depuis les Produits Existants",
-      "selectCookie": "Sélectionner un cookie...",
+      "selectFragrance": "Sélectionnez un parfum...",
       "addToVote": "Ajouter au Vote",
       "quickAdd": {
-        "title": "Ajout Rapide Nouveau Cookie",
-        "subtitle": "Créez un nouveau cookie et ajoutez-le au vote instantanément",
-        "button": "Ajout Rapide Cookie",
-        "cookieImage": "Image du Cookie",
-        "uploadImage": "Cliquez pour télécharger une image",
-        "cookieName": "Nom du Cookie",
+        "title": "Ajout Rapide d'un Nouveau Parfum",
+        "subtitle": "Créez un nouveau parfum et ajoutez-le instantanément au vote",
+        "button": "Ajout Rapide d'un Parfum",
+        "fragranceImage": "Image du Parfum",
+        "uploadImage": "Cliquez pour téléverser une image",
+        "fragranceName": "Nom du Parfum",
         "description": "Description",
         "price": "Prix (DA)",
-        "flavour": "Saveur",
+        "scent": "Parfum",
         "allergens": "Allergènes (séparés par des virgules)",
-        "markAsNew": "Marquer comme Nouveau",
-        "active": "Actif (visible en boutique)",
-        "whatHappens": "Que se passe-t-il ensuite :",
+        "markAsNew": "Marquer comme Nouveauté",
+        "active": "Actif (visible dans la boutique)",
+        "whatHappens": "Ce qui va se passer ensuite :",
         "step1": "Produit créé et ajouté à la liste des Produits",
         "step2": "Automatiquement ajouté à la liste de Vote",
-        "step3Active": "Sera visible en boutique immédiatement",
-        "step3Inactive": "Sera caché de la boutique jusqu'à activation",
+        "step3Active": "Sera visible immédiatement dans la boutique",
+        "step3Inactive": "Sera masqué de la boutique jusqu'à activation",
         "cancel": "Annuler",
-        "create": "Créer & Ajouter au Vote",
-        "namePlaceholder": "ex., Lavande Citron",
-        "descPlaceholder": "Décrivez cette saveur de cookie...",
-        "flavourPlaceholder": "ex., Citron",
-        "allergensPlaceholder": "ex., gluten, produits laitiers, œufs"
+        "create": "Créer et Ajouter au Vote",
+        "namePlaceholder": "ex. Amber Bloom",
+        "descPlaceholder": "Décrivez ce parfum...",
+        "flavourPlaceholder": "ex. Agrumes & Bergamote",
+        "allergensPlaceholder": "ex. alcool, huiles essentielles"
       },
       "candidates": "Candidats au Vote",
-      "cookie": "Cookie",
+      "fragrance": "Parfum",
       "votes": "Votes",
-      "noCandidates": "Pas encore de candidats au vote. Ajoutez-en !",
+      "noCandidates": "Aucun candidat au vote pour le moment. Ajoutez-en !",
       "deleteConfirm": "Êtes-vous sûr de vouloir supprimer ce candidat ?",
       "resetConfirm": "Êtes-vous sûr de vouloir réinitialiser tous les votes ?"
     },
@@ -432,17 +468,201 @@
       "create": "Créer",
       "search": "Rechercher",
       "loading": "Chargement...",
-      "error": "Une erreur s'est produite",
+      "error": "Une erreur est survenue",
       "success": "Succès !",
       "confirm": "Êtes-vous sûr ?"
     },
     "login": {
       "title": "Connexion Admin",
-      "email": "Email",
-      "password": "Mot de passe",
+      "email": "E-mail",
+      "password": "Mot de Passe",
       "signIn": "Se Connecter",
-      "signingIn": "Connexion...",
+      "signingIn": "Connexion en cours...",
       "error": "Identifiants invalides"
     }
+  },
+  "brand": {
+    "name": "Magie Klayn",
+    "subtitle": "Body Splash",
+    "homeAria": "Magie Klayn — accueil"
+  },
+  "coffret": {
+    "eyebrow": "Édition Coffret",
+    "titleLine1": "Le Coffret",
+    "titleLine2": "Découverte",
+    "subtitle": "Six mini-brumes, un écrin élégant. La façon la plus élégante d'essayer toute la palette de couleurs Magie Klayn — ou de l'offrir.",
+    "cta": "Voir le Coffret"
+  },
+  "contact": {
+    "eyebrow": "Contactez-nous",
+    "title": "Discutons",
+    "subtitle": "Des questions sur une commande, un parfum ou un partenariat ? Nous sommes là.",
+    "infoTitle": "Coordonnées",
+    "emailLabel": "E-mail",
+    "phoneLabel": "Téléphone",
+    "hoursLabel": "Horaires",
+    "hoursValue": "Dim – Jeu, 9h – 18h",
+    "formTitle": "Envoyer un Message",
+    "nameLabel": "Nom",
+    "namePlaceholder": "Votre nom complet",
+    "emailFieldLabel": "E-mail",
+    "emailPlaceholder": "vous@exemple.com",
+    "messageLabel": "Message",
+    "messagePlaceholder": "Comment pouvons-nous vous aider ?",
+    "submit": "Envoyer le Message",
+    "success": "Merci — nous vous répondrons bientôt.",
+    "ctaEyebrow": "Vous préférez l'e-mail ?",
+    "ctaTitle": "Contactez-nous directement, à tout moment.",
+    "ctaButton": "Nous Écrire",
+    "errors": {
+      "nameRequired": "Veuillez entrer votre nom.",
+      "emailInvalid": "Veuillez entrer une adresse e-mail valide.",
+      "messageRequired": "Votre message doit contenir au moins 10 caractères."
+    }
+  },
+  "about": {
+    "cta": "Découvrez notre histoire",
+    "eyebrow": "Notre Philosophie",
+    "titleLine1": "Un Parfum.",
+    "titleLine2": "Une Humeur.",
+    "titleLine3": "Une Couleur.",
+    "description": "Chez Magie Klayn, le parfum est une émotion avant d'être une senteur. Chaque brume est pensée comme une couleur — une humeur que vous choisissez selon l'instant, la lumière et l'envie du jour.",
+    "tagline": "L'élégance qui vous suit partout.",
+    "exploreCollection": "Explorer la collection",
+    "pageEyebrow": "À Propos",
+    "pageTitleLine1": "L'Histoire Derrière",
+    "pageTitleLine2": "Chaque Flacon",
+    "pageIntro": "Magie Klayn est née d'une idée simple : un parfum devrait ressembler au choix d'une humeur, pas seulement d'une senteur.",
+    "valuesEyebrow": "Nos Engagements",
+    "valuesTitle": "Nos Valeurs",
+    "value1Title": "Fabriqué avec Soin",
+    "value1Desc": "Chaque brume est formulée en petits lots pour préserver sa qualité et son caractère.",
+    "value2Title": "La Couleur comme Émotion",
+    "value2Desc": "Chaque parfum est associé à une couleur qui reflète l'humeur qu'il est censé évoquer.",
+    "value3Title": "Conçu pour Durer",
+    "value3Desc": "Des formules longue tenue, sans risque pour la peau et les cheveux, conçues pour un usage quotidien.",
+    "findUsEyebrow": "Rendez-nous Visite",
+    "findUsTitle": "Trouvez-nous en Boutique",
+    "findUsDesc": "Disponible chez une sélection de revendeurs à travers le pays — consultez notre page Points de Vente pour trouver un lieu près de chez vous.",
+    "ctaTitle": "Prêt(e) à trouver votre couleur ?",
+    "ctaDesc": "Découvrez les quatorze brumes et trouvez celle qui correspond à votre humeur.",
+    "ctaButton": "Découvrir la Collection"
+  },
+  "notFound": {
+    "eyebrow": "Parfum Perdu",
+    "title": "Cette Page s'est Évaporée",
+    "description": "La page que vous recherchez n'existe pas, ou la brume s'est déjà dissipée. Revenons à quelque chose qui persiste.",
+    "backHome": "Retour à l'Accueil",
+    "browseShop": "Parcourir la Collection",
+    "code": "404",
+    "browseCollection": "Parcourir la Collection"
+  },
+  "faq": {
+    "eyebrow": "Questions & Réponses",
+    "title": "Foire Aux Questions",
+    "subtitle": "Tout ce qu'il faut savoir sur nos brumes, vos commandes et la livraison. Vous ne trouvez pas votre réponse ? Contactez-nous — nous répondons vite.",
+    "contactCta": "Vous avez encore une question ?",
+    "contactButton": "Nous Contacter",
+    "groups": {
+      "top": {
+        "label": "Premières Impressions",
+        "sublabel": "Notes de Tête",
+        "items": [
+          {
+            "q": "Qu'est-ce qu'une brume parfumée, exactement ?",
+            "a": "Une brume parfumée est un spray léger conçu pour le corps et les cheveux. Moins concentrée qu'un parfum traditionnel, elle se superpose élégamment sans jamais être envahissante, et convient à un usage quotidien sur les cheveux."
+          },
+          {
+            "q": "Combien de parfums compte la collection ?",
+            "a": "Quatorze brumes, chacune construite autour d'une humeur et d'une couleur distinctes. Des senteurs les plus douces du matin aux plus audacieuses du soir, il y a une version de vous dans chaque flacon."
+          },
+          {
+            "q": "Combien de temps le parfum tient-il ?",
+            "a": "La plupart des clients perçoivent un sillage doux et radieux pendant 4 à 6 heures, plus longtemps sur les cheveux que sur la peau. Pour de meilleurs résultats, vaporisez sur une peau propre ou des cheveux légèrement humides."
+          }
+        ]
+      },
+      "heart": {
+        "label": "Commandes & Livraison",
+        "sublabel": "Notes de Cœur",
+        "items": [
+          {
+            "q": "Dans quelles wilayas livrez-vous ?",
+            "a": "Nous livrons dans les 58 wilayas via Stop Desk ou livraison à domicile. Les options disponibles s'affichent automatiquement lors du paiement, selon votre adresse."
+          },
+          {
+            "q": "Combien de temps prend la livraison ?",
+            "a": "Les commandes en Stop Desk arrivent généralement sous 2 à 4 jours ouvrés. La livraison à domicile peut prendre un peu plus de temps selon votre région."
+          },
+          {
+            "q": "Puis-je suivre ma commande ?",
+            "a": "Oui. Dès l'expédition de votre commande, vous recevrez les informations de suivi par téléphone ou e-mail afin de la suivre à chaque étape."
+          },
+          {
+            "q": "Quels moyens de paiement acceptez-vous ?",
+            "a": "Nous acceptons actuellement le paiement à la livraison pour toutes les commandes, le paiement par carte arrivera bientôt."
+          }
+        ]
+      },
+      "base": {
+        "label": "Entretien & Assistance",
+        "sublabel": "Notes de Fond",
+        "items": [
+          {
+            "q": "Puis-je composer un coffret personnalisé ?",
+            "a": "Oui. Utilisez Composez Votre Coffret pour choisir une taille et mélanger les brumes de votre choix dans un seul coffret, idéal pour offrir ou pour en essayer plusieurs à la fois."
+          },
+          {
+            "q": "Comment dois-je conserver ma brume ?",
+            "a": "Conservez les flacons à l'abri de la lumière directe du soleil et de la chaleur extrême. Bien conservée, une brume non ouverte garde tout son caractère jusqu'à 24 mois."
+          },
+          {
+            "q": "Que faire si je ne suis pas satisfait(e) de ma commande ?",
+            "a": "Contactez-nous dans les 7 jours suivant la livraison et notre équipe fera le nécessaire, qu'il s'agisse d'un échange ou d'une aide pour trouver votre parfum idéal."
+          }
+        ]
+      }
+    }
+  },
+  "shipping": {
+    "eyebrow": "Livraison & Boutiques",
+    "title": "Livraison & Retrait",
+    "subtitle": "Faites-vous livrer votre brume à domicile, ou venez la sentir en personne dans l'une de nos deux boutiques.",
+    "homeTitle": "Livraison à Domicile",
+    "homeDesc": "Livrée partout en Algérie dans un emballage protecteur, suivie de notre atelier jusqu'à votre porte.",
+    "homeMeta": "2 à 5 jours ouvrés",
+    "pickupTitle": "Retrait en Boutique",
+    "pickupDesc": "Commandez en ligne et retirez gratuitement dans notre boutique d'Alger ou d'Oran — généralement prête sous 24 heures.",
+    "pickupMeta": "Prêt en 24h",
+    "noticeLabel": "Veuillez noter :",
+    "noticeText": "Les délais de livraison peuvent varier en période de forte demande ou dans les wilayas éloignées. Vous recevrez un lien de suivi par SMS et e-mail dès l'expédition de votre commande.",
+    "storesEyebrow": "Rendez-nous Visite",
+    "storesTitle": "Nos Boutiques",
+    "storesSubtitle": "Magie Klayn est actuellement disponible dans deux villes. Venez tester la collection complète en personne.",
+    "addressLabel": "Adresse",
+    "hoursLabel": "Horaires d'Ouverture",
+    "phoneLabel": "Téléphone",
+    "viewOnMap": "Voir sur la carte",
+    "storeAlgiers": {
+      "badge": "Boutique",
+      "city": "Alger",
+      "address": "12 Rue Didouche Mourad, Alger 16000",
+      "hours": "Lun–Sam, 10h00 – 19h00",
+      "phone": "+213 21 00 00 00",
+      "phoneHref": "+21321000000",
+      "mapUrl": "https://maps.app.goo.gl/8Z4rURyqWBcNkdFN6"
+    },
+    "storeOran": {
+      "badge": "Boutique",
+      "city": "Oran",
+      "address": "8 Boulevard de l'ALN, Oran 31000",
+      "hours": "Lun–Sam, 10h00 – 19h00",
+      "phone": "+213 41 00 00 00",
+      "phoneHref": "+21341000000",
+      "mapUrl": "https://maps.app.goo.gl/7nTjBh27SqT7rgRR7"
+    },
+    "ctaEyebrow": "Des Questions ?",
+    "ctaTitle": "Vous ne trouvez pas ce que vous cherchez ?",
+    "ctaButton": "Nous Contacter"
   }
 }

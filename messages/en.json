@@ -1,7 +1,7 @@
 {
   "metadata": {
     "title": "Magie Klayn — Scented Mist for Body & Hair",
-    "description": "Eleven mists, eleven moods. A scented veil that matches every version of you — from the softest morning to the boldest night."
+    "description": "Fourteen mists, fourteen moods. A scented veil that matches every version of you — from the softest morning to the boldest night."
   },
   "nav": {
     "home": "Home",
@@ -56,17 +56,17 @@
   "home": {
     "discovery": {
       "aria": "Discover our fragrances",
-      "eyebrow": "Sélection",
-      "title": "À découvrir",
-      "subtitle": "Trois parfums, choisis pour vous à chaque visite.",
-      "cta": "Découvrir"
+      "eyebrow": "Selection",
+      "title": "To Discover",
+      "subtitle": "Three fragrances, chosen for you on every visit.",
+      "cta": "Discover"
     },
     "hero": {
       "eyebrow": "Scented Mist — Body & Hair",
       "headlineLine1": "Every Color",
       "headlineLine2": "Tells A",
       "headlineLine3": "Story",
-      "description": "Eleven mists, eleven moods. A scented veil that matches every version of you — from the softest morning to the boldest night.",
+      "description": "Fourteen mists, fourteen moods. A scented veil that matches every version of you — from the softest morning to the boldest night.",
       "discoverCollection": "Discover the Collection",
       "ourStory": "Our Story",
       "bodySplashLabel": "Scented Mist",
@@ -90,8 +90,8 @@
     },
     "featured": {
       "eyebrow": "The Collection",
-      "titleLine1": "Eleven Mists.",
-      "titleLine2": "Eleven Moods.",
+      "titleLine1": "Fourteen Mists.",
+      "titleLine2": "Fourteen Moods.",
       "subtitle": "Each bottle carries its own color, like an emotion you choose for the moment. Find yours.",
       "productMeta": "Scented Mist · Body & Hair"
     },
@@ -125,7 +125,7 @@
   "shop": {
     "eyebrow": "Shop the Collection",
     "title": "Our Fragrances",
-    "subtitle": "Eleven mists, eleven moods — find the one that matches yours.",
+    "subtitle": "Fourteen mists, fourteen moods — find the one that matches yours.",
     "filters": {
       "all": "All",
       "new": "New Arrivals"
@@ -522,7 +522,6 @@
   },
   "about": {
     "cta": "Discover our story",
-
     "eyebrow": "Our Philosophy",
     "titleLine1": "One Fragrance.",
     "titleLine2": "One Mood.",
@@ -546,7 +545,7 @@
     "findUsTitle": "Find Us In Store",
     "findUsDesc": "Available at select stockists across the country — check our Stockists page for locations near you.",
     "ctaTitle": "Ready to find your color?",
-    "ctaDesc": "Explore all eleven mists and find the one that matches your mood.",
+    "ctaDesc": "Explore all fourteen mists and find the one that matches your mood.",
     "ctaButton": "Shop the Collection"
   },
   "notFound": {
@@ -575,7 +574,7 @@
           },
           {
             "q": "How many fragrances are in the collection?",
-            "a": "Eleven mists, each built around a distinct mood and color. From the softest morning scents to bolder evening ones, there's a version of you in every bottle."
+            "a": "Fourteen mists, each built around a distinct mood and color. From the softest morning scents to bolder evening ones, there's a version of you in every bottle."
           },
           {
             "q": "How long does the scent last?",
@@ -629,27 +628,21 @@
     "eyebrow": "Delivery & Boutiques",
     "title": "Shipping & Pickup",
     "subtitle": "Have your mist delivered to your door, or come smell it in person at one of our two boutiques.",
-
     "homeTitle": "Home Delivery",
     "homeDesc": "Delivered across Algeria in protective packaging, tracked from our workshop to your door.",
     "homeMeta": "2–5 business days",
-
     "pickupTitle": "Boutique Pickup",
     "pickupDesc": "Order online and collect for free at our Algiers or Oran boutique — usually ready within 24 hours.",
     "pickupMeta": "Ready in 24h",
-
     "noticeLabel": "Please note:",
     "noticeText": "Delivery times may vary during high-demand periods or in remote wilayas. You'll receive a tracking link by SMS and email as soon as your order ships.",
-
     "storesEyebrow": "Visit Us",
     "storesTitle": "Our Boutiques",
     "storesSubtitle": "Magie Klayn is currently available in two cities. Come test the full collection in person.",
-
     "addressLabel": "Address",
     "hoursLabel": "Opening Hours",
     "phoneLabel": "Phone",
     "viewOnMap": "View on map",
-
     "storeAlgiers": {
       "badge": "Boutique",
       "city": "Algiers",
@@ -668,7 +661,6 @@
       "phoneHref": "+21341000000",
       "mapUrl": "https://maps.app.goo.gl/7nTjBh27SqT7rgRR7"
     },
-
     "ctaEyebrow": "Questions?",
     "ctaTitle": "Can't find what you're looking for?",
     "ctaButton": "Contact Us"
