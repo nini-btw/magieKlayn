@@ -29,7 +29,36 @@ import { useTranslations, useLocale } from "next-intl";
 type SortField = "name" | "price" | "status";
 type SortDirection = "asc" | "desc";
 
-// Product Modal Component
+// Product visual — follows the brand's colorHex rule: a real photo gets a
+// soft tint frame, an illustrated placeholder sits on the full-strength
+// signature color.
+function ProductVisual({ product }: { product: Product }) {
+  const hasImage = Boolean(product.images?.[0]);
+  const tint = `color-mix(in srgb, ${product.colorHex} 14%, white)`;
+
+  return (
+    <div
+      className="admin-product-thumb"
+      style={{ backgroundColor: hasImage ? tint : product.colorHex }}
+    >
+      {hasImage ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={product.images[0]}
+          alt={product.name}
+          className="admin-product-thumb-img"
+        />
+      ) : (
+        <PackageIcon
+          className="w-5 h-5"
+          style={{ color: "var(--color-white)" }}
+        />
+      )}
+    </div>
+  );
+}
+
+// Product Modal
 function ProductModal({
   isOpen,
   onClose,
@@ -45,10 +74,8 @@ function ProductModal({
 }) {
   const t = useTranslations();
 
-  // Convert product to initial form data
   const getInitialData = (): Partial<ProductFormData> | undefined => {
     if (!product) return undefined;
-
     return {
       name: product.name,
       slug: product.slug,
@@ -71,23 +98,19 @@ function ProductModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-3xl bg-white shadow-xl">
-        <div className="flex items-center justify-between border-b border-[var(--color-border)] p-4 sm:p-6">
-          <h2 className="text-lg font-bold text-[var(--color-text)]">
+    <div className="admin-modal-overlay">
+      <div className="admin-modal">
+        <div className="admin-modal-head">
+          <h2 className="admin-panel-title">
             {product
               ? t("admin.products.form.editTitle")
               : t("admin.products.form.addTitle")}
           </h2>
-          <button
-            onClick={onClose}
-            className="rounded-lg p-2 transition-colors hover:bg-[var(--color-bg-soft)]"
-          >
-            <XIcon className="h-5 w-5 text-[var(--color-text-secondary)]" />
+          <button onClick={onClose} className="admin-modal-close">
+            <XIcon className="h-5 w-5" />
           </button>
         </div>
-
-        <div className="p-4 sm:p-6">
+        <div className="admin-modal-body">
           <ProductForm
             initialData={getInitialData()}
             onSubmit={handleSubmit}
@@ -102,7 +125,7 @@ function ProductModal({
   );
 }
 
-// Product Card Component for Mobile
+// Product Card — mobile
 function ProductCard({
   product,
   onEdit,
@@ -115,67 +138,41 @@ function ProductCard({
   t: (key: string) => string;
 }) {
   return (
-    <div className="space-y-3 rounded-2xl border border-[var(--color-border)] bg-white p-4">
-      <div className="flex items-start gap-3">
-        <div
-          className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl bg-[var(--color-bg-soft)]"
-          style={
-            !product.images?.[0]
-              ? { backgroundColor: product.colorHex }
-              : undefined
-          }
-        >
-          {product.images?.[0] ? (
-            <img
-              src={product.images[0]}
-              alt={product.name}
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center">
-              <PackageIcon className="h-6 w-6 text-white/80" />
-            </div>
-          )}
-        </div>
-        <div className="min-w-0 flex-1">
-          <h3 className="truncate font-semibold text-[var(--color-text)]">
-            {product.name}
-          </h3>
-          <p className="text-lg font-bold text-[var(--color-text)]">
+    <div className="admin-product-card">
+      <div className="admin-product-card-top">
+        <ProductVisual product={product} />
+        <div className="admin-product-info">
+          <h3 className="admin-product-name">{product.name}</h3>
+          <p className="admin-product-price">
             {product.price} {t("common.currency")}
           </p>
-          <div className="mt-1 flex items-center gap-2">
-            <span className="inline-flex items-center rounded-full bg-[var(--color-bg-soft)] px-2 py-0.5 text-xs font-medium text-[var(--color-text)]">
-              {product.sizeMl}ml
+          <div className="admin-product-tags">
+            <span className="admin-tag">{product.sizeMl}ml</span>
+            <span
+              className={
+                product.isActive
+                  ? "admin-badge admin-badge-success"
+                  : "admin-badge"
+              }
+            >
+              {product.isActive
+                ? t("admin.products.active")
+                : t("admin.products.inactive")}
             </span>
-            {product.isActive ? (
-              <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">
-                {t("admin.products.active")}
-              </span>
-            ) : (
-              <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">
-                {t("admin.products.inactive")}
-              </span>
-            )}
           </div>
         </div>
       </div>
 
-      <p className="line-clamp-2 text-sm text-[var(--color-text-secondary)]">
-        {product.description}
-      </p>
+      <p className="admin-product-desc">{product.description}</p>
 
-      <div className="flex items-center justify-end gap-2 border-t border-[var(--color-border)] pt-2">
-        <button
-          onClick={onEdit}
-          className="flex items-center gap-1.5 rounded-lg bg-[var(--color-bg-soft)] px-3 py-2 text-sm transition-colors hover:bg-[var(--color-border)]"
-        >
-          <PencilIcon className="h-4 w-4 text-[var(--color-text)]" />
+      <div className="admin-product-actions">
+        <button onClick={onEdit} className="admin-action-button">
+          <PencilIcon className="h-4 w-4" />
           {t("common.edit")}
         </button>
         <button
           onClick={onDelete}
-          className="flex items-center gap-1.5 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-500 transition-colors hover:bg-red-100"
+          className="admin-action-button admin-action-button-danger"
         >
           <Trash2Icon className="h-4 w-4" />
           {t("common.delete")}
@@ -209,9 +206,7 @@ export default function AdminProductsPage() {
       try {
         const response = await fetch("/api/admin/products");
         const result = await response.json();
-        if (result.success) {
-          setProducts(result.data);
-        }
+        if (result.success) setProducts(result.data);
       } catch (error) {
         console.error("Failed to fetch products:", error);
       } finally {
@@ -248,17 +243,15 @@ export default function AdminProductsPage() {
   const filteredAndSortedProducts = React.useMemo(() => {
     let filtered = products;
 
-    if (statusFilter === "active") {
+    if (statusFilter === "active")
       filtered = filtered.filter((p) => p.isActive);
-    } else if (statusFilter === "inactive") {
+    else if (statusFilter === "inactive")
       filtered = filtered.filter((p) => !p.isActive);
-    }
 
-    if (availabilityFilter === "new") {
+    if (availabilityFilter === "new")
       filtered = filtered.filter((p) => p.isNew);
-    } else if (availabilityFilter === "soldOut") {
+    else if (availabilityFilter === "soldOut")
       filtered = filtered.filter((p) => p.isSoldOut);
-    }
 
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
@@ -279,9 +272,7 @@ export default function AdminProductsPage() {
           comparison = a.price - b.price;
           break;
         case "status":
-          const statusA = a.isActive ? 1 : 0;
-          const statusB = b.isActive ? 1 : 0;
-          comparison = statusA - statusB;
+          comparison = (a.isActive ? 1 : 0) - (b.isActive ? 1 : 0);
           break;
       }
       return sortDirection === "asc" ? comparison : -comparison;
@@ -353,12 +344,8 @@ export default function AdminProductsPage() {
 
   const handleDelete = async (id: string) => {
     if (!confirm(t("common.confirm"))) return;
-
     try {
-      const response = await fetch(`/api/products/${id}`, {
-        method: "DELETE",
-      });
-
+      const response = await fetch(`/api/products/${id}`, { method: "DELETE" });
       const result = await response.json();
       if (result.success) {
         setProducts(products.filter((p) => p.id !== id));
@@ -378,175 +365,136 @@ export default function AdminProductsPage() {
     field: SortField;
     children: React.ReactNode;
   }) => (
-    <th
-      className="cursor-pointer px-3 py-3 text-left text-xs font-bold tracking-widest text-[var(--color-text-secondary)] uppercase transition-colors hover:text-[var(--color-text)] sm:px-6"
-      onClick={() => handleSort(field)}
-    >
-      <div className="flex items-center gap-1">
+    <th className="admin-th-sortable" onClick={() => handleSort(field)}>
+      <div className="admin-th-inner">
         {children}
         {sortField === field &&
           (sortDirection === "asc" ? (
-            <ChevronUpIcon className="h-4 w-4" />
+            <ChevronUpIcon className="h-3.5 w-3.5" />
           ) : (
-            <ChevronDownIcon className="h-4 w-4" />
+            <ChevronDownIcon className="h-3.5 w-3.5" />
           ))}
       </div>
     </th>
   );
 
-  // Calculate stats
   const stats = React.useMemo(() => {
     const total = products.length;
     const active = products.filter((p) => p.isActive).length;
     const inactive = total - active;
     const newProducts = products.filter((p) => p.isNew).length;
     const soldOut = products.filter((p) => p.isSoldOut).length;
-
     return { total, active, inactive, newProducts, soldOut };
   }, [products]);
 
-  // Stats Card Component
-  const StatCard = ({
+  const FilterStatCard = ({
     title,
     value,
     icon: Icon,
-    color,
     isActive,
     onClick,
   }: {
     title: string;
     value: number;
     icon: React.ElementType;
-    color: string;
     isActive?: boolean;
     onClick?: () => void;
   }) => (
     <button
       onClick={onClick}
-      className={`w-full cursor-pointer rounded-2xl border p-4 text-left transition-all sm:p-5 ${
-        isActive
-          ? "border-[var(--color-text)] bg-[var(--color-bg-soft)] ring-2 ring-[var(--color-text)]/10"
-          : "border-[var(--color-border)] bg-white hover:border-[var(--color-text)]/40 hover:bg-[var(--color-bg-soft)]/60"
-      }`}
+      className={`admin-stat-card admin-stat-card-button ${isActive ? "admin-stat-card-active" : ""}`}
     >
-      <div className="flex items-center gap-3">
-        <div
-          className={`flex h-10 w-10 items-center justify-center rounded-xl ${color}`}
-        >
-          <Icon className="h-5 w-5 text-white" />
-        </div>
-        <div>
-          <p className="text-xs font-bold uppercase tracking-widest text-[var(--color-text-secondary)]">
-            {title}
-          </p>
-          <p className="text-2xl font-bold text-[var(--color-text)]">{value}</p>
-        </div>
+      <div className="admin-stat-icon">
+        <Icon className="h-5 w-5" />
       </div>
+      <p className="admin-stat-label">{title}</p>
+      <p className="admin-stat-value">{value}</p>
     </button>
   );
 
   if (loading) {
     return (
-      <div className="space-y-8">
-        <div>
-          <h1 className="font-display text-3xl text-[var(--color-text)]">
-            {t("admin.products.title")}
-          </h1>
-          <p className="mt-1 text-[var(--color-text-secondary)]">
-            {t("common.loading")}
-          </p>
-        </div>
+      <div>
+        <h1 className="admin-page-title">{t("admin.products.title")}</h1>
+        <p className="state-message">{t("common.loading")}</p>
       </div>
     );
   }
 
   return (
-    <div
-      data-testid="products-page"
-      className="space-y-6 sm:space-y-8"
-      dir={isRTL ? "rtl" : "ltr"}
-    >
+    <div dir={isRTL ? "rtl" : "ltr"}>
       {/* Header */}
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+      <div className="admin-toolbar">
         <div>
-          <h1 className="font-display text-2xl text-[var(--color-text)] sm:text-3xl">
-            {t("admin.products.title")}
-          </h1>
-          <p className="mt-1 text-[var(--color-text-secondary)]">
-            {t("admin.products.subtitle")}
-          </p>
+          <h1 className="admin-page-title">{t("admin.products.title")}</h1>
+          <p className="admin-page-subtitle">{t("admin.products.subtitle")}</p>
         </div>
         <Button
           variant="primary"
           onClick={handleCreate}
-          data-testid="add-product-button"
+          className="!bg-[var(--color-text)] !text-[var(--color-white)] hover:!opacity-90"
         >
           <PlusIcon className="mr-2 h-4 w-4" />
           {t("admin.products.addProduct")}
         </Button>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
-        <StatCard
+      {/* Stats */}
+      <div className="admin-stat-grid admin-stat-grid-5">
+        <FilterStatCard
           title={t("admin.products.stats.total")}
           value={stats.total}
           icon={LayersIcon}
-          color="bg-[var(--color-text)]"
           isActive={statusFilter === null && availabilityFilter === null}
           onClick={clearFilters}
         />
-        <StatCard
+        <FilterStatCard
           title={t("admin.products.stats.active")}
           value={stats.active}
           icon={CheckCircleIcon}
-          color="bg-green-500"
           isActive={statusFilter === "active"}
           onClick={() => toggleStatusFilter("active")}
         />
-        <StatCard
+        <FilterStatCard
           title={t("admin.products.stats.inactive")}
           value={stats.inactive}
           icon={XCircleIcon}
-          color="bg-gray-400"
           isActive={statusFilter === "inactive"}
           onClick={() => toggleStatusFilter("inactive")}
         />
-        <StatCard
+        <FilterStatCard
           title={t("admin.products.stats.new")}
           value={stats.newProducts}
           icon={SparklesIcon}
-          color="bg-[var(--color-text)]"
           isActive={availabilityFilter === "new"}
           onClick={() => toggleAvailabilityFilter("new")}
         />
-        <StatCard
+        <FilterStatCard
           title={t("admin.products.stats.soldOut")}
           value={stats.soldOut}
           icon={BanIcon}
-          color="bg-gray-400"
           isActive={availabilityFilter === "soldOut"}
           onClick={() => toggleAvailabilityFilter("soldOut")}
         />
       </div>
 
-      {/* Search Bar */}
-      <div className="relative">
-        <SearchIcon className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-[var(--color-text-secondary)]" />
+      {/* Search */}
+      <div className="admin-search">
+        <SearchIcon className="admin-search-icon h-4 w-4" />
         <input
           type="text"
           placeholder={t("admin.products.search")}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full rounded-2xl border-2 border-[var(--color-border)] bg-white py-3 pr-4 pl-12 text-[var(--color-text)] focus:border-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-text)]/10 focus:outline-none"
+          className="admin-search-input"
         />
       </div>
 
       {/* Desktop Table */}
-      <div className="hidden overflow-hidden rounded-3xl border border-[var(--color-border)] bg-white sm:block">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-[var(--color-bg-soft)]">
+      <div className="admin-panel hidden sm:block">
+        <div style={{ overflowX: "auto" }}>
+          <table className="admin-table">
+            <thead>
               <tr>
                 <SortHeader field="name">{t("admin.products.name")}</SortHeader>
                 <SortHeader field="price">
@@ -555,94 +503,63 @@ export default function AdminProductsPage() {
                 <SortHeader field="status">
                   {t("admin.products.status")}
                 </SortHeader>
-                <th className="px-3 py-3 text-right text-xs font-bold tracking-widest text-[var(--color-text-secondary)] uppercase sm:px-6">
+                <th style={{ textAlign: "right" }}>
                   {t("admin.products.actions")}
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[var(--color-border)]">
+            <tbody>
               {filteredAndSortedProducts.map((product) => (
-                <tr
-                  key={product.id}
-                  className="transition-colors hover:bg-[var(--color-bg-soft)]/60"
-                >
-                  <td className="px-3 py-3 sm:px-6 sm:py-4">
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-xl bg-[var(--color-bg-soft)] sm:h-14 sm:w-14"
-                        style={
-                          !product.images?.[0]
-                            ? { backgroundColor: product.colorHex }
-                            : undefined
-                        }
-                      >
-                        {product.images?.[0] ? (
-                          <img
-                            src={product.images[0]}
-                            alt={product.name}
-                            className="h-full w-full object-cover"
-                          />
-                        ) : (
-                          <div className="flex h-full w-full items-center justify-center">
-                            <ImageIcon className="h-5 w-5 text-white/80 sm:h-6 sm:w-6" />
-                          </div>
-                        )}
-                      </div>
+                <tr key={product.id}>
+                  <td>
+                    <div className="admin-product-row">
+                      <ProductVisual product={product} />
                       <div className="min-w-0">
-                        <p
-                          data-testid="product-name"
-                          className="truncate text-sm font-medium text-[var(--color-text)] sm:text-base"
-                        >
-                          {product.name}
-                        </p>
-                        <p className="max-w-[150px] truncate text-xs text-[var(--color-text-secondary)] sm:max-w-[200px]">
+                        <p className="admin-product-row-name">{product.name}</p>
+                        <p className="admin-cell-subtext">
                           {product.description.slice(0, 40)}...
                         </p>
                       </div>
                     </div>
                   </td>
-                  <td className="px-3 py-3 text-sm font-semibold text-[var(--color-text)] tabular-nums sm:px-6 sm:py-4 sm:text-base">
+                  <td style={{ fontWeight: 600 }}>
                     {product.price} {t("common.currency")}
                   </td>
-                  <td className="px-3 py-3 sm:px-6 sm:py-4">
+                  <td>
                     <button
                       onClick={() =>
                         handleEdit({ ...product, isActive: !product.isActive })
                       }
-                      className="cursor-pointer"
-                      data-testid="product-toggle"
-                      title={
-                        product.isActive
-                          ? t("admin.products.active")
-                          : t("admin.products.inactive")
-                      }
+                      className="admin-status-toggle"
                     >
-                      {product.isActive ? (
-                        <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800 sm:px-2.5 sm:py-1">
-                          {t("admin.products.active")}
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600 sm:px-2.5 sm:py-1">
-                          {t("admin.products.inactive")}
-                        </span>
-                      )}
+                      <span
+                        className={
+                          product.isActive
+                            ? "admin-badge admin-badge-success"
+                            : "admin-badge"
+                        }
+                      >
+                        {product.isActive
+                          ? t("admin.products.active")
+                          : t("admin.products.inactive")}
+                      </span>
                     </button>
                   </td>
-                  <td className="px-3 py-3 sm:px-6 sm:py-4">
-                    <div className="flex items-center justify-end gap-1 sm:gap-2">
+                  <td>
+                    <div className="admin-row-actions">
                       <button
                         onClick={() => handleEdit(product)}
-                        className="cursor-pointer rounded-lg p-2 transition-colors hover:bg-[var(--color-bg-soft)]"
+                        className="admin-icon-button"
                         title={t("common.edit")}
                       >
-                        <PencilIcon className="h-4 w-4 text-[var(--color-text-secondary)]" />
+                        <PencilIcon className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => handleDelete(product.id)}
-                        className="cursor-pointer rounded-lg p-2 transition-colors hover:bg-red-50"
+                        className="admin-icon-button admin-icon-button-danger"
                         title={t("common.delete")}
                       >
-                        <Trash2Icon className="h-4 w-4 text-red-400" />
+                        <Trash2Icon className="h-4 w-4" />
                       </button>
                     </div>
                   </td>
@@ -652,11 +569,11 @@ export default function AdminProductsPage() {
           </table>
         </div>
         {filteredAndSortedProducts.length === 0 && (
-          <div className="p-8 text-center text-[var(--color-text-secondary)]">
+          <p className="admin-empty">
             {searchQuery
               ? t("shop.noProducts")
               : t("admin.products.noProducts")}
-          </div>
+          </p>
         )}
       </div>
 
@@ -672,15 +589,14 @@ export default function AdminProductsPage() {
           />
         ))}
         {filteredAndSortedProducts.length === 0 && (
-          <div className="rounded-3xl border border-[var(--color-border)] bg-white p-8 text-center text-[var(--color-text-secondary)]">
+          <p className="admin-empty">
             {searchQuery
               ? t("shop.noProducts")
               : t("admin.products.noProducts")}
-          </div>
+          </p>
         )}
       </div>
 
-      {/* Product Modal */}
       <ProductModal
         isOpen={isModalOpen}
         onClose={() => {

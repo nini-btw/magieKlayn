@@ -252,6 +252,7 @@
   },
   "admin": {
     "sidebar": {
+      "viewSite": "View site",
       "dashboard": "Dashboard",
       "orders": "Orders",
       "products": "Products",
@@ -352,6 +353,8 @@
       "delete": "Delete",
       "noProducts": "No products yet. Add some!",
       "stats": {
+        "new": "New",
+        "soldOut": "Sold out",
         "total": "Total",
         "active": "Active",
         "inactive": "Inactive",
@@ -359,6 +362,11 @@
         "coffrets": "Coffrets"
       },
       "form": {
+        "colorLabel": "Signature color",
+        "sizeLabel": "Size (ml)",
+        "notesLabel": "Fragrance notes",
+        "notesPlaceholder": "Add a note and press Enter (e.g. Vanille, Musc blanc)",
+        "markAsSoldOut": "Mark as sold out",
         "addTitle": "Add Product",
         "editTitle": "Edit Product",
         "productImage": "Product Image",

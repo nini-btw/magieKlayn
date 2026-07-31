@@ -3,21 +3,17 @@
 import * as React from "react";
 import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { motion } from "framer-motion";
 import { AlertCircleIcon } from "lucide-react";
-import { Button } from "@/presentation/components/ui/Button";
-import { Input } from "@/presentation/components/ui/Input";
-import { fadeInUp } from "@/presentation/lib/animations";
-import { loginAdmin } from "../actions";
 import Link from "next/link";
 import Logo from "@/presentation/components/ui/Logo";
+import { loginAdmin } from "../actions";
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/admin";
 
-  const [email, setEmail] = React.useState("admin@crumbleivable.com");
+  const [email, setEmail] = React.useState("admin@magieklayn.com");
   const [password, setPassword] = React.useState("");
   const [error, setError] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
@@ -44,78 +40,85 @@ function LoginForm() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#2C1810] p-4">
-      <motion.div
-        variants={fadeInUp}
-        initial="initial"
-        animate="animate"
-        className="w-full max-w-md"
-      >
-        <div className="mb-8 text-center">
-          <Link href="/">
-            <Logo />
-          </Link>
-          <h1 className="font-display text-3xl text-white">crumbleivable!</h1>
-          <p className="mt-2 text-white/70">Admin Dashboard</p>
-        </div>
+    <div className="admin-login-page">
+      <div className="admin-login-inner">
+        <Link href="/" className="admin-login-brand">
+          <Logo />
+          <span className="admin-login-brand-text">Magie Klayn</span>
+          <span className="admin-login-brand-sub">Admin</span>
+        </Link>
 
-        <div className="rounded-3xl bg-white p-6 shadow-[0_8px_32px_rgba(44,24,16,0.16)] sm:p-8">
-          <h2 className="mb-6 text-xl font-bold text-[#2C1810]">Sign In</h2>
+        <div className="admin-login-card">
+          <h1 className="admin-login-title">Sign in</h1>
 
           {error && (
             <div
               data-testid="login-error"
-              className="mb-6 flex items-center gap-3 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600"
+              className="form-error"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.6rem",
+                marginBottom: "var(--space-md)",
+              }}
             >
-              <AlertCircleIcon className="h-5 w-5 flex-shrink-0" />
+              <AlertCircleIcon className="h-5 w-5" style={{ flexShrink: 0 }} />
               {error}
             </div>
           )}
 
-          <form
-            onSubmit={handleSubmit}
-            className="space-y-4"
-            data-testid="login-form"
-          >
-            <Input
-              label="Email"
-              type="email"
-              name="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+          <form onSubmit={handleSubmit} data-testid="login-form">
+            <div className="form-group">
+              <label className="form-label" htmlFor="admin-email">
+                Email
+              </label>
+              <input
+                id="admin-email"
+                className="form-input"
+                type="email"
+                name="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
 
-            <Input
-              label="Password"
-              type="password"
-              name="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+            <div className="form-group">
+              <label className="form-label" htmlFor="admin-password">
+                Password
+              </label>
+              <input
+                id="admin-password"
+                className="form-input"
+                type="password"
+                name="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
 
-            <Button
-              type="submit"
-              fullWidth
-              size="lg"
-              isLoading={isLoading}
-              className="mt-2 cursor-pointer"
-              data-testid="login-button"
-            >
-              Sign In
-            </Button>
+            <div className="form-submit-row">
+              <button
+                type="submit"
+                className="btn btn-primary btn-block"
+                disabled={isLoading}
+                data-testid="login-button"
+              >
+                {isLoading ? "Signing in…" : "Sign in"}
+              </button>
+            </div>
           </form>
 
-          <p className="mt-4 text-center text-sm text-[#A07850]">
-            Default: admin@crumbleivable.com / admin123
+          <p className="admin-login-hint">
+            Default: admin@magieklayn.com / admin123
           </p>
         </div>
 
-        <p className="mt-8 text-center text-sm text-white/50">
-          © {new Date().getFullYear()} Crumbleivable!
+        <p className="admin-login-footer">
+          © {new Date().getFullYear()} Magie Klayn
         </p>
-      </motion.div>
+      </div>
     </div>
   );
 }
@@ -124,8 +127,13 @@ export default function AdminLoginPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center bg-[#2C1810]">
-          <div className="text-white">Loading...</div>
+        <div className="admin-login-page">
+          <p
+            className="state-message"
+            style={{ color: "rgba(255,255,255,0.7)" }}
+          >
+            Loading…
+          </p>
         </div>
       }
     >
