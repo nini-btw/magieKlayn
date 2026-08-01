@@ -1937,9 +1937,10 @@
   }
 }
 .collection {
-  width: 100%;
-  overflow: hidden;
-  padding: var(--space-xl) 0;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: clamp(4rem, 9vw, 7rem) clamp(1.5rem, 5vw, 4rem);
+  box-sizing: border-box;
 }
 
 .collection-inner {
@@ -2512,6 +2513,21 @@
   border-color: color-mix(in srgb, var(--color-warning) 35%, transparent);
   background-color: color-mix(in srgb, var(--color-warning) 10%, white);
 }
+.admin-badge-confirmed {
+  color: #3b6fa0;
+  border-color: color-mix(in srgb, #3b6fa0 35%, transparent);
+  background-color: color-mix(in srgb, #3b6fa0 10%, white);
+}
+.admin-badge-preparing {
+  color: #8a63d2;
+  border-color: color-mix(in srgb, #8a63d2 35%, transparent);
+  background-color: color-mix(in srgb, #8a63d2 10%, white);
+}
+.admin-badge-ready {
+  color: #c2761f;
+  border-color: color-mix(in srgb, #c2761f 35%, transparent);
+  background-color: color-mix(in srgb, #c2761f 10%, white);
+}
 
 /* ---- Mobile order cards ---- */
 .admin-order-card {
@@ -2585,64 +2601,89 @@
 
 /* ---- Login page ---- */
 .admin-login-page {
-  min-height: 100vh;
+  height: 100vh;
+  height: 100dvh; /* falls back gracefully; dvh accounts for mobile browser chrome */
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: var(--space-md);
-  background-color: var(--color-text);
+  background-color: var(--color-bg-soft);
+  background-image: radial-gradient(
+    circle at 50% 0%,
+    rgba(29, 29, 29, 0.04),
+    transparent 60%
+  );
 }
+
 .admin-login-inner {
   width: 100%;
-  max-width: 400px;
+  max-width: 380px;
 }
+
 .admin-login-brand {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  margin-bottom: var(--space-lg);
-  color: var(--color-white);
+  margin-bottom: var(--space-sm);
+  color: var(--color-text);
 }
+
+/* Constrain the logo — it was rendering at native SVG/image size before */
+.admin-login-brand :is(svg, img) {
+  width: 40px;
+  height: 40px;
+  display: block;
+}
+
 .admin-login-brand-text {
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: 1.4rem;
+  font-size: 1.25rem;
   margin-top: var(--space-sm);
+  color: var(--color-text);
 }
+
 .admin-login-brand-sub {
-  font-size: 0.78rem;
-  letter-spacing: 0.14em;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.6);
-  margin-top: var(--space-xs);
+  color: var(--color-text-secondary);
+  margin-top: 2px;
 }
+
 .admin-login-card {
   background-color: var(--color-white);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-card);
-  box-shadow: var(--shadow-soft);
-  padding: var(--space-lg) var(--space-md);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-lg) var(--space-lg);
 }
+
 .admin-login-title {
   font-family: var(--font-display);
   font-weight: 400;
   font-size: 1.5rem;
   color: var(--color-text);
-  margin-bottom: var(--space-md);
+  margin-bottom: var(--space-lg);
+  text-align: center;
 }
+
 .admin-login-hint {
   margin-top: var(--space-md);
   text-align: center;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   color: var(--color-text-secondary);
 }
+
 .admin-login-footer {
   margin-top: var(--space-lg);
   text-align: center;
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
 }
-
 /* ==========================================================================
    Additions to admin.css for the Orders and Products pages.
    Built entirely from the existing Magie Klayn tokens (globals.css) and the
@@ -3154,6 +3195,7 @@
   justify-content: space-between;
   padding: var(--space-md);
   border-bottom: 1px solid var(--color-border);
+  z-index: 50;
 }
 .admin-modal-close {
   padding: 0.5rem;
@@ -4019,18 +4061,16 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-xs);
-  margin: 0 var(--space-sm) var(--space-md);
-  padding: 0.5rem 0.75rem;
-  border-radius: var(--radius-main);
-  border: 1px solid var(--color-border);
-  color: var(--color-text-secondary);
-  font-size: 0.8rem;
-  font-weight: 500;
+  padding: 0.85rem 1.1rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.65);
   transition:
-    border-color var(--duration-base) var(--ease-luxury),
+    background-color var(--duration-base) var(--ease-luxury),
     color var(--duration-base) var(--ease-luxury);
 }
 .admin-sidebar-view-site:hover {
-  border-color: var(--color-text);
-  color: var(--color-text);
+  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--color-white);
 }

@@ -16,19 +16,28 @@ const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
 });
 
 export interface IStorageService {
-  upload(file: File | Buffer, filename: string, mimeType: string): Promise<string>;
+  upload(
+    file: File | Buffer,
+    filename: string,
+    mimeType: string,
+  ): Promise<string>;
   delete(url: string): Promise<void>;
 }
 
 class SupabaseStorageService implements IStorageService {
-  private bucket = "crumbleivable";
-  private folder = "products";
+  private bucket = "magieKlayn";
 
-  async upload(file: File | Buffer, filename: string, mimeType: string): Promise<string> {
-    const sanitized = filename.replace(/[^a-zA-Z0-9.]/g, "-").replace(/-+/g, "-");
+  async upload(
+    file: File | Buffer,
+    filename: string,
+    mimeType: string,
+  ): Promise<string> {
+    const sanitized = filename
+      .replace(/[^a-zA-Z0-9.]/g, "-")
+      .replace(/-+/g, "-");
     const ext = sanitized.split(".").pop() || "bin";
     const name = sanitized.substring(0, sanitized.lastIndexOf(".")) || "file";
-    const path = `${this.folder}/${Date.now()}-${name}.${ext}`;
+    const path = `${Date.now()}-${name}.${ext}`;
 
     const { error } = await supabaseAdmin.storage
       .from(this.bucket)

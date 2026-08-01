@@ -339,6 +339,10 @@
       }
     },
     "products": {
+      "tags": "Tags",
+      "emptyTitle": "No products yet",
+      "emptyDesc": "Add some! Your first fragrance is one click away.",
+      "emptyFilteredDesc": "Nothing matches this filter. Try a different one.",
       "title": "Products",
       "subtitle": "Manage your products",
       "addProduct": "Add Product",

@@ -64,7 +64,7 @@ export const AdminSidebar: React.FC<{
       >
         <Link href="/admin" className="admin-sidebar-brand" onClick={onClose}>
           <span className="admin-sidebar-brand-mark" aria-hidden="true">
-            <Logo />
+            <Logo variant="white" />
           </span>
           <div>
             <span className="admin-sidebar-brand-text">Magie Klayn</span>
@@ -72,18 +72,6 @@ export const AdminSidebar: React.FC<{
               {t("admin.topbar.adminDashboard")}
             </span>
           </div>
-        </Link>
-
-        {/* Back to the live storefront — deliberately outside /admin */}
-        <Link
-          href="/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="admin-sidebar-view-site"
-          onClick={onClose}
-        >
-          <ExternalLinkIcon className="h-4 w-4" />
-          {t("admin.sidebar.viewSite")}
         </Link>
 
         <nav className="admin-nav">
@@ -109,6 +97,18 @@ export const AdminSidebar: React.FC<{
         </nav>
 
         <div className="admin-sidebar-footer">
+          {/* Back to the live storefront — deliberately outside /admin */}
+          <Link
+            href="/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="admin-sidebar-view-site"
+            onClick={onClose}
+          >
+            <ExternalLinkIcon className="h-4 w-4" />
+            {t("admin.sidebar.viewSite")}
+          </Link>
+
           <LanguageSwitcher variant="admin" />
 
           <div className="admin-user-row">

@@ -6,7 +6,6 @@ import {
   PlusIcon,
   PencilIcon,
   Trash2Icon,
-  ImageIcon,
   ChevronUpIcon,
   ChevronDownIcon,
   XIcon,
@@ -28,6 +27,11 @@ import { useTranslations, useLocale } from "next-intl";
 
 type SortField = "name" | "price" | "status";
 type SortDirection = "asc" | "desc";
+
+// The five stat cards now drive ONE mutually-exclusive filter instead of
+// two independent ones — picking "New" clears "Active"/"Inactive"/"Sold
+// out" and vice versa, same as a normal single-select filter bar.
+type ProductFilter = "active" | "inactive" | "new" | "soldOut" | null;
 
 // Product visual — follows the brand's colorHex rule: a real photo gets a
 // soft tint frame, an illustrated placeholder sits on the full-strength
@@ -53,6 +57,93 @@ function ProductVisual({ product }: { product: Product }) {
           className="w-5 h-5"
           style={{ color: "var(--color-white)" }}
         />
+      )}
+    </div>
+  );
+}
+
+// Availability chips — "New" / "Sold out", shared by the table's Tags
+// column and the mobile card. Neutral/monochrome to match the rest of
+// the admin surface; only the badge components carry semantic color.
+function ProductTags({ product }: { product: Product }) {
+  if (!product.isNew && !product.isSoldOut) {
+    return <span className="admin-cell-subtext">—</span>;
+  }
+  return (
+    <div className="admin-product-tags">
+      {product.isNew && (
+        <span className="admin-tag" style={{ color: "#2f9488" }}>
+          <SparklesIcon className="h-3 w-3" style={{ marginInlineEnd: 4 }} />
+          New
+        </span>
+      )}
+      {product.isSoldOut && (
+        <span className="admin-tag" style={{ color: "#c0392b" }}>
+          <BanIcon className="h-3 w-3" style={{ marginInlineEnd: 4 }} />
+          Sold out
+        </span>
+      )}
+    </div>
+  );
+}
+
+// Empty state — replaces the bare "no products" line with something that
+// actually invites the next action instead of dead-ending the page.
+function EmptyProductsState({
+  isFiltered,
+  onAddProduct,
+  t,
+}: {
+  isFiltered: boolean;
+  onAddProduct: () => void;
+  t: (key: string) => string;
+}) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        textAlign: "center",
+        padding: "var(--space-xl) var(--space-md)",
+        gap: "var(--space-sm)",
+      }}
+    >
+      <div
+        style={{
+          width: 56,
+          height: 56,
+          borderRadius: "50%",
+          background: "var(--color-bg-soft)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "var(--color-text-secondary)",
+        }}
+      >
+        <PackageIcon className="h-6 w-6" />
+      </div>
+      <p style={{ fontWeight: 600, color: "var(--color-text)" }}>
+        {isFiltered
+          ? t("admin.products.noProducts")
+          : t("admin.products.emptyTitle") || "No products yet"}
+      </p>
+      <p className="admin-cell-subtext" style={{ maxWidth: 320 }}>
+        {isFiltered
+          ? t("admin.products.emptyFilteredDesc") ||
+            "Nothing matches this filter. Try a different one."
+          : t("admin.products.emptyDesc") ||
+            "Add some! Your first fragrance is one click away."}
+      </p>
+      {!isFiltered && (
+        <Button
+          variant="primary"
+          onClick={onAddProduct}
+          className="!bg-[var(--color-text)] !text-[var(--color-white)] hover:!opacity-90 mt-2"
+        >
+          <PlusIcon className="mr-2 h-4 w-4" />
+          {t("admin.products.addProduct")}
+        </Button>
       )}
     </div>
   );
@@ -159,6 +250,16 @@ function ProductCard({
                 ? t("admin.products.active")
                 : t("admin.products.inactive")}
             </span>
+            {product.isNew && (
+              <span className="admin-tag" style={{ color: "#2f9488" }}>
+                New
+              </span>
+            )}
+            {product.isSoldOut && (
+              <span className="admin-tag" style={{ color: "#c0392b" }}>
+                Sold out
+              </span>
+            )}
           </div>
         </div>
       </div>
@@ -191,12 +292,7 @@ export default function AdminProductsPage() {
   const [sortField, setSortField] = useState<SortField>("name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<
-    "active" | "inactive" | null
-  >(null);
-  const [availabilityFilter, setAvailabilityFilter] = useState<
-    "new" | "soldOut" | null
-  >(null);
+  const [activeFilter, setActiveFilter] = useState<ProductFilter>(null);
   const t = useTranslations();
   const locale = useLocale();
   const isRTL = locale === "ar";
@@ -225,33 +321,36 @@ export default function AdminProductsPage() {
     }
   };
 
-  const toggleStatusFilter = (status: "active" | "inactive") => {
-    setStatusFilter((prev) => (prev === status ? null : status));
-  };
-
-  const toggleAvailabilityFilter = (availability: "new" | "soldOut") => {
-    setAvailabilityFilter((prev) =>
-      prev === availability ? null : availability,
-    );
+  // Single toggle for all five stat cards: clicking the currently-active
+  // one clears the filter, clicking any other one replaces it outright —
+  // so only one filter can ever be "on" at a time.
+  const toggleFilter = (filter: Exclude<ProductFilter, null>) => {
+    setActiveFilter((prev) => (prev === filter ? null : filter));
   };
 
   const clearFilters = () => {
-    setStatusFilter(null);
-    setAvailabilityFilter(null);
+    setActiveFilter(null);
   };
 
   const filteredAndSortedProducts = React.useMemo(() => {
     let filtered = products;
 
-    if (statusFilter === "active")
-      filtered = filtered.filter((p) => p.isActive);
-    else if (statusFilter === "inactive")
-      filtered = filtered.filter((p) => !p.isActive);
-
-    if (availabilityFilter === "new")
-      filtered = filtered.filter((p) => p.isNew);
-    else if (availabilityFilter === "soldOut")
-      filtered = filtered.filter((p) => p.isSoldOut);
+    switch (activeFilter) {
+      case "active":
+        filtered = filtered.filter((p) => p.isActive);
+        break;
+      case "inactive":
+        filtered = filtered.filter((p) => !p.isActive);
+        break;
+      case "new":
+        filtered = filtered.filter((p) => p.isNew);
+        break;
+      case "soldOut":
+        filtered = filtered.filter((p) => p.isSoldOut);
+        break;
+      default:
+        break;
+    }
 
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
@@ -277,14 +376,7 @@ export default function AdminProductsPage() {
       }
       return sortDirection === "asc" ? comparison : -comparison;
     });
-  }, [
-    products,
-    sortField,
-    sortDirection,
-    searchQuery,
-    statusFilter,
-    availabilityFilter,
-  ]);
+  }, [products, sortField, sortDirection, searchQuery, activeFilter]);
 
   const handleEdit = (product: Product) => {
     setEditingProduct(product);
@@ -421,6 +513,10 @@ export default function AdminProductsPage() {
     );
   }
 
+  const isFilteredEmpty =
+    filteredAndSortedProducts.length === 0 &&
+    (Boolean(activeFilter) || Boolean(searchQuery.trim()));
+
   return (
     <div dir={isRTL ? "rtl" : "ltr"}>
       {/* Header */}
@@ -439,42 +535,42 @@ export default function AdminProductsPage() {
         </Button>
       </div>
 
-      {/* Stats */}
+      {/* Stats — now a single-select filter bar */}
       <div className="admin-stat-grid admin-stat-grid-5">
         <FilterStatCard
           title={t("admin.products.stats.total")}
           value={stats.total}
           icon={LayersIcon}
-          isActive={statusFilter === null && availabilityFilter === null}
+          isActive={activeFilter === null}
           onClick={clearFilters}
         />
         <FilterStatCard
           title={t("admin.products.stats.active")}
           value={stats.active}
           icon={CheckCircleIcon}
-          isActive={statusFilter === "active"}
-          onClick={() => toggleStatusFilter("active")}
+          isActive={activeFilter === "active"}
+          onClick={() => toggleFilter("active")}
         />
         <FilterStatCard
           title={t("admin.products.stats.inactive")}
           value={stats.inactive}
           icon={XCircleIcon}
-          isActive={statusFilter === "inactive"}
-          onClick={() => toggleStatusFilter("inactive")}
+          isActive={activeFilter === "inactive"}
+          onClick={() => toggleFilter("inactive")}
         />
         <FilterStatCard
           title={t("admin.products.stats.new")}
           value={stats.newProducts}
           icon={SparklesIcon}
-          isActive={availabilityFilter === "new"}
-          onClick={() => toggleAvailabilityFilter("new")}
+          isActive={activeFilter === "new"}
+          onClick={() => toggleFilter("new")}
         />
         <FilterStatCard
           title={t("admin.products.stats.soldOut")}
           value={stats.soldOut}
           icon={BanIcon}
-          isActive={availabilityFilter === "soldOut"}
-          onClick={() => toggleAvailabilityFilter("soldOut")}
+          isActive={activeFilter === "soldOut"}
+          onClick={() => toggleFilter("soldOut")}
         />
       </div>
 
@@ -500,6 +596,7 @@ export default function AdminProductsPage() {
                 <SortHeader field="price">
                   {t("admin.products.price")}
                 </SortHeader>
+                <th>{t("admin.products.tags") || "Tags"}</th>
                 <SortHeader field="status">
                   {t("admin.products.status")}
                 </SortHeader>
@@ -526,24 +623,20 @@ export default function AdminProductsPage() {
                     {product.price} {t("common.currency")}
                   </td>
                   <td>
-                    <button
-                      onClick={() =>
-                        handleEdit({ ...product, isActive: !product.isActive })
+                    <ProductTags product={product} />
+                  </td>
+                  <td>
+                    <span
+                      className={
+                        product.isActive
+                          ? "admin-badge admin-badge-success"
+                          : "admin-badge"
                       }
-                      className="admin-status-toggle"
                     >
-                      <span
-                        className={
-                          product.isActive
-                            ? "admin-badge admin-badge-success"
-                            : "admin-badge"
-                        }
-                      >
-                        {product.isActive
-                          ? t("admin.products.active")
-                          : t("admin.products.inactive")}
-                      </span>
-                    </button>
+                      {product.isActive
+                        ? t("admin.products.active")
+                        : t("admin.products.inactive")}
+                    </span>
                   </td>
                   <td>
                     <div className="admin-row-actions">
@@ -569,11 +662,11 @@ export default function AdminProductsPage() {
           </table>
         </div>
         {filteredAndSortedProducts.length === 0 && (
-          <p className="admin-empty">
-            {searchQuery
-              ? t("shop.noProducts")
-              : t("admin.products.noProducts")}
-          </p>
+          <EmptyProductsState
+            isFiltered={isFilteredEmpty}
+            onAddProduct={handleCreate}
+            t={t}
+          />
         )}
       </div>
 
@@ -589,11 +682,11 @@ export default function AdminProductsPage() {
           />
         ))}
         {filteredAndSortedProducts.length === 0 && (
-          <p className="admin-empty">
-            {searchQuery
-              ? t("shop.noProducts")
-              : t("admin.products.noProducts")}
-          </p>
+          <EmptyProductsState
+            isFiltered={isFilteredEmpty}
+            onAddProduct={handleCreate}
+            t={t}
+          />
         )}
       </div>
 

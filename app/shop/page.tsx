@@ -107,7 +107,7 @@ export default function ShopPage({
 
       <section className="collection">
         {sortedProducts.length > 0 ? (
-          <div className="product-grid">
+          <div className="product-grid ">
             {sortedProducts.map((product, index) => (
               <ProductCard key={product.id} product={product} index={index} />
             ))}

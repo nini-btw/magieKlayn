@@ -35,14 +35,6 @@ type SortDirection = "asc" | "desc";
 
 // Same badge convention as the dashboard — keep this mapping in one
 // place if it ever moves to a shared module.
-const statusBadgeClass: Record<string, string> = {
-  pending: "admin-badge admin-badge-warning",
-  confirmed: "admin-badge",
-  preparing: "admin-badge",
-  ready: "admin-badge",
-  delivered: "admin-badge admin-badge-success",
-  cancelled: "admin-badge admin-badge-error",
-};
 
 const statusOptionsList = [
   "pending",
@@ -52,6 +44,33 @@ const statusOptionsList = [
   "delivered",
   "cancelled",
 ];
+
+const STATUS_COLORS: Record<string, string> = {
+  pending: "#b8860b",
+  confirmed: "#3b6fa0",
+  preparing: "#8a63d2",
+  ready: "#c2761f",
+  delivered: "#2f9488",
+  cancelled: "#c0392b",
+};
+
+const STATUS_DOT: Record<string, string> = {
+  pending: "🟡",
+  confirmed: "🔵",
+  preparing: "🟣",
+  ready: "🟠",
+  delivered: "🟢",
+  cancelled: "🔴",
+};
+
+const statusBadgeClass: Record<string, string> = {
+  pending: "admin-badge admin-badge-warning",
+  confirmed: "admin-badge admin-badge-confirmed",
+  preparing: "admin-badge admin-badge-preparing",
+  ready: "admin-badge admin-badge-ready",
+  delivered: "admin-badge admin-badge-success",
+  cancelled: "admin-badge admin-badge-error",
+};
 
 // Product swatch — mirrors the "colorHex" rule from the design system:
 // no photo yet → solid signature color behind a bottle glyph;
@@ -197,16 +216,30 @@ function StatusChart({
           const count = statusCounts[status] || 0;
           const percentage = total > 0 ? Math.round((count / total) * 100) : 0;
           const barWidth = maxCount > 0 ? (count / maxCount) * 100 : 0;
+          const color = STATUS_COLORS[status];
 
           return (
             <div className="admin-bar-row" key={status}>
               <div className="admin-bar-label">
+                <span
+                  style={{
+                    display: "inline-block",
+                    width: 8,
+                    height: 8,
+                    borderRadius: "50%",
+                    backgroundColor: color,
+                    marginInlineEnd: 6,
+                  }}
+                />
                 <span>{t(`admin.orders.statusLabels.${status}`)}</span>
               </div>
               <div className="admin-bar-track">
                 <div
                   className="admin-bar-fill"
-                  style={{ width: `${barWidth}%` }}
+                  style={{
+                    width: `${barWidth}%`,
+                    backgroundColor: color,
+                  }}
                 />
               </div>
               <div className="admin-bar-meta">
@@ -278,18 +311,31 @@ function OrderDetailSidebar({
               {t("admin.orders.orderDetails.status")}
             </h3>
             <div className="admin-status-pills">
-              {statusOptionsList.map((status) => (
-                <button
-                  key={status}
-                  onClick={() => handleStatusChange(status as Order["status"])}
-                  disabled={isUpdating || order.status === status}
-                  className={`admin-status-pill ${
-                    order.status === status ? "admin-status-pill-active" : ""
-                  }`}
-                >
-                  {t(`admin.orders.statusLabels.${status}`)}
-                </button>
-              ))}
+              {statusOptionsList.map((status) => {
+                const isActive = order.status === status;
+                const color = STATUS_COLORS[status];
+                return (
+                  <button
+                    key={status}
+                    onClick={() =>
+                      handleStatusChange(status as Order["status"])
+                    }
+                    disabled={isUpdating || isActive}
+                    className="admin-status-pill"
+                    style={
+                      isActive
+                        ? {
+                            backgroundColor: color,
+                            borderColor: color,
+                            color: "#fff",
+                          }
+                        : undefined
+                    }
+                  >
+                    {t(`admin.orders.statusLabels.${status}`)}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -728,7 +774,7 @@ export default function AdminOrdersPage() {
     { value: "", label: t("admin.orders.allStatuses") },
     ...statusOptionsList.map((s) => ({
       value: s,
-      label: t(`admin.orders.statusLabels.${s}`),
+      label: `${STATUS_DOT[s]} ${t(`admin.orders.statusLabels.${s}`)}`,
     })),
   ];
 

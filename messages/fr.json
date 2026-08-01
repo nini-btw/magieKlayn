@@ -1,20 +1,20 @@
 {
   "metadata": {
-    "title": "Magie Klayn — Brume Parfumée pour le Corps & les Cheveux",
-    "description": "Quatorze brumes, quatorze humeurs. Un voile parfumé qui vous correspond à chaque instant — du matin le plus doux à la nuit la plus audacieuse."
+    "title": "Magie Klayn — Brume Parfumée pour le Corps et les Cheveux",
+    "description": "Quatorze brumes, quatorze humeurs. Un voile parfumé qui s'accorde à chaque version de vous — du matin le plus doux à la nuit la plus audacieuse."
   },
   "nav": {
     "home": "Accueil",
     "shop": "Boutique",
     "build": "Composez Votre Coffret",
-    "vote": "Vote",
+    "vote": "Voter",
     "cart": "Panier",
     "admin": "Admin",
     "login": "Connexion",
     "logout": "Déconnexion",
     "collection": "Collection",
     "coffrets": "Coffrets",
-    "about": "À Propos"
+    "about": "À propos"
   },
   "common": {
     "close": "Fermer",
@@ -30,15 +30,15 @@
     "remove": "Retirer",
     "search": "Rechercher",
     "loading": "Chargement...",
-    "error": "Une erreur est survenue",
+    "error": "Une erreur s'est produite",
     "success": "Succès !",
     "tryAgain": "Réessayer",
-    "confirm": "Êtes-vous sûr ?",
+    "confirm": "Êtes-vous sûr(e) ?",
     "yes": "Oui",
     "no": "Non",
     "submit": "Envoyer",
     "continue": "Continuer",
-    "viewAll": "Tout Voir",
+    "viewAll": "Voir Tout",
     "seeMore": "Voir Plus",
     "show": "Afficher",
     "hide": "Masquer",
@@ -62,11 +62,11 @@
       "cta": "Découvrir"
     },
     "hero": {
-      "eyebrow": "Brume Parfumée — Corps & Cheveux",
+      "eyebrow": "Brume Parfumée — Corps et Cheveux",
       "headlineLine1": "Chaque Couleur",
       "headlineLine2": "Raconte Une",
       "headlineLine3": "Histoire",
-      "description": "Quatorze brumes, quatorze humeurs. Un voile parfumé qui vous correspond à chaque instant — du matin le plus doux à la nuit la plus audacieuse.",
+      "description": "Quatorze brumes, quatorze humeurs. Un voile parfumé qui s'accorde à chaque version de vous — du matin le plus doux à la nuit la plus audacieuse.",
       "discoverCollection": "Découvrir la Collection",
       "ourStory": "Notre Histoire",
       "bodySplashLabel": "Brume Parfumée",
@@ -76,8 +76,8 @@
     },
     "features": {
       "fresh": {
-        "title": "Petits Lots",
-        "desc": "Chaque brume est formulée en petits lots pour préserver sa qualité et son caractère"
+        "title": "Petites Séries",
+        "desc": "Chaque brume est formulée en petites séries pour préserver qualité et caractère"
       },
       "delivery": {
         "title": "Livraison Nationale",
@@ -85,30 +85,30 @@
       },
       "custom": {
         "title": "Composez Votre Coffret",
-        "desc": "Mélangez les brumes pour créer votre propre coffret cadeau"
+        "desc": "Combinez les brumes pour créer votre propre coffret cadeau"
       }
     },
     "featured": {
       "eyebrow": "La Collection",
       "titleLine1": "Quatorze Brumes.",
       "titleLine2": "Quatorze Humeurs.",
-      "subtitle": "Chaque flacon porte sa propre couleur, comme une émotion que vous choisissez pour l'instant présent. Trouvez la vôtre.",
-      "productMeta": "Brume Parfumée · Corps & Cheveux"
+      "subtitle": "Chaque flacon porte sa propre couleur, comme une émotion que l'on choisit pour l'instant présent. Trouvez la vôtre.",
+      "productMeta": "Brume Parfumée · Corps et Cheveux"
     },
     "vote": {
       "title": "Faites-la Revenir !",
       "subtitle": "Votez pour vos brumes retirées préférées",
-      "cta": "Votez Maintenant",
-      "nextDrop": "Prochaine Sortie Dans"
+      "cta": "Voter Maintenant",
+      "nextDrop": "Prochain Lancement Dans"
     },
     "countdown": {
-      "badge": "Prochaine Sortie Dans",
+      "badge": "Prochain Lancement Dans",
       "title": "Quelque chose ",
       "highlight": "arrive",
       "subtitle": "Une création secrète est sur le point d'être révélée.",
       "productSuffix": "sort dans :",
-      "hint": "Édition limitée · Soyez prêt",
-      "noDrop": "Aucune sortie prévue pour le moment"
+      "hint": "Série limitée · Soyez prêt(e)",
+      "noDrop": "Aucun lancement prévu pour le moment"
     },
     "newsletter": {
       "title": "Restez Dans La Lumière",
@@ -116,7 +116,7 @@
       "emailLabel": "Adresse e-mail",
       "placeholder": "Votre adresse e-mail",
       "button": "S'abonner",
-      "success": "Merci pour votre inscription !"
+      "success": "Merci de votre inscription !"
     },
     "ticker": {
       "aria": "Nos parfums"
@@ -125,9 +125,9 @@
   "shop": {
     "eyebrow": "Découvrez la Collection",
     "title": "Nos Parfums",
-    "subtitle": "Quatorze brumes, quatorze humeurs — trouvez celle qui vous ressemble.",
+    "subtitle": "Quatorze brumes, quatorze humeurs — trouvez celle qui vous correspond.",
     "filters": {
-      "all": "Tout",
+      "all": "Tous",
       "new": "Nouveautés"
     },
     "sort": {
@@ -147,21 +147,21 @@
   },
   "product": {
     "notes": "Notes",
-    "size": "Format",
+    "size": "Taille",
     "backToShop": "Retour à la Boutique",
     "scent": "Parfum",
     "allergens": "Allergènes",
-    "boxContents": "Contenu du Coffret",
+    "boxContents": "Contenu de la Boîte",
     "quantity": "Quantité",
     "addToCart": "Ajouter au Panier",
     "added": "Ajouté au Panier !",
-    "related": "Vous Aimerez Aussi",
+    "related": "Vous Pourriez Aussi Aimer",
     "description": "Description",
     "ingredients": "Ingrédients"
   },
   "build": {
     "title": "Composez Votre Coffret",
-    "subtitle": "Mélangez les brumes pour créer votre propre coffret",
+    "subtitle": "Combinez les brumes pour créer votre propre coffret",
     "selectSize": "Choisissez la Taille du Coffret",
     "boxOf4": "Coffret de 4",
     "boxOf6": "Coffret de 6",
@@ -178,7 +178,7 @@
   },
   "vote": {
     "title": "Faites-la Revenir !",
-    "subtitle": "Votez pour vos brumes retirées préférées. Les parfums les plus plébiscités pourraient bien faire leur retour !",
+    "subtitle": "Votez pour vos brumes retirées préférées. Les parfums les plus populaires pourraient faire leur retour !",
     "badge": "Vote de la Communauté",
     "votes": "votes",
     "vote": "Voter",
@@ -191,29 +191,29 @@
     "title": "Votre Panier",
     "subtitle": "Vérifiez votre commande",
     "empty": "Votre panier est vide",
-    "continueShopping": "Continuer mes Achats",
+    "continueShopping": "Continuer les Achats",
     "qty": "Qté",
     "remove": "Retirer",
-    "orderSummary": "Récapitulatif de la Commande",
+    "orderSummary": "Résumé de la Commande",
     "checkout": "Passer à la Caisse",
-    "note": "Une demande particulière ? Ajoutez-la lors du paiement",
+    "note": "Demandes spéciales ? Ajoutez-les à la caisse",
     "clearCart": "Vider le Panier"
   },
   "checkout": {
-    "title": "Paiement",
+    "title": "Commande",
     "subtitle": "Finalisez votre commande",
-    "contactInfo": "Coordonnées",
+    "contactInfo": "Informations de Contact",
     "fullName": "Nom Complet",
     "phone": "Numéro de Téléphone",
     "address": "Adresse de Livraison",
     "wilaya": "Wilaya",
-    "selectWilaya": "Sélectionnez une wilaya",
+    "selectWilaya": "Sélectionner la wilaya",
     "commune": "Commune",
-    "selectCommune": "Sélectionnez une commune",
+    "selectCommune": "Sélectionner la commune",
     "deliveryType": "Type de Livraison",
     "stopDesk": "Stop Desk",
     "homeDelivery": "Livraison à Domicile",
-    "selectDelivery": "Sélectionnez une livraison",
+    "selectDelivery": "Sélectionner la livraison",
     "noWilayas": "Zones de livraison indisponibles. Veuillez contacter le support.",
     "giftNote": "Message Cadeau (facultatif)",
     "giftNotePlaceholder": "Ajoutez un message personnel...",
@@ -224,7 +224,7 @@
     "orderDetails": "Détails de la Commande"
   },
   "footer": {
-    "tagline": "Les Brumes Comme Parfum",
+    "tagline": "Des Brumes Comme Parfum",
     "quickLinks": "Liens Rapides",
     "contact": "Contact",
     "followUs": "Suivez-nous",
@@ -235,7 +235,7 @@
       "about": "À propos"
     },
     "about": {
-      "title": "À Propos",
+      "title": "À propos",
       "story": "Notre histoire",
       "stockists": "Points de vente"
     },
@@ -252,10 +252,11 @@
   },
   "admin": {
     "sidebar": {
+      "viewSite": "Voir le site",
       "dashboard": "Tableau de Bord",
       "orders": "Commandes",
       "products": "Produits",
-      "weeklyDrop": "Sortie Hebdomadaire",
+      "weeklyDrop": "Lancement Hebdomadaire",
       "votes": "Votes",
       "signOut": "Se Déconnecter",
       "language": "Langue"
@@ -266,15 +267,15 @@
     "dashboard": {
       "title": "Tableau de Bord",
       "subtitle": "Aperçu des performances de votre boutique",
-      "totalOrders": "Total des Commandes",
-      "revenue": "Chiffre d'Affaires",
+      "totalOrders": "Commandes Totales",
+      "revenue": "Revenu",
       "mostOrdered": "Le Plus Commandé",
       "mostVoted": "Le Plus Voté",
       "recentOrders": "Commandes Récentes",
       "noOrders": "Aucune commande pour le moment",
-      "viewAll": "Tout Voir",
+      "viewAll": "Voir Tout",
       "manageProducts": "Gérer les Produits",
-      "scheduleDrop": "Planifier une Sortie",
+      "scheduleDrop": "Planifier un Lancement",
       "viewVotes": "Voir les Votes"
     },
     "orders": {
@@ -289,16 +290,16 @@
       "view": "Voir",
       "delete": "Supprimer",
       "noOrders": "Aucune commande pour le moment",
-      "topWilayas": "Principales Wilayas",
+      "topWilayas": "Meilleures Wilayas",
       "wilaya": "Wilaya",
       "commune": "Commune",
       "deliveryType": "Type de Livraison",
       "filters": "Filtres",
       "allWilayas": "Toutes les Wilayas",
       "allStatuses": "Tous les Statuts",
-      "selectWilaya": "Sélectionnez une wilaya",
-      "selectStatus": "Sélectionnez un statut",
-      "selectDate": "Sélectionnez une date",
+      "selectWilaya": "Sélectionner la wilaya",
+      "selectStatus": "Sélectionner le statut",
+      "selectDate": "Sélectionner la date",
       "startDate": "Date de Début",
       "endDate": "Date de Fin",
       "clearFilters": "Effacer les Filtres",
@@ -319,7 +320,7 @@
       },
       "stats": {
         "total": "Total des Commandes",
-        "revenue": "Chiffre d'Affaires",
+        "revenue": "Revenu",
         "pending": "En Attente",
         "delivered": "Livrées"
       },
@@ -333,11 +334,15 @@
         "giftNote": "Message Cadeau",
         "subtotal": "Sous-total",
         "total": "Total",
-        "orderedOn": "Commandé le",
+        "orderedOn": "Commandée le",
         "deleteOrder": "Supprimer la Commande"
       }
     },
     "products": {
+      "tags": "Étiquettes",
+      "emptyTitle": "Aucun produit pour l'instant",
+      "emptyDesc": "Ajoutez-en un ! Votre premier parfum est à un clic.",
+      "emptyFilteredDesc": "Rien ne correspond à ce filtre. Essayez-en un autre.",
       "title": "Produits",
       "subtitle": "Gérez vos produits",
       "addProduct": "Ajouter un Produit",
@@ -350,8 +355,10 @@
       "inactive": "Inactif",
       "edit": "Modifier",
       "delete": "Supprimer",
-      "noProducts": "Aucun produit pour le moment. Ajoutez-en !",
+      "noProducts": "Aucun produit pour l'instant. Ajoutez-en !",
       "stats": {
+        "new": "Nouveau",
+        "soldOut": "Épuisé",
         "total": "Total",
         "active": "Actifs",
         "inactive": "Inactifs",
@@ -359,6 +366,11 @@
         "coffrets": "Coffrets"
       },
       "form": {
+        "colorLabel": "Couleur signature",
+        "sizeLabel": "Taille (ml)",
+        "notesLabel": "Notes olfactives",
+        "notesPlaceholder": "Ajoutez une note et appuyez sur Entrée (ex. Vanille, Musc blanc)",
+        "markAsSoldOut": "Marquer comme épuisé",
         "addTitle": "Ajouter un Produit",
         "editTitle": "Modifier le Produit",
         "productImage": "Image du Produit",
@@ -369,18 +381,18 @@
         "description": "Description",
         "scent": "Parfum",
         "allergens": "Allergènes (séparés par des virgules)",
-        "boxContents": "Contenu du Coffret",
+        "boxContents": "Contenu de la Boîte",
         "allergensPlaceholder": "ex. alcool, huiles essentielles",
         "typeLabel": "Type",
         "bottle": "Flacon",
         "coffret": "Coffret",
         "activeLabel": "Actif (visible dans la boutique)",
-        "markAsNew": "Marquer comme Nouveauté",
+        "markAsNew": "Marquer comme Nouveau",
         "cancel": "Annuler",
         "save": "Enregistrer les Modifications",
         "create": "Créer le Produit",
-        "sold": "vendus",
-        "active": "actif",
+        "sold": "vendu(s)",
+        "active": "actif(s)",
         "items": "Articles",
         "selectBottles": "Sélectionner les Flacons",
         "bottleQuantity": "Quantité",
@@ -391,31 +403,31 @@
       "actions": "Actions"
     },
     "drop": {
-      "title": "Sortie Hebdomadaire",
-      "subtitle": "Planifiez la révélation de votre prochain parfum avec compte à rebours",
-      "scheduleNew": "Planifier une Nouvelle Sortie",
-      "selectFragrance": "Sélectionner un Parfum",
+      "title": "Lancement Hebdomadaire",
+      "subtitle": "Planifiez votre prochaine révélation de parfum avec compte à rebours",
+      "scheduleNew": "Planifier un Nouveau Lancement",
+      "selectFragrance": "Sélectionner le Parfum",
       "chooseFragrance": "Choisissez un parfum...",
       "date": "Date",
       "time": "Heure",
-      "selectDate": "Sélectionnez une date",
-      "selectTime": "Sélectionnez une heure",
-      "schedule": "Planifier la Sortie",
+      "selectDate": "Sélectionner la date",
+      "selectTime": "Sélectionner l'heure",
+      "schedule": "Planifier le Lancement",
       "preview": "Aperçu",
       "countdownPreview": "Aperçu du Compte à Rebours",
       "selectDateTime": "Sélectionnez une date et une heure pour voir l'aperçu",
-      "scheduledFor": "Planifiée pour",
-      "activeDrop": "Sortie Active Actuelle",
-      "noActiveDrop": "Aucune Sortie Active",
-      "noActiveDesc": "Planifiez une nouvelle sortie pour la voir ici",
-      "scheduled": "Planifiée",
-      "revealed": "Révélée",
-      "cancelDrop": "Annuler la Sortie",
-      "dropInfo": "La sortie sera visible sur la page d'accueil avec un compte à rebours. Une fois l'heure atteinte, le produit sera automatiquement révélé, activé et marqué comme nouveauté.",
-      "dropLive": "🎉 La Sortie est en Ligne !",
+      "scheduledFor": "Planifié pour",
+      "activeDrop": "Lancement Actif Actuel",
+      "noActiveDrop": "Aucun Lancement Actif",
+      "noActiveDesc": "Planifiez un nouveau lancement pour le voir ici",
+      "scheduled": "Planifié",
+      "revealed": "Révélé",
+      "cancelDrop": "Annuler le Lancement",
+      "dropInfo": "Le lancement sera visible sur la page d'accueil avec un compte à rebours. Une fois l'heure arrivée, le produit sera automatiquement révélé, activé et marqué comme nouveau.",
+      "dropLive": "🎉 Le Lancement est en Direct !",
       "revealNow": "Révéler Maintenant",
-      "confirmReveal": "Êtes-vous sûr de vouloir révéler cette sortie maintenant ? Le produit sera activé et marqué comme nouveauté.",
-      "revealedSuccess": "Sortie révélée ! Le produit est maintenant actif et marqué comme nouveauté dans la boutique."
+      "confirmReveal": "Êtes-vous sûr(e) de vouloir révéler ce lancement maintenant ? Le produit sera activé et marqué comme nouveau.",
+      "revealedSuccess": "Lancement révélé ! Le produit est maintenant actif et marqué comme nouveau dans la boutique."
     },
     "votes": {
       "title": "Gestion des Votes",
@@ -439,26 +451,26 @@
         "price": "Prix (DA)",
         "scent": "Parfum",
         "allergens": "Allergènes (séparés par des virgules)",
-        "markAsNew": "Marquer comme Nouveauté",
+        "markAsNew": "Marquer comme Nouveau",
         "active": "Actif (visible dans la boutique)",
-        "whatHappens": "Ce qui va se passer ensuite :",
+        "whatHappens": "Ce qui se passe ensuite :",
         "step1": "Produit créé et ajouté à la liste des Produits",
-        "step2": "Automatiquement ajouté à la liste de Vote",
+        "step2": "Ajouté automatiquement à la liste des Votes",
         "step3Active": "Sera visible immédiatement dans la boutique",
         "step3Inactive": "Sera masqué de la boutique jusqu'à activation",
         "cancel": "Annuler",
         "create": "Créer et Ajouter au Vote",
         "namePlaceholder": "ex. Amber Bloom",
         "descPlaceholder": "Décrivez ce parfum...",
-        "flavourPlaceholder": "ex. Agrumes & Bergamote",
+        "flavourPlaceholder": "ex. Agrumes et Bergamote",
         "allergensPlaceholder": "ex. alcool, huiles essentielles"
       },
       "candidates": "Candidats au Vote",
       "fragrance": "Parfum",
       "votes": "Votes",
       "noCandidates": "Aucun candidat au vote pour le moment. Ajoutez-en !",
-      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer ce candidat ?",
-      "resetConfirm": "Êtes-vous sûr de vouloir réinitialiser tous les votes ?"
+      "deleteConfirm": "Êtes-vous sûr(e) de vouloir supprimer ce candidat ?",
+      "resetConfirm": "Êtes-vous sûr(e) de vouloir réinitialiser tous les votes ?"
     },
     "common": {
       "save": "Enregistrer",
@@ -468,9 +480,9 @@
       "create": "Créer",
       "search": "Rechercher",
       "loading": "Chargement...",
-      "error": "Une erreur est survenue",
+      "error": "Une erreur s'est produite",
       "success": "Succès !",
-      "confirm": "Êtes-vous sûr ?"
+      "confirm": "Êtes-vous sûr(e) ?"
     },
     "login": {
       "title": "Connexion Admin",
@@ -490,14 +502,14 @@
     "eyebrow": "Édition Coffret",
     "titleLine1": "Le Coffret",
     "titleLine2": "Découverte",
-    "subtitle": "Six mini-brumes, un écrin élégant. La façon la plus élégante d'essayer toute la palette de couleurs Magie Klayn — ou de l'offrir.",
-    "cta": "Voir le Coffret"
+    "subtitle": "Six mini-brumes, un écrin élégant. La façon la plus raffinée d'essayer toute la palette Magie Klayn — ou de l'offrir.",
+    "cta": "Découvrir le Coffret"
   },
   "contact": {
     "eyebrow": "Contactez-nous",
-    "title": "Discutons",
+    "title": "Parlons-en",
     "subtitle": "Des questions sur une commande, un parfum ou un partenariat ? Nous sommes là.",
-    "infoTitle": "Coordonnées",
+    "infoTitle": "Informations de Contact",
     "emailLabel": "E-mail",
     "phoneLabel": "Téléphone",
     "hoursLabel": "Horaires",
@@ -510,7 +522,7 @@
     "messageLabel": "Message",
     "messagePlaceholder": "Comment pouvons-nous vous aider ?",
     "submit": "Envoyer le Message",
-    "success": "Merci — nous vous répondrons bientôt.",
+    "success": "Merci — nous vous répondrons rapidement.",
     "ctaEyebrow": "Vous préférez l'e-mail ?",
     "ctaTitle": "Contactez-nous directement, à tout moment.",
     "ctaButton": "Nous Écrire",
@@ -521,37 +533,37 @@
     }
   },
   "about": {
-    "cta": "Découvrez notre histoire",
+    "cta": "Découvrir notre histoire",
     "eyebrow": "Notre Philosophie",
     "titleLine1": "Un Parfum.",
     "titleLine2": "Une Humeur.",
     "titleLine3": "Une Couleur.",
-    "description": "Chez Magie Klayn, le parfum est une émotion avant d'être une senteur. Chaque brume est pensée comme une couleur — une humeur que vous choisissez selon l'instant, la lumière et l'envie du jour.",
+    "description": "Chez Magie Klayn, le parfum est une émotion avant d'être une senteur. Chaque brume est pensée comme une couleur — une humeur que l'on choisit selon l'instant, la lumière et l'envie du jour.",
     "tagline": "L'élégance qui vous suit partout.",
     "exploreCollection": "Explorer la collection",
     "pageEyebrow": "À Propos",
     "pageTitleLine1": "L'Histoire Derrière",
     "pageTitleLine2": "Chaque Flacon",
     "pageIntro": "Magie Klayn est née d'une idée simple : un parfum devrait ressembler au choix d'une humeur, pas seulement d'une senteur.",
-    "valuesEyebrow": "Nos Engagements",
+    "valuesEyebrow": "Ce En Quoi Nous Croyons",
     "valuesTitle": "Nos Valeurs",
-    "value1Title": "Fabriqué avec Soin",
-    "value1Desc": "Chaque brume est formulée en petits lots pour préserver sa qualité et son caractère.",
-    "value2Title": "La Couleur comme Émotion",
-    "value2Desc": "Chaque parfum est associé à une couleur qui reflète l'humeur qu'il est censé évoquer.",
-    "value3Title": "Conçu pour Durer",
-    "value3Desc": "Des formules longue tenue, sans risque pour la peau et les cheveux, conçues pour un usage quotidien.",
-    "findUsEyebrow": "Rendez-nous Visite",
-    "findUsTitle": "Trouvez-nous en Boutique",
-    "findUsDesc": "Disponible chez une sélection de revendeurs à travers le pays — consultez notre page Points de Vente pour trouver un lieu près de chez vous.",
+    "value1Title": "Fabriqué Avec Soin",
+    "value1Desc": "Chaque brume est formulée en petites séries pour préserver qualité et caractère.",
+    "value2Title": "La Couleur Comme Émotion",
+    "value2Desc": "Chaque parfum est associé à une couleur qui reflète l'humeur qu'il évoque.",
+    "value3Title": "Conçu Pour Durer",
+    "value3Desc": "Des formules longue tenue, douces pour la peau et les cheveux, pensées pour un usage quotidien.",
+    "findUsEyebrow": "Venez Nous Voir",
+    "findUsTitle": "Retrouvez-nous en Boutique",
+    "findUsDesc": "Disponible chez une sélection de points de vente à travers le pays — consultez notre page Points de Vente pour trouver le plus proche de vous.",
     "ctaTitle": "Prêt(e) à trouver votre couleur ?",
-    "ctaDesc": "Découvrez les quatorze brumes et trouvez celle qui correspond à votre humeur.",
+    "ctaDesc": "Explorez les quatorze brumes et trouvez celle qui correspond à votre humeur.",
     "ctaButton": "Découvrir la Collection"
   },
   "notFound": {
     "eyebrow": "Parfum Perdu",
-    "title": "Cette Page s'est Évaporée",
-    "description": "La page que vous recherchez n'existe pas, ou la brume s'est déjà dissipée. Revenons à quelque chose qui persiste.",
+    "title": "Cette Page S'est Évaporée",
+    "description": "La page que vous cherchez n'existe pas, ou la brume s'est déjà dissipée. Revenons à quelque chose qui persiste.",
     "backHome": "Retour à l'Accueil",
     "browseShop": "Parcourir la Collection",
     "code": "404",
@@ -559,8 +571,8 @@
   },
   "faq": {
     "eyebrow": "Questions & Réponses",
-    "title": "Foire Aux Questions",
-    "subtitle": "Tout ce qu'il faut savoir sur nos brumes, vos commandes et la livraison. Vous ne trouvez pas votre réponse ? Contactez-nous — nous répondons vite.",
+    "title": "Questions Fréquentes",
+    "subtitle": "Tout ce que vous devez savoir sur nos brumes, vos commandes et la livraison. Vous ne trouvez pas votre réponse ? Contactez-nous — nous répondons vite.",
     "contactCta": "Vous avez encore une question ?",
     "contactButton": "Nous Contacter",
     "groups": {
@@ -570,15 +582,15 @@
         "items": [
           {
             "q": "Qu'est-ce qu'une brume parfumée, exactement ?",
-            "a": "Une brume parfumée est un spray léger conçu pour le corps et les cheveux. Moins concentrée qu'un parfum traditionnel, elle se superpose élégamment sans jamais être envahissante, et convient à un usage quotidien sur les cheveux."
+            "a": "Une brume parfumée est un spray léger conçu pour le corps et les cheveux. Moins concentrée qu'un parfum traditionnel, elle se superpose magnifiquement sans jamais envahir, et elle est sans risque pour un usage quotidien sur les cheveux."
           },
           {
             "q": "Combien de parfums compte la collection ?",
-            "a": "Quatorze brumes, chacune construite autour d'une humeur et d'une couleur distinctes. Des senteurs les plus douces du matin aux plus audacieuses du soir, il y a une version de vous dans chaque flacon."
+            "a": "Quatorze brumes, chacune construite autour d'une humeur et d'une couleur distinctes. Du matin le plus doux aux soirées les plus audacieuses, il existe une version de vous dans chaque flacon."
           },
           {
             "q": "Combien de temps le parfum tient-il ?",
-            "a": "La plupart des clients perçoivent un sillage doux et radieux pendant 4 à 6 heures, plus longtemps sur les cheveux que sur la peau. Pour de meilleurs résultats, vaporisez sur une peau propre ou des cheveux légèrement humides."
+            "a": "La plupart de nos clients perçoivent un sillage doux et radieux pendant 4 à 6 heures, plus longtemps sur les cheveux que sur la peau. Pour un résultat optimal, vaporisez sur une peau propre ou des cheveux légèrement humides."
           }
         ]
       },
@@ -588,11 +600,11 @@
         "items": [
           {
             "q": "Dans quelles wilayas livrez-vous ?",
-            "a": "Nous livrons dans les 58 wilayas via Stop Desk ou livraison à domicile. Les options disponibles s'affichent automatiquement lors du paiement, selon votre adresse."
+            "a": "Nous livrons dans les 58 wilayas via Stop Desk ou livraison à domicile. Les options disponibles s'affichent automatiquement lors du paiement selon votre adresse."
           },
           {
             "q": "Combien de temps prend la livraison ?",
-            "a": "Les commandes en Stop Desk arrivent généralement sous 2 à 4 jours ouvrés. La livraison à domicile peut prendre un peu plus de temps selon votre région."
+            "a": "Les commandes Stop Desk arrivent généralement sous 2 à 4 jours ouvrables. La livraison à domicile peut prendre un peu plus de temps selon votre région."
           },
           {
             "q": "Puis-je suivre ma commande ?",
@@ -610,11 +622,11 @@
         "items": [
           {
             "q": "Puis-je composer un coffret personnalisé ?",
-            "a": "Oui. Utilisez Composez Votre Coffret pour choisir une taille et mélanger les brumes de votre choix dans un seul coffret, idéal pour offrir ou pour en essayer plusieurs à la fois."
+            "a": "Oui. Utilisez Composez Votre Coffret pour choisir une taille et combiner les brumes de votre choix en un seul coffret, idéal pour offrir ou pour en essayer plusieurs à la fois."
           },
           {
-            "q": "Comment dois-je conserver ma brume ?",
-            "a": "Conservez les flacons à l'abri de la lumière directe du soleil et de la chaleur extrême. Bien conservée, une brume non ouverte garde tout son caractère jusqu'à 24 mois."
+            "q": "Comment conserver ma brume ?",
+            "a": "Conservez les flacons à l'abri de la lumière directe du soleil et des fortes chaleurs. Bien conservée, une brume non ouverte garde tout son caractère jusqu'à 24 mois."
           },
           {
             "q": "Que faire si je ne suis pas satisfait(e) de ma commande ?",
@@ -629,16 +641,16 @@
     "title": "Livraison & Retrait",
     "subtitle": "Faites-vous livrer votre brume à domicile, ou venez la sentir en personne dans l'une de nos deux boutiques.",
     "homeTitle": "Livraison à Domicile",
-    "homeDesc": "Livrée partout en Algérie dans un emballage protecteur, suivie de notre atelier jusqu'à votre porte.",
-    "homeMeta": "2 à 5 jours ouvrés",
+    "homeDesc": "Livré partout en Algérie dans un emballage protecteur, suivi de notre atelier jusqu'à votre porte.",
+    "homeMeta": "2 à 5 jours ouvrables",
     "pickupTitle": "Retrait en Boutique",
-    "pickupDesc": "Commandez en ligne et retirez gratuitement dans notre boutique d'Alger ou d'Oran — généralement prête sous 24 heures.",
-    "pickupMeta": "Prêt en 24h",
+    "pickupDesc": "Commandez en ligne et retirez gratuitement dans notre boutique d'Alger ou d'Oran — généralement prêt sous 24 heures.",
+    "pickupMeta": "Prêt sous 24h",
     "noticeLabel": "Veuillez noter :",
     "noticeText": "Les délais de livraison peuvent varier en période de forte demande ou dans les wilayas éloignées. Vous recevrez un lien de suivi par SMS et e-mail dès l'expédition de votre commande.",
-    "storesEyebrow": "Rendez-nous Visite",
+    "storesEyebrow": "Venez Nous Voir",
     "storesTitle": "Nos Boutiques",
-    "storesSubtitle": "Magie Klayn est actuellement disponible dans deux villes. Venez tester la collection complète en personne.",
+    "storesSubtitle": "Magie Klayn est actuellement disponible dans deux villes. Venez tester toute la collection en personne.",
     "addressLabel": "Adresse",
     "hoursLabel": "Horaires d'Ouverture",
     "phoneLabel": "Téléphone",

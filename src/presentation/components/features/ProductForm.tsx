@@ -44,11 +44,11 @@ export function ProductForm({
     name: "",
     slug: "",
     description: "",
-    price: 1500,
+    price: 1100,
     notes: [],
-    colorHex: "#D0223A",
-    sizeMl: 50,
-    isActive: isVoteMode ? false : true,
+    colorHex: "#ffffff",
+    sizeMl: 250,
+    isActive: true,
     images: [],
     isNew: true,
     isSoldOut: false,
@@ -117,7 +117,7 @@ export function ProductForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {/* Image Upload */}
-      <div>
+      <div className="mt-2">
         <label className="mb-2 block text-xs font-bold tracking-widest text-[var(--color-text-secondary)] uppercase">
           {t("admin.products.form.productImage")}
         </label>
@@ -297,7 +297,7 @@ export function ProductForm({
             onChange={(e) =>
               setFormData({ ...formData, isActive: e.target.checked })
             }
-            className="h-4 w-4 rounded border-2 border-[var(--color-border)] text-[var(--color-text)] focus:ring-[var(--color-text)]"
+            className="h-4 w-4 rounded border-2 border-[var(--color-border)] accent-[var(--color-text)] focus:ring-[var(--color-text)]"
             data-testid="product-toggle"
           />
           <span className="text-sm text-[var(--color-text)]">
@@ -314,7 +314,7 @@ export function ProductForm({
                 onChange={(e) =>
                   setFormData({ ...formData, isNew: e.target.checked })
                 }
-                className="h-4 w-4 rounded border-2 border-[var(--color-border)] text-[var(--color-text)] focus:ring-[var(--color-text)]"
+                className="h-4 w-4 rounded border-2 border-[var(--color-border)] accent-[var(--color-text)] focus:ring-[var(--color-text)]"
               />
               <span className="text-sm text-[var(--color-text)]">
                 {t("admin.products.form.markAsNew")}
@@ -328,7 +328,7 @@ export function ProductForm({
                 onChange={(e) =>
                   setFormData({ ...formData, isSoldOut: e.target.checked })
                 }
-                className="h-4 w-4 rounded border-2 border-[var(--color-border)] text-[var(--color-text)] focus:ring-[var(--color-text)]"
+                className="h-4 w-4 rounded border-2 border-[var(--color-border)] accent-[var(--color-text)] focus:ring-[var(--color-text)]"
               />
               <span className="text-sm text-[var(--color-text)]">
                 {t("admin.products.form.markAsSoldOut")}
@@ -370,7 +370,7 @@ export function ProductForm({
           type="submit"
           variant="primary"
           isLoading={isSubmitting || isUploading}
-          className="flex-1"
+          className="flex-1 !bg-black !text-white !border !border-black hover:!-translate-y-0.5 hover:!shadow-lg transition-transform duration-200"
           data-testid="save-product-button"
         >
           {initialData?.name
