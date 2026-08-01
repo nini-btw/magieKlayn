@@ -185,7 +185,7 @@ export const ProductDetail: React.FC<{ product: Product }> = ({ product }) => {
         </div>
 
         {/* Note */}
-        <p className="text-[var(--color-text-secondary)] text-sm">
+        <p className="text-(--color-text-secondary) text-sm">
           {t("common.free")} {t("common.delivery")}.
         </p>
       </motion.div>
