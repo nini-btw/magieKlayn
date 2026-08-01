@@ -39,9 +39,7 @@ export const ProductDetail: React.FC<{ product: Product }> = ({ product }) => {
         : null,
     };
 
-    dispatch(
-      addItem({ product: serializedProduct as unknown as Product, quantity }),
-    );
+    dispatch(addItem({ product: serializedProduct, quantity }));
     dispatch(
       addToast({
         message: `${quantity}x ${product.name} ${t("product.added")}`,

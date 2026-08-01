@@ -3,7 +3,7 @@
  * @module domain/entities/order
  */
 
-import type { Product } from "./product";
+import type { SerializedProduct } from "./product";
 
 /**
  * Order status enum
@@ -63,10 +63,14 @@ export interface OrderItem {
 }
 
 /**
- * Cart item used during shopping
+ * Cart item used during shopping.
+ *
+ * Uses `SerializedProduct` (not `Product`) because CartItem lives in
+ * Redux state, which must be JSON-serializable — a real `Date` object
+ * on `product.createdAt`/`updatedAt` would break serialization.
  */
 export interface CartItem {
-  product: Product;
+  product: SerializedProduct;
   quantity: number;
 }
 

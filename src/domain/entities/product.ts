@@ -58,6 +58,15 @@ export interface Product {
   createdAt: Date;
   updatedAt: Date;
 }
+/**
+ * Serialized product — the shape a Product takes once it enters
+ * Redux state or any other JSON-serializable boundary. Dates become
+ * ISO strings (or null) since real Date objects aren't serializable.
+ */
+export type SerializedProduct = Omit<Product, "createdAt" | "updatedAt"> & {
+  createdAt: string | null;
+  updatedAt: string | null;
+};
 
 /**
  * UI helper type.

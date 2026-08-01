@@ -23,6 +23,27 @@ export interface ProductCardProps {
 const DEFAULT_LIQUID = "#e2264a";
 const DEFAULT_LIQUID_DEEP = "#a3172c";
 
+/**
+ * Darkens a hex color by a given amount (0–1). Used to derive a "deep"
+ * shade for the bottle-liquid gradient from a single stored colorHex,
+ * since Product only stores one signature color per fragrance.
+ */
+function darkenHex(hex: string, amount: number): string {
+  const clean = hex.replace("#", "");
+  if (clean.length !== 6) return hex;
+
+  const r = parseInt(clean.substring(0, 2), 16);
+  const g = parseInt(clean.substring(2, 4), 16);
+  const b = parseInt(clean.substring(4, 6), 16);
+
+  const darken = (channel: number) =>
+    Math.max(0, Math.round(channel * (1 - amount)));
+
+  const toHex = (channel: number) => channel.toString(16).padStart(2, "0");
+
+  return `#${toHex(darken(r))}${toHex(darken(g))}${toHex(darken(b))}`;
+}
+
 export const ProductCard: React.FC<ProductCardProps> = ({
   product,
   index = 0,
@@ -36,6 +57,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   // Signature color used for the hover wash — falls back safely if a
   // product hasn't been assigned one yet.
   const accentColor = product.colorHex || DEFAULT_LIQUID;
+
+  // Bottle-liquid gradient derived from the single stored colorHex, since
+  // Product doesn't carry separate liquidColor/liquidColorDeep fields.
+  const liquidColor = product.colorHex || DEFAULT_LIQUID;
+  const liquidColorDeep = product.colorHex
+    ? darkenHex(product.colorHex, 0.25)
+    : DEFAULT_LIQUID_DEEP;
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -76,11 +104,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         href={`/shop/${product.slug}`}
         className="product-card group relative flex flex-col overflow-hidden rounded-[var(--radius-card)] border border-[var(--color-border)] bg-white transition-shadow duration-[var(--duration-base)] ease-[var(--ease-luxury)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)]"
         style={{ "--product-color": accentColor } as React.CSSProperties}
-        onMouseEnter={() => {
-          console.log("Product:", product.name);
-          console.log("Accent Color:", accentColor);
-          console.log("Product colorHex:", product.colorHex);
-        }}
       >
         {(isNew || isSoldOut) && (
           <div className="absolute top-3 left-3 z-20">
@@ -125,8 +148,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             }`}
             style={
               {
-                "--liquid": product.liquidColor ?? DEFAULT_LIQUID,
-                "--liquid-deep": product.liquidColorDeep ?? DEFAULT_LIQUID_DEEP,
+                "--liquid": liquidColor,
+                "--liquid-deep": liquidColorDeep,
               } as React.CSSProperties
             }
           >

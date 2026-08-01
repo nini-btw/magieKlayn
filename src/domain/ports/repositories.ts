@@ -151,18 +151,3 @@ export interface IStorageService {
    */
   getPublicUrl(path: string): string;
 }
-
-/**
- * Notification service interface for Telegram
- */
-export interface INotificationService {
-  /**
-   * Send order notification
-   */
-  sendOrderNotification(order: Order): Promise<void>;
-
-  /**
-   * Test connection
-   */
-  testConnection(): Promise<boolean>;
-}

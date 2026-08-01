@@ -3,7 +3,7 @@
  * @module application/services/cart
  */
 
-import type { Product } from "@/domain/entities/product";
+import type { SerializedProduct } from "@/domain/entities/product";
 import type { CartItem } from "@/domain/entities/order";
 import {
   calculateCartTotal,
@@ -29,7 +29,7 @@ export class CartService {
    */
   addItem(
     currentItems: CartItem[],
-    product: Product,
+    product: SerializedProduct,
     quantity: number = 1,
   ): CartOperationResult {
     const existingItem = findCartItem(currentItems, product.id);

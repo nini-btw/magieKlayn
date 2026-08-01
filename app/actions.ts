@@ -4,7 +4,6 @@ import { cache } from "react";
 import { productRepository } from "@/infrastructure/db/product.adapter";
 import { orderRepository } from "@/infrastructure/db/order.adapter";
 
-import { telegramService } from "@/infrastructure/telegram/service";
 import type { CreateOrderPayload } from "@/domain/entities/order";
 import type { Product } from "@/domain/entities/product";
 
@@ -31,13 +30,6 @@ export async function createOrder(payload: CreateOrderPayload) {
   try {
     // Create order
     const order = await orderRepository.create(payload);
-
-    // Send Telegram notification
-    try {
-      await telegramService.sendOrderNotification(order);
-    } catch (notifyError) {
-      console.error("Notification failed:", notifyError);
-    }
 
     return { success: true, orderId: order.id };
   } catch (error) {

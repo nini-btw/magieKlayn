@@ -175,7 +175,14 @@ export class OrderRepository implements IOrderRepository {
       .orderBy(sql`COUNT(*) DESC`)
       .limit(limit);
 
-    return result.map((row) => ({
+    type TopWilayaRow = {
+      wilayaCode: string | null;
+      wilayaName: string | null;
+      orderCount: number;
+      totalRevenue: number;
+    };
+
+    return (result as TopWilayaRow[]).map((row) => ({
       wilayaCode: row.wilayaCode || "",
       wilayaName: row.wilayaName || "",
       orderCount: row.orderCount,

@@ -4,10 +4,7 @@
  */
 
 import type { Order, CreateOrderPayload } from "@/domain/entities/order";
-import type {
-  IOrderRepository,
-  INotificationService,
-} from "@/domain/ports/repositories";
+import type { IOrderRepository } from "@/domain/ports/repositories";
 
 /**
  * Result type for order creation
@@ -22,10 +19,7 @@ export interface CreateOrderResult {
  * Create order use case
  */
 export class CreateOrderUseCase {
-  constructor(
-    private orderRepo: IOrderRepository,
-    private notificationService: INotificationService,
-  ) {}
+  constructor(private orderRepo: IOrderRepository) {}
 
   /**
    * Execute order creation
@@ -34,14 +28,6 @@ export class CreateOrderUseCase {
     try {
       // Create order in database
       const order = await this.orderRepo.create(payload);
-
-      // Send notification
-      try {
-        await this.notificationService.sendOrderNotification(order);
-      } catch (notifyError) {
-        // Log but don't fail if notification fails
-        console.error("Failed to send notification:", notifyError);
-      }
 
       return { success: true, order };
     } catch (error) {

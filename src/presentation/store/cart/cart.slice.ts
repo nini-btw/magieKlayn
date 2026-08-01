@@ -4,7 +4,7 @@
  */
 
 import { createSlice, createSelector, PayloadAction } from "@reduxjs/toolkit";
-import type { Product } from "@/domain/entities/product";
+import type { SerializedProduct } from "@/domain/entities/product";
 import type { CartItem } from "@/domain/entities/order";
 import { cartService } from "@/application/services/cart.service";
 
@@ -27,7 +27,7 @@ export const cartSlice = createSlice({
   reducers: {
     addItem: (
       state,
-      action: PayloadAction<{ product: Product; quantity?: number }>,
+      action: PayloadAction<{ product: SerializedProduct; quantity?: number }>,
     ) => {
       const { product, quantity = 1 } = action.payload;
       const result = cartService.addItem(state.items, product, quantity);
