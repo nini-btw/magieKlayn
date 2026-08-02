@@ -18,9 +18,11 @@ const notoKufiArabic = Noto_Kufi_Arabic({
   variable: "--font-arabic",
   weight: ["400", "500", "600", "700"],
 });
-
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
-  metadataBase: new URL("http://localhost:3000"),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "https://magie-klayn.vercel.app",
+  ),
   title: {
     template: "%s · Magie Klayn",
     default: "Magie Klayn — Fragrances de Luxe à Oran",
