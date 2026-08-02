@@ -13,6 +13,7 @@ import {
 import type { Order } from "@/domain/entities/order";
 import type { Product } from "@/domain/entities/product";
 import { useTranslations, useLocale } from "next-intl";
+import { EmptyState } from "@/presentation/components/ui/EmptyState";
 
 const statusBadgeClass: Record<string, string> = {
   pending: "admin-badge admin-badge-warning",
@@ -230,7 +231,14 @@ export default function AdminDashboardPage() {
             </div>
           </>
         ) : (
-          <p className="admin-empty">{t("admin.dashboard.noOrders")}</p>
+          <EmptyState
+            icon={ShoppingBagIcon}
+            title={t("admin.dashboard.noOrders")}
+            description={
+              t("admin.dashboard.noOrdersDesc") ||
+              "New orders will appear here as customers check out."
+            }
+          />
         )}
       </div>
     </div>

@@ -7,7 +7,6 @@
     "home": "Home",
     "shop": "Shop",
     "build": "Build Your Box",
-    "vote": "Vote",
     "cart": "Cart",
     "admin": "Admin",
     "login": "Login",
@@ -95,21 +94,7 @@
       "subtitle": "Each bottle carries its own color, like an emotion you choose for the moment. Find yours.",
       "productMeta": "Scented Mist · Body & Hair"
     },
-    "vote": {
-      "title": "Bring It Back!",
-      "subtitle": "Vote for your favorite retired mists",
-      "cta": "Cast Your Vote",
-      "nextDrop": "Next Drop In"
-    },
-    "countdown": {
-      "badge": "Next Drop In",
-      "title": "Something is ",
-      "highlight": "coming",
-      "subtitle": "A secret creation is about to be revealed.",
-      "productSuffix": "drops in:",
-      "hint": "Limited batch · Be ready",
-      "noDrop": "No upcoming drops scheduled"
-    },
+
     "newsletter": {
       "title": "Stay In The Light",
       "subtitle": "New arrivals, limited editions, and color stories — straight to your inbox.",
@@ -176,17 +161,7 @@
     "completeSelection": "Please complete your selection",
     "pieces": "bottles"
   },
-  "vote": {
-    "title": "Bring It Back!",
-    "subtitle": "Vote for your favorite retired mists. The most popular fragrances might make a comeback!",
-    "badge": "Community Vote",
-    "votes": "votes",
-    "vote": "Vote",
-    "voted": "Voted!",
-    "totalVotes": "total votes cast",
-    "noCandidates": "No vote candidates yet. Check back soon!",
-    "candidates": "candidates"
-  },
+
   "cart": {
     "title": "Your Cart",
     "subtitle": "Review your order",
@@ -256,8 +231,6 @@
       "dashboard": "Dashboard",
       "orders": "Orders",
       "products": "Products",
-      "weeklyDrop": "Weekly Drop",
-      "votes": "Votes",
       "signOut": "Sign Out",
       "language": "Language"
     },
@@ -265,20 +238,20 @@
       "adminDashboard": "Admin Dashboard"
     },
     "dashboard": {
+      "noOrdersDesc": "New orders will appear here as customers check out.",
       "title": "Dashboard",
       "subtitle": "Overview of your shop's performance",
       "totalOrders": "Total Orders",
       "revenue": "Revenue",
       "mostOrdered": "Most Ordered",
-      "mostVoted": "Most Voted",
       "recentOrders": "Recent Orders",
       "noOrders": "No orders yet",
       "viewAll": "View All",
-      "manageProducts": "Manage Products",
-      "scheduleDrop": "Schedule Drop",
-      "viewVotes": "View Votes"
+      "manageProducts": "Manage Products"
     },
     "orders": {
+      "noOrdersDesc": "Orders placed by customers will show up here.",
+      "noOrdersFilteredDesc": "Try adjusting or clearing your filters.",
       "title": "Orders",
       "subtitle": "Manage customer orders",
       "orderId": "Order ID",
@@ -402,76 +375,7 @@
       },
       "actions": "Actions"
     },
-    "drop": {
-      "title": "Weekly Drop",
-      "subtitle": "Schedule your next fragrance reveal with countdown",
-      "scheduleNew": "Schedule New Drop",
-      "selectFragrance": "Select Fragrance",
-      "chooseFragrance": "Choose a fragrance...",
-      "date": "Date",
-      "time": "Time",
-      "selectDate": "Select date",
-      "selectTime": "Select time",
-      "schedule": "Schedule Drop",
-      "preview": "Preview",
-      "countdownPreview": "Countdown Preview",
-      "selectDateTime": "Select a date and time to see the preview",
-      "scheduledFor": "Scheduled for",
-      "activeDrop": "Current Active Drop",
-      "noActiveDrop": "No Active Drop",
-      "noActiveDesc": "Schedule a new drop to see it here",
-      "scheduled": "Scheduled",
-      "revealed": "Revealed",
-      "cancelDrop": "Cancel Drop",
-      "dropInfo": "The drop will be visible on the home page with a countdown timer. When the time arrives, the product will be automatically revealed, activated, and marked as new.",
-      "dropLive": "🎉 Drop is Live!",
-      "revealNow": "Reveal Now",
-      "confirmReveal": "Are you sure you want to reveal this drop now? The product will be activated and marked as new.",
-      "revealedSuccess": "Drop revealed! The product is now active and marked as new in the shop."
-    },
-    "votes": {
-      "title": "Vote Management",
-      "subtitle": "Manage community vote candidates",
-      "showChart": "Show Chart",
-      "hideChart": "Hide Chart",
-      "reset": "Reset",
-      "voteResults": "Vote Results",
-      "totalVotes": "total votes",
-      "addFromProduct": "Add from Existing Products",
-      "selectFragrance": "Select a fragrance...",
-      "addToVote": "Add to Vote",
-      "quickAdd": {
-        "title": "Quick Add New Fragrance",
-        "subtitle": "Create a new fragrance and add it to vote instantly",
-        "button": "Quick Add Fragrance",
-        "fragranceImage": "Fragrance Image",
-        "uploadImage": "Click to upload image",
-        "fragranceName": "Fragrance Name",
-        "description": "Description",
-        "price": "Price (DA)",
-        "scent": "Scent",
-        "allergens": "Allergens (comma-separated)",
-        "markAsNew": "Mark as New",
-        "active": "Active (visible in shop)",
-        "whatHappens": "What happens next:",
-        "step1": "Product created and added to Products list",
-        "step2": "Automatically added to Vote list",
-        "step3Active": "Will be visible in shop immediately",
-        "step3Inactive": "Will be hidden from shop until activated",
-        "cancel": "Cancel",
-        "create": "Create & Add to Vote",
-        "namePlaceholder": "e.g., Amber Bloom",
-        "descPlaceholder": "Describe this fragrance...",
-        "flavourPlaceholder": "e.g., Citrus & Bergamot",
-        "allergensPlaceholder": "e.g., alcohol, essential oils"
-      },
-      "candidates": "Vote Candidates",
-      "fragrance": "Fragrance",
-      "votes": "Votes",
-      "noCandidates": "No vote candidates yet. Add some!",
-      "deleteConfirm": "Are you sure you want to delete this candidate?",
-      "resetConfirm": "Are you sure you want to reset all votes?"
-    },
+
     "common": {
       "save": "Save",
       "cancel": "Cancel",

@@ -183,11 +183,6 @@ export const ProductDetail: React.FC<{ product: Product }> = ({ product }) => {
             {product.isSoldOut ? t("shop.soldOut") : t("shop.addToCart")}
           </Button>
         </div>
-
-        {/* Note */}
-        <p className="text-(--color-text-secondary) text-sm">
-          {t("common.free")} {t("common.delivery")}.
-        </p>
       </motion.div>
     </div>
   );

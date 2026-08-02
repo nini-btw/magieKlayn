@@ -4074,6 +4074,39 @@
   background-color: rgba(255, 255, 255, 0.08);
   color: var(--color-white);
 }
+.admin-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-2xl) var(--space-lg);
+  gap: var(--space-xs);
+}
+
+.admin-empty-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-bg-soft);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-sm);
+}
+
+.admin-empty-title {
+  font-weight: 600;
+  color: var(--color-text);
+  font-size: 0.95rem;
+}
+
+.admin-empty-desc {
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+  max-width: 280px;
+}
 
 /* ==========================================================================
    Mobile nav (hamburger + slide-in panel)

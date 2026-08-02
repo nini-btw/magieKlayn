@@ -7,7 +7,6 @@
     "home": "Accueil",
     "shop": "Boutique",
     "build": "Composez Votre Coffret",
-    "vote": "Voter",
     "cart": "Panier",
     "admin": "Admin",
     "login": "Connexion",
@@ -95,21 +94,7 @@
       "subtitle": "Chaque flacon porte sa propre couleur, comme une émotion que l'on choisit pour l'instant présent. Trouvez la vôtre.",
       "productMeta": "Brume Parfumée · Corps et Cheveux"
     },
-    "vote": {
-      "title": "Faites-la Revenir !",
-      "subtitle": "Votez pour vos brumes retirées préférées",
-      "cta": "Voter Maintenant",
-      "nextDrop": "Prochain Lancement Dans"
-    },
-    "countdown": {
-      "badge": "Prochain Lancement Dans",
-      "title": "Quelque chose ",
-      "highlight": "arrive",
-      "subtitle": "Une création secrète est sur le point d'être révélée.",
-      "productSuffix": "sort dans :",
-      "hint": "Série limitée · Soyez prêt(e)",
-      "noDrop": "Aucun lancement prévu pour le moment"
-    },
+
     "newsletter": {
       "title": "Restez Dans La Lumière",
       "subtitle": "Nouveautés, éditions limitées et histoires de couleurs — directement dans votre boîte mail.",
@@ -176,17 +161,7 @@
     "completeSelection": "Veuillez compléter votre sélection",
     "pieces": "flacons"
   },
-  "vote": {
-    "title": "Faites-la Revenir !",
-    "subtitle": "Votez pour vos brumes retirées préférées. Les parfums les plus populaires pourraient faire leur retour !",
-    "badge": "Vote de la Communauté",
-    "votes": "votes",
-    "vote": "Voter",
-    "voted": "Voté !",
-    "totalVotes": "votes au total",
-    "noCandidates": "Aucun candidat au vote pour le moment. Revenez bientôt !",
-    "candidates": "candidats"
-  },
+
   "cart": {
     "title": "Votre Panier",
     "subtitle": "Vérifiez votre commande",
@@ -256,8 +231,6 @@
       "dashboard": "Tableau de Bord",
       "orders": "Commandes",
       "products": "Produits",
-      "weeklyDrop": "Lancement Hebdomadaire",
-      "votes": "Votes",
       "signOut": "Se Déconnecter",
       "language": "Langue"
     },
@@ -265,20 +238,20 @@
       "adminDashboard": "Tableau de Bord Admin"
     },
     "dashboard": {
+      "noOrdersDesc": "Les nouvelles commandes apparaîtront ici dès qu'un client passera commande.",
       "title": "Tableau de Bord",
       "subtitle": "Aperçu des performances de votre boutique",
       "totalOrders": "Commandes Totales",
       "revenue": "Revenu",
       "mostOrdered": "Le Plus Commandé",
-      "mostVoted": "Le Plus Voté",
       "recentOrders": "Commandes Récentes",
       "noOrders": "Aucune commande pour le moment",
       "viewAll": "Voir Tout",
-      "manageProducts": "Gérer les Produits",
-      "scheduleDrop": "Planifier un Lancement",
-      "viewVotes": "Voir les Votes"
+      "manageProducts": "Gérer les Produits"
     },
     "orders": {
+      "noOrdersDesc": "Les commandes passées par les clients s'afficheront ici.",
+      "noOrdersFilteredDesc": "Essayez d'ajuster ou de réinitialiser vos filtres.",
       "title": "Commandes",
       "subtitle": "Gérez les commandes clients",
       "orderId": "N° de Commande",
@@ -402,76 +375,7 @@
       },
       "actions": "Actions"
     },
-    "drop": {
-      "title": "Lancement Hebdomadaire",
-      "subtitle": "Planifiez votre prochaine révélation de parfum avec compte à rebours",
-      "scheduleNew": "Planifier un Nouveau Lancement",
-      "selectFragrance": "Sélectionner le Parfum",
-      "chooseFragrance": "Choisissez un parfum...",
-      "date": "Date",
-      "time": "Heure",
-      "selectDate": "Sélectionner la date",
-      "selectTime": "Sélectionner l'heure",
-      "schedule": "Planifier le Lancement",
-      "preview": "Aperçu",
-      "countdownPreview": "Aperçu du Compte à Rebours",
-      "selectDateTime": "Sélectionnez une date et une heure pour voir l'aperçu",
-      "scheduledFor": "Planifié pour",
-      "activeDrop": "Lancement Actif Actuel",
-      "noActiveDrop": "Aucun Lancement Actif",
-      "noActiveDesc": "Planifiez un nouveau lancement pour le voir ici",
-      "scheduled": "Planifié",
-      "revealed": "Révélé",
-      "cancelDrop": "Annuler le Lancement",
-      "dropInfo": "Le lancement sera visible sur la page d'accueil avec un compte à rebours. Une fois l'heure arrivée, le produit sera automatiquement révélé, activé et marqué comme nouveau.",
-      "dropLive": "🎉 Le Lancement est en Direct !",
-      "revealNow": "Révéler Maintenant",
-      "confirmReveal": "Êtes-vous sûr(e) de vouloir révéler ce lancement maintenant ? Le produit sera activé et marqué comme nouveau.",
-      "revealedSuccess": "Lancement révélé ! Le produit est maintenant actif et marqué comme nouveau dans la boutique."
-    },
-    "votes": {
-      "title": "Gestion des Votes",
-      "subtitle": "Gérez les candidats au vote de la communauté",
-      "showChart": "Afficher le Graphique",
-      "hideChart": "Masquer le Graphique",
-      "reset": "Réinitialiser",
-      "voteResults": "Résultats du Vote",
-      "totalVotes": "votes au total",
-      "addFromProduct": "Ajouter depuis les Produits Existants",
-      "selectFragrance": "Sélectionnez un parfum...",
-      "addToVote": "Ajouter au Vote",
-      "quickAdd": {
-        "title": "Ajout Rapide d'un Nouveau Parfum",
-        "subtitle": "Créez un nouveau parfum et ajoutez-le instantanément au vote",
-        "button": "Ajout Rapide d'un Parfum",
-        "fragranceImage": "Image du Parfum",
-        "uploadImage": "Cliquez pour téléverser une image",
-        "fragranceName": "Nom du Parfum",
-        "description": "Description",
-        "price": "Prix (DA)",
-        "scent": "Parfum",
-        "allergens": "Allergènes (séparés par des virgules)",
-        "markAsNew": "Marquer comme Nouveau",
-        "active": "Actif (visible dans la boutique)",
-        "whatHappens": "Ce qui se passe ensuite :",
-        "step1": "Produit créé et ajouté à la liste des Produits",
-        "step2": "Ajouté automatiquement à la liste des Votes",
-        "step3Active": "Sera visible immédiatement dans la boutique",
-        "step3Inactive": "Sera masqué de la boutique jusqu'à activation",
-        "cancel": "Annuler",
-        "create": "Créer et Ajouter au Vote",
-        "namePlaceholder": "ex. Amber Bloom",
-        "descPlaceholder": "Décrivez ce parfum...",
-        "flavourPlaceholder": "ex. Agrumes et Bergamote",
-        "allergensPlaceholder": "ex. alcool, huiles essentielles"
-      },
-      "candidates": "Candidats au Vote",
-      "fragrance": "Parfum",
-      "votes": "Votes",
-      "noCandidates": "Aucun candidat au vote pour le moment. Ajoutez-en !",
-      "deleteConfirm": "Êtes-vous sûr(e) de vouloir supprimer ce candidat ?",
-      "resetConfirm": "Êtes-vous sûr(e) de vouloir réinitialiser tous les votes ?"
-    },
+
     "common": {
       "save": "Enregistrer",
       "cancel": "Annuler",

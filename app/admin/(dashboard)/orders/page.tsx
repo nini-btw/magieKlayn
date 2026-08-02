@@ -29,6 +29,7 @@ import type { Order, WilayaOrderStats } from "@/domain/entities/order";
 import type { DeliveryZone } from "@/domain/entities/delivery";
 import { useTranslations, useLocale } from "next-intl";
 import { formatPrice } from "@/presentation/lib/utils";
+import { EmptyState } from "@/presentation/components/ui/EmptyState";
 
 type SortField = "id" | "customer" | "total" | "status" | "date";
 type SortDirection = "asc" | "desc";
@@ -962,7 +963,17 @@ export default function AdminOrdersPage() {
             </tbody>
           </table>
           {sortedOrders.length === 0 && (
-            <p className="admin-empty">{t("admin.orders.noOrders")}</p>
+            <EmptyState
+              icon={hasActiveFilters ? FilterIcon : PackageIcon}
+              title={t("admin.orders.noOrders")}
+              description={
+                hasActiveFilters
+                  ? t("admin.orders.noOrdersFilteredDesc") ||
+                    "Try adjusting or clearing your filters."
+                  : t("admin.orders.noOrdersDesc") ||
+                    "Orders placed by customers will show up here."
+              }
+            />
           )}
         </div>
 
@@ -988,7 +999,17 @@ export default function AdminOrdersPage() {
             />
           ))}
           {sortedOrders.length === 0 && (
-            <p className="admin-empty">{t("admin.orders.noOrders")}</p>
+            <EmptyState
+              icon={hasActiveFilters ? FilterIcon : PackageIcon}
+              title={t("admin.orders.noOrders")}
+              description={
+                hasActiveFilters
+                  ? t("admin.orders.noOrdersFilteredDesc") ||
+                    "Try adjusting or clearing your filters."
+                  : t("admin.orders.noOrdersDesc") ||
+                    "Orders placed by customers will show up here."
+              }
+            />
           )}
         </div>
       </div>

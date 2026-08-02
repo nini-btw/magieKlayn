@@ -37,13 +37,22 @@ import type { DeliverySelection } from "@/domain/entities/delivery";
 
 const checkoutSchema = z.object({
   fullName: z.string().min(2, "Name is required"),
-  phone: z.string().min(10, "Valid phone number required"),
-  address: z.string().min(10, "Complete address required"),
+  phone: z
+    .string()
+    .transform((val) => val.replace(/[\s-]/g, ""))
+    .pipe(
+      z
+        .string()
+        .regex(
+          /^0[567]\d{8}$/,
+          "Phone must be 10 digits and start with 05, 06, or 07",
+        ),
+    ),
+  address: z.string().min(1, "Address is required"),
   deliveryZoneId: z.string().uuid("Delivery zone is required"),
   deliveryType: z.enum(["stop_desk", "home"]),
   deliveryFee: z.number().min(0, "Delivery fee is required"),
 });
-
 type CheckoutFormData = z.infer<typeof checkoutSchema>;
 
 /**
@@ -316,7 +325,7 @@ export default function CartPage() {
 
                 <Input
                   label={t("checkout.phone")}
-                  placeholder="+213 555 123 456"
+                  placeholder="0555 123 456"
                   error={errors.phone?.message}
                   {...register("phone")}
                 />
