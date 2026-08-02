@@ -98,7 +98,7 @@ export default function ShopPage({
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen overflow-x">
       <div className="page-hero">
         <p className="eyebrow">{t("shop.eyebrow")}</p>
         <h1 className="section-title mb-4">{t("shop.title")}</h1>

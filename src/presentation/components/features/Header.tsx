@@ -23,7 +23,7 @@ export const Header: React.FC = () => {
     <header className="site-header">
       <nav className="nav">
         <div className="nav-left">
-          <Link href="/shop" className="nav-link">
+          <Link href="/shop" className="nav-link nav-link-desktop">
             {mounted ? t("nav.collection") : "Collection"}
           </Link>
         </div>
@@ -48,7 +48,6 @@ export const Header: React.FC = () => {
           <button
             onClick={() => dispatch(toggleCart())}
             className="icon-circle"
-            style={{ position: "relative" }}
             aria-label={t("common.openCart")}
             data-testid="cart-button"
           >
@@ -64,24 +63,7 @@ export const Header: React.FC = () => {
               <path d="M7 6V4.5a3 3 0 0 1 6 0V6" />
             </svg>
             {cartCount > 0 && (
-              <span
-                data-testid="cart-count"
-                style={{
-                  position: "absolute",
-                  top: "-4px",
-                  right: "-4px",
-                  background: "var(--color-text)",
-                  color: "var(--color-white)",
-                  fontSize: "10px",
-                  fontWeight: 700,
-                  width: "18px",
-                  height: "18px",
-                  borderRadius: "50%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
+              <span className="cart-badge" data-testid="cart-count">
                 {cartCount}
               </span>
             )}

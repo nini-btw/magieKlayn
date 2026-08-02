@@ -70,7 +70,7 @@ export default function HomePage() {
           </div>
         </section>
       )}
-      <section className="collection-home" id="collection">
+      <section className="collection-home overflow-x-hidden" id="collection">
         <div className="collection-inner">
           <div className="section-head collection-text">
             <p className="eyebrow">{t("home.featured.eyebrow")}</p>

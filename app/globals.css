@@ -4074,3 +4074,113 @@
   background-color: rgba(255, 255, 255, 0.08);
   color: var(--color-white);
 }
+
+/* ==========================================================================
+   Mobile nav (hamburger + slide-in panel)
+   ========================================================================== */
+
+.nav-menu-toggle {
+  display: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  flex: 0 0 auto;
+  transition:
+    background-color var(--duration-base) var(--ease-luxury),
+    border-color var(--duration-base) var(--ease-luxury);
+}
+.nav-menu-toggle:hover {
+  background-color: var(--color-bg-soft);
+  border-color: var(--color-text);
+}
+
+.mobile-nav-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  background-color: rgba(29, 29, 29, 0.45);
+}
+
+.mobile-nav-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 50;
+  width: min(80vw, 300px);
+  height: 100%;
+  height: 100dvh;
+  background-color: var(--color-white);
+  box-shadow: var(--shadow-soft);
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-md);
+  overflow-y: auto;
+}
+
+.mobile-nav-close {
+  align-self: flex-end;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+.mobile-nav-close:hover {
+  background-color: var(--color-bg-soft);
+}
+
+.mobile-nav-links {
+  display: flex;
+  flex-direction: column;
+  margin-top: var(--space-lg);
+}
+
+.mobile-nav-link {
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--color-text);
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+@media (max-width: 700px) {
+  .nav {
+    padding: var(--space-sm) var(--space-md);
+    justify-content: space-between;
+  }
+
+  /* Collection link is hidden (nav-link-desktop), so nav-left collapses.
+     Logo moves into its place on the left instead of staying centered. */
+  .nav-left {
+    display: none;
+  }
+
+  .nav-center {
+    flex: 0 0 auto;
+    margin-right: auto;
+  }
+
+  .nav-right {
+    flex: 0 0 auto;
+    gap: var(--space-sm);
+  }
+
+  .nav-link {
+    font-size: 0.68rem;
+  }
+}
+
+.product-grid {
+  min-width: 0; /* allow the grid track itself to shrink */
+}
+.product-grid > * {
+  min-width: 0; /* prevent card content (badges, long names) from forcing the column wider than its 1fr track */
+}
