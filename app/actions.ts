@@ -6,6 +6,7 @@ import { orderRepository } from "@/infrastructure/db/order.adapter";
 
 import type { CreateOrderPayload } from "@/domain/entities/order";
 import type { Product } from "@/domain/entities/product";
+import { telegramNotificationService } from "@/infrastructure/telegram/telegram-notification.service";
 
 /**
  * Get all active products
@@ -30,6 +31,7 @@ export async function createOrder(payload: CreateOrderPayload) {
   try {
     // Create order
     const order = await orderRepository.create(payload);
+    await telegramNotificationService.notifyNewOrder(order);
 
     return { success: true, orderId: order.id };
   } catch (error) {
