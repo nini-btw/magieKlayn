@@ -38,6 +38,11 @@ export const orderStatusEnum = pgEnum("order_status", [
   "cancelled",
 ]);
 
+export const productGenderEnum = pgEnum("product_gender", [
+  "male",
+  "female",
+  "unisex",
+]);
 /**
  * Delivery type enum
  */
@@ -65,6 +70,8 @@ export const products = pgTable("products", {
   notes: jsonb("notes").$type<string[]>().default([]).notNull(),
   price: integer("price").notNull(), // smallest currency unit (DA)
   // Signature color — core to the brand identity, each fragrance has one
+  gender: productGenderEnum("gender"),
+
   colorHex: varchar("color_hex", { length: 7 }).notNull(), // e.g. "#D0223A"
   sizeMl: integer("size_ml").notNull(),
   images: jsonb("images").$type<string[]>().default([]).notNull(),

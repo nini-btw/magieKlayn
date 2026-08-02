@@ -49,6 +49,7 @@ export const ProductDetail: React.FC<{ product: Product }> = ({ product }) => {
     setQuantity(1);
   };
 
+  console.log("ProductDetail rendered with product:", product);
   return (
     <div
       data-testid="product-detail"
@@ -123,6 +124,11 @@ export const ProductDetail: React.FC<{ product: Product }> = ({ product }) => {
         </nav>
 
         <h1 className="section-title">{product.name}</h1>
+        {product.gender && (
+          <Badge variant={product.gender === "unisex" ? "unisex" : "gender"}>
+            {t(`product.gender.${product.gender}`)}
+          </Badge>
+        )}
 
         {/* Price */}
         <p className="text-[var(--color-text)] text-3xl font-extrabold tabular-nums">

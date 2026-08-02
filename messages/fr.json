@@ -132,6 +132,7 @@
   },
   "product": {
     "notes": "Notes",
+    "gender": { "male": "Homme", "female": "Femme", "unisex": "Unisexe" },
     "size": "Taille",
     "backToShop": "Retour à la Boutique",
     "scent": "Parfum",

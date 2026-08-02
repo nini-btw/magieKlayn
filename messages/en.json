@@ -132,6 +132,7 @@
   },
   "product": {
     "notes": "Notes",
+    "gender": { "male": "Male", "female": "Female", "unisex": "Unisex" },
     "size": "Size",
     "backToShop": "Back to Shop",
     "scent": "Scent",

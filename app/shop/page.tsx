@@ -23,13 +23,6 @@ export default function ShopPage({
   const [error, setError] = useState<string | null>(null);
   const t = useTranslations();
 
-  // Only name-based sorting, per product decision — no isNew filter tabs and
-  // no price/newest sort until real fragrance categories are defined.
-  const sortOptions = [
-    { value: "name-asc", label: t("shop.sort.nameAsc") },
-    { value: "name-desc", label: t("shop.sort.nameDesc") },
-  ];
-
   useEffect(() => {
     async function fetchProducts() {
       try {

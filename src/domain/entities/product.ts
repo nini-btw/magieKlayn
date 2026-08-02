@@ -10,6 +10,7 @@
  * Gift packaging (Luxury Coffret) is an order-level option and
  * therefore does not belong to this entity.
  */
+export type ProductGender = "male" | "female" | "unisex";
 
 export interface Product {
   /** Unique product identifier */
@@ -33,6 +34,7 @@ export interface Product {
 
   /** Price in Algerian Dinar (DA) */
   price: number;
+  gender: ProductGender | null;
 
   /**
    * Signature bottle/liquid color
