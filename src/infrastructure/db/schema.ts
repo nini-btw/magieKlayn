@@ -43,6 +43,7 @@ export const orderStatusEnum = pgEnum("order_status", [
  */
 export const deliveryTypeEnum = pgEnum("delivery_type", ["stop_desk", "home"]);
 
+export const boxColorEnum = pgEnum("box_color", ["white", "black"]);
 /**
  * Packaging type enum — the coffret decision, made at checkout, order-level
  */
@@ -81,7 +82,6 @@ export const orders = pgTable("orders", {
   id: uuid("id").primaryKey().defaultRandom(),
   fullName: varchar("full_name", { length: 255 }).notNull(),
   phone: varchar("phone", { length: 50 }).notNull(),
-  address: text("address").notNull(),
   giftNote: text("gift_note"),
   status: orderStatusEnum("status").default("pending").notNull(),
   totalAmount: integer("total_amount").notNull(),
@@ -92,8 +92,8 @@ export const orders = pgTable("orders", {
     .notNull(),
   // Only populated when packagingType = 'luxury_coffret'
   coffretFee: integer("coffret_fee"),
+  boxColor: boxColorEnum("box_color"), // <-- new, only set when packagingType = 'luxury_coffret'
 
-  // Delivery fields — unchanged shape from Crumbleivable
   deliveryZoneId: uuid("delivery_zone_id")
     .references(() => deliveryZones.id)
     .notNull(),

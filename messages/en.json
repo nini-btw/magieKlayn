@@ -172,7 +172,18 @@
     "orderSummary": "Order Summary",
     "checkout": "Proceed to Checkout",
     "note": "Special requests? Add them at checkout",
-    "clearCart": "Clear Cart"
+    "clearCart": "Clear Cart",
+    "packaging": {
+      "selectedNote": "Click the × to remove the gift box.",
+      "remove": "Remove gift box",
+      "title": "Luxury Box",
+      "capacityNote": "The box can hold up to 4 bottles maximum.",
+      "notEligible": "The gift box is only available for 4 bottles or fewer (you have {count}).",
+      "none": "No box",
+      "white": "White",
+      "black": "Black",
+      "fee": "Gift box"
+    }
   },
   "checkout": {
     "title": "Checkout",
@@ -298,6 +309,7 @@
         "delivered": "Delivered"
       },
       "orderDetails": {
+        "luxuryCoffret": "Luxury Box",
         "title": "Order Details",
         "status": "Order Status",
         "customerInfo": "Customer",

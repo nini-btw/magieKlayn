@@ -4,6 +4,7 @@
  */
 
 import type { SerializedProduct } from "./product";
+export type BoxColor = "white" | "black";
 
 /**
  * Order status enum
@@ -28,13 +29,14 @@ export interface Order {
   id: string;
   fullName: string;
   phone: string;
-  address: string;
   giftNote?: string;
   items: OrderItem[];
   status: OrderStatus;
   totalAmount: number;
   packagingType: PackagingType;
   coffretFee?: number;
+  boxColor?: BoxColor; // <-- new
+
   // Delivery details
   deliveryZoneId: string;
   deliveryType?: "stop_desk" | "home";
@@ -80,7 +82,6 @@ export interface CartItem {
 export interface CustomerInfo {
   fullName: string;
   phone: string;
-  address: string;
 }
 
 /**
@@ -99,6 +100,8 @@ export interface CreateOrderPayload {
   items: CartItem[];
   packagingType?: PackagingType;
   coffretFee?: number;
+  boxColor?: BoxColor; // <-- new
+
   deliveryZoneId: string;
   deliveryType: "stop_desk" | "home";
   deliveryFee: number;

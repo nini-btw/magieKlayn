@@ -44,3 +44,12 @@ export function hasProductInCart(
 export function getTotalItemCount(items: CartItem[]): number {
   return items.reduce((sum, item) => sum + item.quantity, 0);
 }
+
+/** A coffret (gift box) can hold at most this many bottles */
+export const MAX_BOX_CAPACITY = 4;
+
+/** Whether the current cart is eligible for coffret packaging */
+export function isBoxPackagingEligible(items: CartItem[]): boolean {
+  const count = getTotalItemCount(items);
+  return count > 0 && count <= MAX_BOX_CAPACITY;
+}

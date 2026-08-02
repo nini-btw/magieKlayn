@@ -163,6 +163,17 @@
   },
 
   "cart": {
+    "packaging": {
+      "selectedNote": "Cliquez sur le × pour retirer le coffret.",
+      "remove": "Retirer le coffret",
+      "title": "Coffret de Luxe",
+      "capacityNote": "Le coffret peut contenir jusqu'à 4 flacons maximum.",
+      "notEligible": "Le coffret n'est disponible que pour 4 flacons ou moins (vous en avez {count}).",
+      "none": "Sans coffret",
+      "white": "Blanc",
+      "black": "Noir",
+      "fee": "Coffret"
+    },
     "title": "Votre Panier",
     "subtitle": "Vérifiez votre commande",
     "empty": "Votre panier est vide",
@@ -298,6 +309,7 @@
         "delivered": "Livrées"
       },
       "orderDetails": {
+        "luxuryCoffret": "Coffret de Luxe",
         "title": "Détails de la Commande",
         "status": "Statut de la Commande",
         "customerInfo": "Client",

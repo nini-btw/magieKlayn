@@ -30,11 +30,7 @@ export const Header: React.FC = () => {
 
         <div className="nav-center">
           <Link href="/" className="wordmark" aria-label={t("brand.homeAria")}>
-            <span className="wordmark-mark" aria-hidden="true">
-              <Logo />
-            </span>
-            <span className="wordmark-text">Magie Klayn</span>
-            <span className="wordmark-sub">Body Splash</span>
+            <Logo />
           </Link>
         </div>
 

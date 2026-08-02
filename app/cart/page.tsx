@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
@@ -14,6 +14,9 @@ import {
   ShoppingBagIcon,
   ArrowLeftIcon,
   CheckCircleIcon,
+  PackageIcon,
+  XIcon,
+  CheckIcon,
 } from "lucide-react";
 
 import { Button } from "@/presentation/components/ui/Button";
@@ -27,6 +30,11 @@ import {
   clearCart,
   setGiftNote,
   selectGiftNote,
+  setBoxColor,
+  selectBoxColor,
+  selectIsBoxEligible,
+  selectTotalItemCount,
+  type BoxColor,
 } from "@/presentation/store/cart/cart.slice";
 import { addToast } from "@/presentation/store/ui/ui.slice";
 import { formatPrice } from "@/presentation/lib/utils";
@@ -34,6 +42,7 @@ import { fadeInUp } from "@/presentation/lib/animations";
 import { useTranslations } from "next-intl";
 import { WilayaCommuneSelect } from "@/presentation/components/features/WilayaCommuneSelect";
 import type { DeliverySelection } from "@/domain/entities/delivery";
+import { MAX_BOX_CAPACITY } from "@/domain/rules/cart.rules";
 
 const checkoutSchema = z.object({
   fullName: z.string().min(2, "Name is required"),
@@ -48,12 +57,21 @@ const checkoutSchema = z.object({
           "Phone must be 10 digits and start with 05, 06, or 07",
         ),
     ),
-  address: z.string().min(1, "Address is required"),
   deliveryZoneId: z.string().uuid("Delivery zone is required"),
   deliveryType: z.enum(["stop_desk", "home"]),
   deliveryFee: z.number().min(0, "Delivery fee is required"),
 });
 type CheckoutFormData = z.infer<typeof checkoutSchema>;
+
+// TODO: replace with the real coffret fee (or source from config/product data)
+const COFFRET_FEE = 800;
+
+const BOX_IMAGES: Record<BoxColor, string> = {
+  white:
+    "https://gaquniefolcmosxhctmg.supabase.co/storage/v1/object/public/magieKlayn/whiteBox.png",
+  black:
+    "https://gaquniefolcmosxhctmg.supabase.co/storage/v1/object/public/magieKlayn/blackBox.png",
+};
 
 /**
  * Product visual: real photo on a soft tint of its signature color.
@@ -78,6 +96,128 @@ const ProductThumb: React.FC<{
   </div>
 );
 
+/**
+ * Box packaging selector — shown under the products list.
+ * Lets the customer opt into a gift box (white or black), disabled
+ * automatically when the cart holds more than MAX_BOX_CAPACITY bottles.
+ * A selected box can be cleared via the small remove (×) icon on its card.
+ */
+const BoxPackagingSelector: React.FC<{
+  boxColor: BoxColor | null;
+  isEligible: boolean;
+  itemCount: number;
+  onSelect: (color: BoxColor | null) => void;
+  t: ReturnType<typeof useTranslations>;
+}> = ({ boxColor, isEligible, itemCount, onSelect, t }) => {
+  // Backdrop behind each box swatch — darker neutral behind the white box
+  // so its edges read clearly; a soft warm tint behind the black box.
+  const CARD_BG: Record<BoxColor, string> = {
+    white: "#eeeeee",
+    black: "#ffffff",
+  };
+
+  return (
+    <div className="mt-4 p-5 bg-[var(--color-white)] rounded-[var(--radius-card)] border border-[var(--color-border)] shadow-[var(--shadow-soft)]">
+      <div className="flex items-center gap-2 mb-1">
+        <PackageIcon className="w-4 h-4 text-[var(--color-text-secondary)]" />
+        <h3 className="font-bold text-[var(--color-text)] text-sm">
+          {t("cart.packaging.title") || "Coffret cadeau (optionnel)"}
+        </h3>
+      </div>
+      <p className="text-xs text-[var(--color-text-secondary)] mb-4">
+        {t("cart.packaging.capacityNote") ||
+          `Le coffret peut contenir jusqu'à ${MAX_BOX_CAPACITY} flacons maximum.`}
+      </p>
+
+      {!isEligible && (
+        <p className="text-xs text-amber-600 mb-3">
+          {t("cart.packaging.notEligible") ||
+            `Le coffret n'est disponible que pour ${MAX_BOX_CAPACITY} flacons ou moins (vous en avez ${itemCount}).`}
+        </p>
+      )}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {(["white", "black"] as const).map((color) => {
+          const isSelected = boxColor === color;
+          return (
+            <button
+              key={color}
+              type="button"
+              disabled={!isEligible}
+              onClick={() => onSelect(isSelected ? null : color)}
+              className={`group relative flex flex-col items-center justify-center gap-2 h-60 px-2 rounded-[var(--radius-main)] border-2 overflow-hidden transition-all duration-[var(--duration-base)] ease-[var(--ease-luxury)] cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${
+                isSelected
+                  ? "border-[var(--color-text)] shadow-[0_8px_24px_-6px_rgba(0,0,0,0.25)] scale-[1.02]"
+                  : "border-[var(--color-border)] hover:border-[var(--color-text-secondary)] hover:-translate-y-0.5 hover:shadow-[0_6px_18px_-8px_rgba(0,0,0,0.18)]"
+              }`}
+              style={{ background: CARD_BG[color] }}
+            >
+              {/* Remove icon — only visible on the selected card */}
+              <AnimatePresence>
+                {isSelected && (
+                  <motion.span
+                    initial={{ opacity: 0, scale: 0.6 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.6 }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSelect(null);
+                    }}
+                    className="absolute top-2 right-2 w-6 h-6 rounded-full bg-[var(--color-text)] text-[var(--color-white)] flex items-center justify-center cursor-pointer z-10"
+                    aria-label={
+                      t("cart.packaging.remove") || "Retirer le coffret"
+                    }
+                  >
+                    <XIcon className="w-3.5 h-3.5" />
+                  </motion.span>
+                )}
+              </AnimatePresence>
+
+              {/* Selected check badge, bottom-left */}
+              <AnimatePresence>
+                {isSelected && (
+                  <motion.span
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 4 }}
+                    className="absolute bottom-2 left-2 w-5 h-5 rounded-full bg-[var(--color-text)] text-[var(--color-white)] flex items-center justify-center z-10"
+                  >
+                    <CheckIcon className="w-3 h-3" />
+                  </motion.span>
+                )}
+              </AnimatePresence>
+
+              <div className="relative w-48 h-40 transition-transform duration-[var(--duration-base)] ease-[var(--ease-luxury)] group-hover:scale-105">
+                <Image
+                  src={BOX_IMAGES[color]}
+                  alt={
+                    color === "white"
+                      ? t("cart.packaging.white") || "Coffret blanc"
+                      : t("cart.packaging.black") || "Coffret noir"
+                  }
+                  fill
+                  className="object-contain scale-180 sm:scale-170 drop-shadow-[0_6px_10px_rgba(0,0,0,0.18)]"
+                />
+              </div>
+              <span className="text-xs font-medium text-[var(--color-text)] capitalize tracking-wide">
+                {color === "white"
+                  ? t("cart.packaging.white") || "Blanc"
+                  : t("cart.packaging.black") || "Noir"}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      {boxColor && (
+        <p className="text-xs text-[var(--color-text-secondary)] text-center mt-3">
+          {t("cart.packaging.selectedNote") ||
+            "Cliquez sur le × pour retirer le coffret."}
+        </p>
+      )}
+    </div>
+  );
+};
+
 export default function CartPage() {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -85,6 +225,9 @@ export default function CartPage() {
   const items = useSelector(selectCartItems);
   const total = useSelector(selectCartTotal);
   const giftNote = useSelector(selectGiftNote);
+  const boxColor = useSelector(selectBoxColor);
+  const isBoxEligible = useSelector(selectIsBoxEligible);
+  const itemCount = useSelector(selectTotalItemCount);
 
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [orderComplete, setOrderComplete] = React.useState(false);
@@ -116,7 +259,8 @@ export default function CartPage() {
 
   const deliveryFee = deliverySelection?.fee || 0;
   const subtotal = total;
-  const orderTotal = subtotal + deliveryFee;
+  const coffretFee = boxColor ? COFFRET_FEE : 0;
+  const orderTotal = subtotal + deliveryFee + coffretFee;
 
   const onSubmit = async (data: CheckoutFormData) => {
     setIsSubmitting(true);
@@ -129,7 +273,6 @@ export default function CartPage() {
           customer: {
             fullName: data.fullName,
             phone: data.phone,
-            address: data.address,
           },
           notes: {
             giftNote: giftNote || undefined,
@@ -141,6 +284,9 @@ export default function CartPage() {
           deliveryZoneId: data.deliveryZoneId,
           deliveryType: data.deliveryType,
           deliveryFee: data.deliveryFee,
+          packagingType: boxColor ? "luxury_coffret" : "standard",
+          coffretFee: boxColor ? COFFRET_FEE : undefined,
+          boxColor: boxColor ?? undefined,
         }),
       });
 
@@ -298,6 +444,15 @@ export default function CartPage() {
                   </div>
                 ))}
               </div>
+
+              {/* Box packaging selector — directly under the products list */}
+              <BoxPackagingSelector
+                boxColor={boxColor}
+                isEligible={isBoxEligible}
+                itemCount={itemCount}
+                onSelect={(color) => dispatch(setBoxColor(color))}
+                t={t}
+              />
             </motion.div>
 
             {/* Right: Checkout Form */}
@@ -330,13 +485,6 @@ export default function CartPage() {
                   {...register("phone")}
                 />
 
-                <Textarea
-                  label={t("checkout.address")}
-                  placeholder={t("checkout.address")}
-                  error={errors.address?.message}
-                  {...register("address")}
-                />
-
                 <WilayaCommuneSelect
                   onChange={handleDeliveryChange}
                   error={
@@ -355,6 +503,16 @@ export default function CartPage() {
                       {formatPrice(subtotal)}
                     </span>
                   </div>
+                  {boxColor && (
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-[var(--color-text-secondary)]">
+                        {t("cart.packaging.fee") || "Coffret"}
+                      </span>
+                      <span className="text-[var(--color-text)]">
+                        {formatPrice(coffretFee)}
+                      </span>
+                    </div>
+                  )}
                   <div className="flex justify-between items-center mb-4">
                     <span className="text-[var(--color-text-secondary)]">
                       {t("common.delivery")}

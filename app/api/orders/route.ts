@@ -68,11 +68,7 @@ export async function POST(request: NextRequest) {
     const body: CreateOrderPayload = await request.json();
 
     // Validate required fields
-    if (
-      !body.customer?.fullName ||
-      !body.customer?.phone ||
-      !body.customer?.address
-    ) {
+    if (!body.customer?.fullName || !body.customer?.phone) {
       return NextResponse.json(
         { success: false, error: "Missing customer information" },
         { status: 400 },
@@ -89,6 +85,27 @@ export async function POST(request: NextRequest) {
         { success: false, error: "Missing delivery information" },
         { status: 400 },
       );
+    }
+    if (body.packagingType === "luxury_coffret") {
+      const totalQty = body.items.reduce(
+        (s: number, i: any) => s + i.quantity,
+        0,
+      );
+      if (totalQty > 4) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Coffret packaging is only available for up to 4 bottles",
+          },
+          { status: 400 },
+        );
+      }
+      if (!body.boxColor) {
+        return NextResponse.json(
+          { success: false, error: "Please select a box color" },
+          { status: 400 },
+        );
+      }
     }
 
     // Resolve delivery zone and derive wilaya/commune fields

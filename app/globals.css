@@ -527,17 +527,23 @@
   color: var(--color-text);
 }
 
-.wordmark-mark {
-  width: 26px;
-  height: 13px;
-  color: var(--color-text);
-  margin-bottom: 2px;
+/* Nav logo */
+.wordmark svg {
+  width: 8rem;
+  height: auto;
+  display: block;
 }
-.wordmark-mark svg {
-  width: 100%;
-  height: 100%;
+@media (max-width: 640px) {
+  .wordmark svg {
+    width: 7rem;
+  }
 }
-
+/* Footer logo — usually wants to be a bit bigger or smaller than nav */
+.wordmark-footer svg {
+  width: 8rem;
+  height: auto;
+  display: block;
+}
 .wordmark-text {
   font-family: var(--font-body);
   font-size: 1.02rem;
@@ -2630,10 +2636,9 @@
   color: var(--color-text);
 }
 
-/* Constrain the logo — it was rendering at native SVG/image size before */
 .admin-login-brand :is(svg, img) {
-  width: 40px;
-  height: 40px;
+  width: 8rem;
+  height: auto;
   display: block;
 }
 
@@ -3602,6 +3607,28 @@
   font-weight: 500;
 }
 
+.admin-note-body-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.admin-box-color-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.admin-box-color-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
 /* Drawer (order detail) */
 .admin-drawer-overlay {
   position: fixed;

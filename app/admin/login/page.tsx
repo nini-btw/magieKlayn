@@ -44,7 +44,6 @@ function LoginForm() {
       <div className="admin-login-inner">
         <Link href="/" className="admin-login-brand">
           <Logo />
-          <span className="admin-login-brand-text">Magie Klayn</span>
           <span className="admin-login-brand-sub">Admin</span>
         </Link>
 

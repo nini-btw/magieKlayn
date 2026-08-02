@@ -30,6 +30,8 @@ export class OrderRepository implements IOrderRepository {
     const packagingType = payload.packagingType ?? "standard";
     const coffretFee =
       packagingType === "luxury_coffret" ? payload.coffretFee : undefined;
+    const boxColor =
+      packagingType === "luxury_coffret" ? payload.boxColor : undefined; // <-- new
 
     // Create order
     const [orderResult] = await db
@@ -37,12 +39,12 @@ export class OrderRepository implements IOrderRepository {
       .values({
         fullName: payload.customer.fullName,
         phone: payload.customer.phone,
-        address: payload.customer.address,
         giftNote: payload.notes.giftNote,
         status: "pending",
         totalAmount: totalAmount + payload.deliveryFee + (coffretFee ?? 0),
         packagingType,
         coffretFee,
+        boxColor,
         deliveryZoneId: payload.deliveryZoneId,
         deliveryType: payload.deliveryType,
         deliveryFee: payload.deliveryFee,
@@ -237,12 +239,12 @@ export class OrderRepository implements IOrderRepository {
       id: order.id,
       fullName: order.fullName,
       phone: order.phone,
-      address: order.address,
       giftNote: order.giftNote || undefined,
       status: order.status,
       totalAmount: order.totalAmount,
       packagingType: order.packagingType,
       coffretFee: order.coffretFee || undefined,
+      boxColor: order.boxColor || undefined, // <-- new
       deliveryZoneId: order.deliveryZoneId,
       deliveryType: order.deliveryType || undefined,
       deliveryFee: order.deliveryFee || undefined,

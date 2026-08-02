@@ -25,7 +25,11 @@ import {
 } from "lucide-react";
 import { Button } from "@/presentation/components/ui/Button";
 import { Select } from "@/presentation/components/ui/Select";
-import type { Order, WilayaOrderStats } from "@/domain/entities/order";
+import type {
+  Order,
+  WilayaOrderStats,
+  BoxColor,
+} from "@/domain/entities/order";
 import type { DeliveryZone } from "@/domain/entities/delivery";
 import { useTranslations, useLocale } from "next-intl";
 import { formatPrice } from "@/presentation/lib/utils";
@@ -71,6 +75,13 @@ const statusBadgeClass: Record<string, string> = {
   ready: "admin-badge admin-badge-ready",
   delivered: "admin-badge admin-badge-success",
   cancelled: "admin-badge admin-badge-error",
+};
+
+// Swatch color shown next to the box color name — actual brand hex,
+// not pure #fff/#000, so the white swatch stays visible on a white card.
+const BOX_COLOR_SWATCH: Record<BoxColor, string> = {
+  white: "#f2ede3",
+  black: "#1a1a1a",
 };
 
 // Product swatch — mirrors the "colorHex" rule from the design system:
@@ -282,6 +293,9 @@ function OrderDetailSidebar({
     setIsUpdating(false);
   };
 
+  const hasPackagingNote =
+    order.packagingType === "luxury_coffret" || Boolean(order.giftNote);
+
   return (
     <>
       <div className="admin-drawer-overlay" onClick={onClose} />
@@ -410,10 +424,6 @@ function OrderDetailSidebar({
                 <PhoneIcon className="admin-info-icon w-4 h-4" />
                 <p className="admin-info-value">{order.phone}</p>
               </div>
-              <div className="admin-info-row">
-                <MapPinIcon className="admin-info-icon w-4 h-4" />
-                <p className="admin-info-value">{order.address}</p>
-              </div>
             </div>
           </div>
 
@@ -445,7 +455,7 @@ function OrderDetailSidebar({
           </div>
 
           {/* Packaging + Notes */}
-          {(order.packagingType === "luxury_coffret" || order.giftNote) && (
+          {hasPackagingNote && (
             <div className="admin-drawer-section">
               <h3 className="admin-drawer-section-title">
                 {t("admin.orders.orderDetails.notes")}
@@ -455,14 +465,26 @@ function OrderDetailSidebar({
                   <div className="admin-note-card">
                     <p className="admin-note-label">
                       <GiftIcon className="w-3.5 h-3.5" />
-                      {t("admin.orders.orderDetails.luxuryCoffret") ||
-                        "Luxury coffret"}
+                      {t("admin.orders.orderDetails.luxuryCoffret")}
                     </p>
-                    {order.coffretFee !== undefined && (
-                      <p className="admin-note-body">
-                        {formatPrice(order.coffretFee)}
-                      </p>
-                    )}
+                    <div className="admin-note-body-row">
+                      {order.boxColor && (
+                        <span className="admin-box-color-chip">
+                          <span
+                            className="admin-box-color-dot"
+                            style={{
+                              backgroundColor: BOX_COLOR_SWATCH[order.boxColor],
+                            }}
+                          />
+                          {t(`cart.packaging.${order.boxColor}`)}
+                        </span>
+                      )}
+                      {order.coffretFee !== undefined && (
+                        <p className="admin-note-body">
+                          {formatPrice(order.coffretFee)}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 )}
                 {order.giftNote && (
@@ -482,9 +504,19 @@ function OrderDetailSidebar({
             <div className="admin-summary-row">
               <span>{t("admin.orders.orderDetails.subtotal")}</span>
               <span>
-                {formatPrice(order.totalAmount - (order.deliveryFee || 0))}
+                {formatPrice(
+                  order.totalAmount -
+                    (order.deliveryFee || 0) -
+                    (order.coffretFee || 0),
+                )}
               </span>
             </div>
+            {order.coffretFee !== undefined && (
+              <div className="admin-summary-row">
+                <span>{t("admin.orders.orderDetails.luxuryCoffret")}</span>
+                <span>{formatPrice(order.coffretFee)}</span>
+              </div>
+            )}
             {order.deliveryFee !== undefined && (
               <div className="admin-summary-row">
                 <span>{t("common.delivery")}</span>

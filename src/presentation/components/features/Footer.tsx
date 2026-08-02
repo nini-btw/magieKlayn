@@ -17,13 +17,9 @@ export const Footer: React.FC = () => {
             className="wordmark wordmark-footer"
             aria-label={t("brand.homeAria")}
           >
-            <span className="wordmark-mark" aria-hidden="true">
-              <Logo />
-            </span>
-            <span className="wordmark-text">Magie Klayn</span>
+            <Logo />
           </Link>
-          <p className="footer-tagline">{t("footer.tagline")}</p>
-          <div className="footer-social">
+          <div className="footer-social mt-4">
             <a href="#" className="icon-circle" aria-label="Instagram">
               <svg
                 viewBox="0 0 20 20"
