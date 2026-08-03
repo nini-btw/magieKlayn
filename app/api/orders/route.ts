@@ -9,6 +9,7 @@ import { orderRepository } from "@/infrastructure/db/order.adapter";
 import { deliveryRepository } from "@/infrastructure/db/delivery.adapter";
 import { getAdminSession } from "@/infrastructure/auth/supabase-auth";
 import type { CreateOrderPayload, OrderFilters } from "@/domain/entities/order";
+import { telegramNotificationService } from "@/infrastructure/telegram/telegram-notification.service";
 
 /**
  * GET /api/orders
@@ -123,6 +124,10 @@ export async function POST(request: NextRequest) {
       wilayaName: zone.wilayaNameAscii,
       communeName: zone.communeNameAscii,
     });
+
+    // Fire-and-forget: notifyNewOrder already catches all errors internally
+    // and never throws, so it can't fail the response — see its own docs.
+    await telegramNotificationService.notifyNewOrder(order);
 
     return NextResponse.json(
       { success: true, data: order, message: "Order created successfully" },

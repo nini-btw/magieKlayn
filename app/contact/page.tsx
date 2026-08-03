@@ -56,7 +56,6 @@ export default function ContactPage() {
     }
 
     // TODO: wire up to your real contact/support endpoint.
-    console.log("contact form submission:", result.data);
     setErrors({});
     setSubmitted(true);
     setForm({ name: "", email: "", message: "" });

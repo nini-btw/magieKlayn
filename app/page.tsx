@@ -36,7 +36,6 @@ export default function HomePage() {
   function handleNewsletterSubmit(e: React.FormEvent) {
     e.preventDefault();
     // TODO: wire up to your real newsletter endpoint.
-    console.log("newsletter signup:", email);
   }
 
   // Featured product for the hero: prefer an isNew fragrance, fall back to

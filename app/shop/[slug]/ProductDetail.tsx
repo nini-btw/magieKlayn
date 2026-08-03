@@ -49,7 +49,6 @@ export const ProductDetail: React.FC<{ product: Product }> = ({ product }) => {
     setQuantity(1);
   };
 
-  console.log("ProductDetail rendered with product:", product);
   return (
     <div
       data-testid="product-detail"

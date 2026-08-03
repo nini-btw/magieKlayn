@@ -35,16 +35,6 @@ export default function ShopPage({
         }
 
         setProducts(result.data);
-
-        // Debug: check that every product has a colorHex
-        console.log("Products loaded:", result.data);
-        console.table(
-          result.data.map((p: Product) => ({
-            name: p.name,
-            colorHex: p.colorHex,
-            hasColor: Boolean(p.colorHex),
-          })),
-        );
       } catch (err: any) {
         setError(err.message);
       } finally {
