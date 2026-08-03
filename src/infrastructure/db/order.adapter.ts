@@ -25,6 +25,8 @@ export class OrderRepository implements IOrderRepository {
         "wilaya fields must be resolved server-side before calling orderRepository.create()",
       );
     }
+    const fullName =
+      `${payload.customer.firstName} ${payload.customer.lastName}`.trim();
 
     const totalAmount = calculateCartTotal(payload.items);
     const packagingType = payload.packagingType ?? "standard";
@@ -37,7 +39,9 @@ export class OrderRepository implements IOrderRepository {
     const [orderResult] = await db
       .insert(orders)
       .values({
-        fullName: payload.customer.fullName,
+        fullName,
+        firstName: payload.customer.firstName,
+        lastName: payload.customer.lastName,
         phone: payload.customer.phone,
         giftNote: payload.notes.giftNote,
         status: "pending",
@@ -238,6 +242,8 @@ export class OrderRepository implements IOrderRepository {
     return {
       id: order.id,
       fullName: order.fullName,
+      firstName: order.firstName || undefined,
+      lastName: order.lastName || undefined,
       phone: order.phone,
       giftNote: order.giftNote || undefined,
       status: order.status,

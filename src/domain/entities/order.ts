@@ -28,6 +28,8 @@ export type PackagingType = "standard" | "luxury_coffret";
 export interface Order {
   id: string;
   fullName: string;
+  firstName?: string; // undefined on pre-migration orders
+  lastName?: string;
   phone: string;
   giftNote?: string;
   items: OrderItem[];
@@ -80,7 +82,8 @@ export interface CartItem {
  * Customer information for checkout
  */
 export interface CustomerInfo {
-  fullName: string;
+  firstName: string;
+  lastName: string;
   phone: string;
 }
 
@@ -129,4 +132,15 @@ export interface WilayaOrderStats {
   wilayaName: string;
   orderCount: number;
   totalRevenue: number;
+}
+
+// domain/entities/order.ts (or a shared lib file)
+export function splitOrGetFullName(
+  order: Pick<Order, "fullName" | "firstName" | "lastName">,
+) {
+  return {
+    firstName: order.firstName ?? null, // null = old order, no structured name
+    lastName: order.lastName ?? null,
+    display: order.fullName, // always safe to render
+  };
 }

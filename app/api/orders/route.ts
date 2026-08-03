@@ -69,7 +69,11 @@ export async function POST(request: NextRequest) {
     const body: CreateOrderPayload = await request.json();
 
     // Validate required fields
-    if (!body.customer?.fullName || !body.customer?.phone) {
+    if (
+      !body.customer?.firstName ||
+      !body.customer?.lastName ||
+      !body.customer?.phone
+    ) {
       return NextResponse.json(
         { success: false, error: "Missing customer information" },
         { status: 400 },

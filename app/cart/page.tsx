@@ -45,7 +45,8 @@ import type { DeliverySelection } from "@/domain/entities/delivery";
 import { MAX_BOX_CAPACITY } from "@/domain/rules/cart.rules";
 
 const checkoutSchema = z.object({
-  fullName: z.string().min(2, "Name is required"),
+  firstName: z.string().min(2, "First name is required"),
+  lastName: z.string().min(2, "Last name is required"),
   phone: z
     .string()
     .transform((val) => val.replace(/[\s-]/g, ""))
@@ -271,7 +272,8 @@ export default function CartPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           customer: {
-            fullName: data.fullName,
+            firstName: data.firstName,
+            lastName: data.lastName,
             phone: data.phone,
           },
           notes: {
@@ -471,12 +473,20 @@ export default function CartPage() {
                 className="space-y-4"
                 data-testid="checkout-form"
               >
-                <Input
-                  label={t("checkout.fullName")}
-                  placeholder={t("checkout.fullName")}
-                  error={errors.fullName?.message}
-                  {...register("fullName")}
-                />
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <Input
+                    label={t("checkout.firstName")}
+                    placeholder={t("checkout.firstName")}
+                    error={errors.firstName?.message}
+                    {...register("firstName")}
+                  />
+                  <Input
+                    label={t("checkout.lastName")}
+                    placeholder={t("checkout.lastName")}
+                    error={errors.lastName?.message}
+                    {...register("lastName")}
+                  />
+                </div>
 
                 <Input
                   label={t("checkout.phone")}

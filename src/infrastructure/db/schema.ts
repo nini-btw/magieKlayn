@@ -88,6 +88,9 @@ export const products = pgTable("products", {
 export const orders = pgTable("orders", {
   id: uuid("id").primaryKey().defaultRandom(),
   fullName: varchar("full_name", { length: 255 }).notNull(),
+  firstName: varchar("first_name", { length: 150 }), // new, nullable
+  lastName: varchar("last_name", { length: 150 }), // new, nullable — null on all pre-migration orders
+
   phone: varchar("phone", { length: 50 }).notNull(),
   giftNote: text("gift_note"),
   status: orderStatusEnum("status").default("pending").notNull(),
