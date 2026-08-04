@@ -17,48 +17,11 @@
 
 import { config as loadEnv } from "dotenv";
 import path from "node:path";
-// NOTE: `db`, `deliveryZones`, `yalidineClient`, `getOriginWilayaId` are
-// imported dynamically INSIDE main(), after loadEnv() runs. A normal
-// top-of-file `import` statement is hoisted by JS regardless of where it's
-// written in the file, so if db/client.ts or yalidine/client.ts read
-// process.env.* at module-load time, a static import here would run
-// BEFORE .env.local is loaded, silently producing an unconfigured client.
-// This was almost certainly the actual cause of the earlier "no output"
-// run — the script likely crashed (or the DB client hung on an undefined
-// connection string) before reaching the first console.log.
 import { inArray } from "drizzle-orm";
-import type { YalidineCommuneFee } from "../src/infrastructure/yalidine/types";
-
-// Quota is ~4-5 req/sec — stay safely under that between calls.
-const THROTTLE_MS = 300;
-
-function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-/**
- * Strips diacritics for the *Ascii columns, e.g. "Béjaïa" -> "Bejaia".
- * Review output against existing seeded data — automated deaccenting can
- * occasionally diverge from how names were originally entered.
- */
-function toAscii(input: string): string {
-  return input
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/'/g, "'"); // keep apostrophes as-is
-}
-
-interface CandidateRow {
-  wilayaCode: string;
-  wilayaNameAscii: string;
-  wilayaName: string;
-  communeNameAscii: string;
-  communeName: string;
-  stopDeskFee: number | null;
-  homeFee: number | null;
-  hasStopDesk: boolean;
-  hasHomeDelivery: boolean;
-}
+// NOTE: db/schema imports are deferred inside main(), after loadEnv() runs.
+// A static top-of-file import is hoisted by JS regardless of position, so
+// if db/client.ts reads process.env.* at module-load time, importing it
+// here would run BEFORE .env.local loads, silently breaking the client.
 
 function parseWilayaFilter(): number[] | null {
   const arg = process.argv.find((a) => a.startsWith("--wilayas="));
@@ -95,10 +58,8 @@ async function main() {
   // Dynamic imports — deferred until AFTER env vars are loaded above.
   const { db } = await import("../src/infrastructure/db/client");
   const { deliveryZones } = await import("../src/infrastructure/db/schema");
-  const { yalidineClient } =
-    await import("../src/infrastructure/yalidine/client");
-  const { getOriginWilayaId } =
-    await import("../src/infrastructure/yalidine/config");
+  const { fetchCandidateRows } =
+    await import("../src/infrastructure/yalidine/zone-sync-helpers");
 
   console.log("=== Yalidine Zone Sync — DRY RUN (no writes) ===\n");
 
@@ -107,77 +68,20 @@ async function main() {
     console.log(`Limiting run to wilayas: ${wilayaFilter.join(", ")}\n`);
   }
 
-  // 1. Fetch all wilayas, filter to deliverable ones only
-  const wilayasRes = await yalidineClient.getWilayas();
-  let wilayas = wilayasRes.data.filter((w) => w.is_deliverable === 1);
+  console.log("Fetching live data from Yalidine (throttled)...\n");
+  const { candidateRows, errors, skippedWilayas } =
+    await fetchCandidateRows(wilayaFilter);
 
-  if (wilayaFilter) {
-    wilayas = wilayas.filter((w) => wilayaFilter.includes(w.id));
-  }
-
-  const skipped = wilayasRes.data.filter((w) => w.is_deliverable === 0);
-  if (skipped.length > 0) {
+  if (skippedWilayas.length > 0) {
     console.log(
-      `Skipping ${skipped.length} non-deliverable wilaya(s): ${skipped
-        .map((w) => `${w.id} (${w.name})`)
-        .join(", ")}\n`,
+      `Skipped ${skippedWilayas.length} non-deliverable wilaya(s): ` +
+        skippedWilayas.map((w) => `${w.id} (${w.name})`).join(", ") +
+        "\n",
     );
   }
 
-  console.log(`Fetching fees for ${wilayas.length} wilaya(s)...\n`);
-
-  const candidateRows: CandidateRow[] = [];
-  const errors: { wilayaId: number; wilayaName: string; error: string }[] = [];
-
-  // 2. Fetch fees per wilaya, throttled
-  for (const wilaya of wilayas) {
-    const originId = getOriginWilayaId(wilaya.id);
-
-    try {
-      const feeRes = await yalidineClient.getFees(originId, wilaya.id);
-
-      const communeFees = Object.values(
-        feeRes.per_commune,
-      ) as YalidineCommuneFee[];
-
-      for (const fee of communeFees) {
-        candidateRows.push({
-          wilayaCode: String(wilaya.id).padStart(2, "0"),
-          wilayaNameAscii: toAscii(feeRes.to_wilaya_name),
-          wilayaName: feeRes.to_wilaya_name,
-          communeNameAscii: toAscii(fee.commune_name),
-          communeName: fee.commune_name,
-          stopDeskFee: fee.express_desk,
-          homeFee: fee.express_home,
-          hasStopDesk: fee.express_desk !== null,
-          hasHomeDelivery: fee.express_home !== null,
-        });
-
-        // Flag if economic tier ever shows up — plan currently assumes express-only
-        if (fee.economic_home !== null || fee.economic_desk !== null) {
-          console.warn(
-            `⚠ Economic tier detected for ${fee.commune_name} (wilaya ${wilaya.id}) — ` +
-              `plan currently assumes express-only. Re-evaluate schema decision.`,
-          );
-        }
-      }
-    } catch (err) {
-      errors.push({
-        wilayaId: wilaya.id,
-        wilayaName: wilaya.name,
-        error: err instanceof Error ? err.message : String(err),
-      });
-      console.error(
-        `✗ Failed to fetch fees for wilaya ${wilaya.id} (${wilaya.name}):`,
-        err,
-      );
-    }
-
-    await sleep(THROTTLE_MS);
-  }
-
   console.log(
-    `\nFetched ${candidateRows.length} commune fee rows from Yalidine.`,
+    `Fetched ${candidateRows.length} commune fee rows from Yalidine.`,
   );
   if (errors.length > 0) {
     console.log(
