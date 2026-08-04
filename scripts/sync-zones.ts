@@ -17,6 +17,7 @@
 
 import { config as loadEnv } from "dotenv";
 import path from "node:path";
+import fs from "node:fs";
 import { inArray } from "drizzle-orm";
 // NOTE: db/schema imports are deferred inside main(), after loadEnv() runs.
 // A static top-of-file import is hoisted by JS regardless of position, so
@@ -158,11 +159,29 @@ async function main() {
     const staleRows = [...existingByKey.entries()].filter(
       ([key]) => !candidateKeys.has(key),
     );
+
     if (staleRows.length > 0) {
       console.log(
         `\n[IN DB, NOT IN YALIDINE RESPONSE] ${staleRows.length} row(s) — ` +
           `review manually, do NOT auto-delete:`,
       );
+
+      // Dump the FULL list to disk for offline review (§3 of the state doc)
+      fs.writeFileSync(
+        "orphan-communes.json",
+        JSON.stringify(
+          staleRows.map(([, row]) => ({
+            wilayaCode: row.wilayaCode,
+            wilayaName: row.wilayaName,
+            communeNameAscii: row.communeNameAscii,
+            communeName: row.communeName,
+          })),
+          null,
+          2,
+        ),
+      );
+      console.log(`  (full list written to orphan-communes.json)`);
+
       for (const [, row] of staleRows.slice(0, 20)) {
         console.log(`  - ${row.wilayaName} / ${row.communeName}`);
       }

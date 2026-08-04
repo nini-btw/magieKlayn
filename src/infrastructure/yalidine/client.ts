@@ -13,7 +13,24 @@ const TIMEOUT_MS = 8000;
 const MAX_RETRIES = 3;
 
 class YalidineClient {
+  private lastQuota: { minute: number | null } = { minute: null };
+
   private async request<T>(path: string): Promise<T> {
+    // Preemptive guard — if the last response told us minute quota is low,
+    // wait out the window BEFORE sending the next request, rather than
+    // finding out via a 429 after the fact.
+    const MINUTE_SAFETY_BUFFER = 5;
+    if (
+      this.lastQuota.minute !== null &&
+      this.lastQuota.minute <= MINUTE_SAFETY_BUFFER
+    ) {
+      console.log(
+        `[yalidine] minute quota low (${this.lastQuota.minute}) — pausing 60s for window reset`,
+      );
+      await new Promise((r) => setTimeout(r, 60_000));
+      this.lastQuota.minute = null; // reset assumption after waiting
+    }
+
     let attempt = 0;
 
     while (true) {
@@ -72,6 +89,9 @@ class YalidineClient {
     };
     if (quota.second !== null) {
       console.log("[yalidine] quota", quota);
+    }
+    if (quota.minute !== null) {
+      this.lastQuota.minute = Number(quota.minute);
     }
   }
 
