@@ -9,8 +9,12 @@ import type {
   DeliveryType,
   DeliverySelection,
 } from "@/domain/entities/delivery";
-import { getDeliveryFee } from "@/domain/entities/delivery";
-import { StoreIcon, HomeIcon } from "lucide-react";
+import {
+  getDeliveryFee,
+  isStorePickupAvailable,
+  STORE_PICKUP_ADDRESSES,
+} from "@/domain/entities/delivery";
+import { StoreIcon, HomeIcon, MapPinIcon } from "lucide-react";
 
 interface WilayaCommuneSelectProps {
   onChange: (selection: DeliverySelection | null) => void;
@@ -149,6 +153,10 @@ export function WilayaCommuneSelect({
     );
   }
 
+  const storePickupAvailable = selectedZone
+    ? isStorePickupAvailable(selectedZone.wilayaCode)
+    : false;
+
   return (
     <div className="space-y-4">
       {/* Wilaya Select */}
@@ -196,7 +204,7 @@ export function WilayaCommuneSelect({
           <label className="block text-sm font-medium text-[var(--color-text)]">
             {t("checkout.deliveryType") || "Delivery Type"}
           </label>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {/* Stop Desk Option */}
             {selectedZone.hasStopDesk && (
               <button
@@ -302,7 +310,68 @@ export function WilayaCommuneSelect({
                 )}
               </button>
             )}
+
+            {/* Store Pickup Option — wilaya 16/31 only, free, bypasses Yalidine */}
+            {storePickupAvailable && (
+              <button
+                type="button"
+                onClick={() => handleTypeSelect("store_pickup")}
+                className={cn(
+                  "relative flex flex-col items-center p-4 rounded-[var(--radius-card)] border-2 transition-all duration-[var(--duration-base)] ease-[var(--ease-luxury)] cursor-pointer",
+                  selectedType === "store_pickup"
+                    ? "border-[var(--color-text)] bg-[var(--color-bg-soft)]"
+                    : "border-[var(--color-border)] bg-[var(--color-white)] hover:border-[var(--color-text)]/50",
+                )}
+              >
+                <MapPinIcon
+                  className={cn(
+                    "w-8 h-8 mb-2",
+                    selectedType === "store_pickup"
+                      ? "text-[var(--color-text)]"
+                      : "text-[var(--color-text-secondary)]",
+                  )}
+                />
+                <span
+                  className={cn(
+                    "font-medium text-sm",
+                    selectedType === "store_pickup"
+                      ? "text-[var(--color-text)]"
+                      : "text-[var(--color-text-secondary)]",
+                  )}
+                >
+                  {t("checkout.storePickup") || "Store Pickup"}
+                </span>
+                <span className="text-xs text-[var(--color-text-secondary)] mt-1">
+                  {t("common.free") || "Free"}
+                </span>
+                {selectedType === "store_pickup" && (
+                  <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[var(--color-text)] flex items-center justify-center">
+                    <svg
+                      className="w-3 h-3 text-[var(--color-white)]"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={3}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  </div>
+                )}
+              </button>
+            )}
           </div>
+
+          {/* Store address, shown once store_pickup is selected */}
+          {selectedType === "store_pickup" && (
+            <p className="text-xs text-[var(--color-text-secondary)] mt-1">
+              {t("checkout.storePickupAddress") || "Pickup address"}:{" "}
+              {STORE_PICKUP_ADDRESSES[selectedZone.wilayaCode]}
+            </p>
+          )}
         </div>
       )}
     </div>

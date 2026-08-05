@@ -191,6 +191,8 @@
     }
   },
   "checkout": {
+    "storePickup": "الاستلام من المتجر",
+    "storePickupAddress": "عنوان الاستلام",
     "title": "إتمام الطلب",
     "subtitle": "أكملي طلبك",
     "contactInfo": "معلومات الاتصال",

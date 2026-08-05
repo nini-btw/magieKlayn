@@ -59,7 +59,7 @@ const checkoutSchema = z.object({
         ),
     ),
   deliveryZoneId: z.string().uuid("Delivery zone is required"),
-  deliveryType: z.enum(["stop_desk", "home"]),
+  deliveryType: z.enum(["stop_desk", "home", "store_pickup"]),
   deliveryFee: z.number().min(0, "Delivery fee is required"),
 });
 type CheckoutFormData = z.infer<typeof checkoutSchema>;

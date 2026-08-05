@@ -187,6 +187,8 @@
     "clearCart": "Vider le Panier"
   },
   "checkout": {
+    "storePickup": "Retrait en magasin",
+    "storePickupAddress": "Adresse de retrait",
     "title": "Commande",
     "subtitle": "Finalisez votre commande",
     "contactInfo": "Informations de Contact",

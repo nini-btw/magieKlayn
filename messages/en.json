@@ -187,6 +187,8 @@
     }
   },
   "checkout": {
+    "storePickup": "Store Pickup",
+    "storePickupAddress": "Pickup address",
     "title": "Checkout",
     "subtitle": "Complete your order",
     "contactInfo": "Contact Information",
