@@ -296,7 +296,8 @@
       "noData": "Aucune donnée disponible",
       "deliveryTypes": {
         "stop_desk": "Stop Desk",
-        "home": "Livraison à Domicile"
+        "home": "Livraison à Domicile",
+        "store_pickup": "Retrait en magasin"
       },
       "statusLabels": {
         "pending": "En Attente",

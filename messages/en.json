@@ -296,7 +296,8 @@
       "noData": "No data available",
       "deliveryTypes": {
         "stop_desk": "Stop Desk",
-        "home": "Home Delivery"
+        "home": "Home Delivery",
+        "store_pickup": "Store Pickup"
       },
       "statusLabels": {
         "pending": "Pending",

@@ -46,7 +46,11 @@ export const productGenderEnum = pgEnum("product_gender", [
 /**
  * Delivery type enum
  */
-export const deliveryTypeEnum = pgEnum("delivery_type", ["stop_desk", "home"]);
+export const deliveryTypeEnum = pgEnum("delivery_type", [
+  "stop_desk",
+  "home",
+  "store_pickup",
+]);
 
 export const boxColorEnum = pgEnum("box_color", ["white", "black"]);
 /**
@@ -112,6 +116,7 @@ export const orders = pgTable("orders", {
   wilayaCode: varchar("wilaya_code", { length: 2 }),
   wilayaName: varchar("wilaya_name", { length: 255 }),
   communeName: varchar("commune_name", { length: 255 }),
+  yalidineTracking: varchar("yalidine_tracking", { length: 50 }),
 
   orderDate: timestamp("order_date").defaultNow(),
   deletedAt: timestamp("deleted_at"), // soft delete

@@ -273,6 +273,12 @@ export class OrderRepository implements IOrderRepository {
       })),
     };
   }
+  async setYalidineTracking(id: string, tracking: string): Promise<void> {
+    await db
+      .update(orders)
+      .set({ yalidineTracking: tracking, updatedAt: new Date() })
+      .where(eq(orders.id, id));
+  }
 }
 
 /**

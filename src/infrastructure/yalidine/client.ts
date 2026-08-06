@@ -3,6 +3,9 @@ import type {
   YalidineWilaya,
   YalidineCommune,
   YalidineFeeResponse,
+  YalidineCenter,
+  YalidineCreateParcelPayload,
+  YalidineCreateParcelResponse,
 } from "./types";
 
 const BASE_URL = process.env.YALIDINE_API_BASE_URL!;
@@ -15,7 +18,11 @@ const MAX_RETRIES = 3;
 class YalidineClient {
   private lastQuota: { minute: number | null } = { minute: null };
 
-  private async request<T>(path: string): Promise<T> {
+  private async request<T>(
+    path: string,
+    method: "GET" | "POST" = "GET",
+    body?: unknown,
+  ): Promise<T> {
     // Preemptive guard — if the last response told us minute quota is low,
     // wait out the window BEFORE sending the next request, rather than
     // finding out via a 429 after the fact.
@@ -40,10 +47,13 @@ class YalidineClient {
 
       try {
         const res = await fetch(`${BASE_URL}${path}`, {
+          method,
           headers: {
             "X-API-ID": API_ID,
             "X-API-TOKEN": API_TOKEN,
+            ...(body ? { "Content-Type": "application/json" } : {}),
           },
+          body: body ? JSON.stringify(body) : undefined,
           signal: controller.signal,
         });
         clearTimeout(timeout);
@@ -108,6 +118,29 @@ class YalidineClient {
   async getFees(fromWilayaId: number, toWilayaId: number) {
     return this.request<YalidineFeeResponse>(
       `/fees/?from_wilaya_id=${fromWilayaId}&to_wilaya_id=${toWilayaId}`,
+    );
+  }
+
+  /**
+   * Retrieves stop-desk centers for a wilaya. Used to resolve a default
+   * stopdesk_id server-side, since the customer never picks one
+   * (see integration state doc v5 §2.1).
+   */
+  async getCenters(wilayaId: number) {
+    return this.request<YalidineListResponse<YalidineCenter>>(
+      `/centers/?wilaya_id=${wilayaId}`,
+    );
+  }
+
+  /**
+   * Creates one or more parcels. Response is a map keyed by the order_id
+   * you supplied in each payload, not an array — see YalidineCreateParcelResponse.
+   */
+  async createParcels(parcels: YalidineCreateParcelPayload[]) {
+    return this.request<YalidineCreateParcelResponse>(
+      "/parcels/",
+      "POST",
+      parcels,
     );
   }
 }

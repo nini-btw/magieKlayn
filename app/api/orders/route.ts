@@ -10,6 +10,7 @@ import { deliveryRepository } from "@/infrastructure/db/delivery.adapter";
 import { getAdminSession } from "@/infrastructure/auth/supabase-auth";
 import type { CreateOrderPayload, OrderFilters } from "@/domain/entities/order";
 import { telegramNotificationService } from "@/infrastructure/telegram/telegram-notification.service";
+import { createParcelForOrder } from "@/../scripts/create-parcel"; // adjust path to your actual import alias
 
 /**
  * GET /api/orders
@@ -122,8 +123,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Store pickup is always free — never trust a client-supplied fee for it.
+    // This also guards against a tampered request pairing "store_pickup"
+    // with a non-zero deliveryFee.
+    const deliveryFee =
+      body.deliveryType === "store_pickup" ? 0 : body.deliveryFee;
+
     const order = await orderRepository.create({
       ...body,
+      deliveryFee,
       wilayaCode: zone.wilayaCode,
       wilayaName: zone.wilayaNameAscii,
       communeName: zone.communeNameAscii,
@@ -132,6 +140,7 @@ export async function POST(request: NextRequest) {
     // Fire-and-forget: notifyNewOrder already catches all errors internally
     // and never throws, so it can't fail the response — see its own docs.
     await telegramNotificationService.notifyNewOrder(order);
+    await createParcelForOrder(order);
 
     return NextResponse.json(
       { success: true, data: order, message: "Order created successfully" },

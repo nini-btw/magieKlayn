@@ -301,7 +301,8 @@
       "noData": "لا توجد بيانات متاحة",
       "deliveryTypes": {
         "stop_desk": "المكتب",
-        "home": "التوصيل المنزلي"
+        "home": "التوصيل المنزلي",
+        "store_pickup": "الاستلام من المتجر"
       },
       "statusLabels": {
         "pending": "قيد الانتظار",

@@ -52,3 +52,10 @@ export function getOriginWilayaId(
   }
   return DEFAULT_ORIGIN_WILAYA_ID;
 }
+
+export const DEFAULT_PARCEL_DIMENSIONS = {
+  length: 20, // cm
+  width: 15,
+  height: 15,
+  weight: 2, // kg — actual weight; volumetric = 20*15*15*0.0002 = 0.9kg, so billable = 2kg either way
+};

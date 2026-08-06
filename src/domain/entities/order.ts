@@ -41,11 +41,12 @@ export interface Order {
 
   // Delivery details
   deliveryZoneId: string;
-  deliveryType?: "stop_desk" | "home";
+  deliveryType?: "stop_desk" | "home" | "store_pickup";
   deliveryFee?: number;
   wilayaCode?: string;
   wilayaName?: string;
   communeName?: string;
+  yalidineTracking?: string;
   orderDate?: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -106,7 +107,7 @@ export interface CreateOrderPayload {
   boxColor?: BoxColor; // <-- new
 
   deliveryZoneId: string;
-  deliveryType: "stop_desk" | "home";
+  deliveryType: "stop_desk" | "home" | "store_pickup";
   deliveryFee: number;
   wilayaCode?: string;
   wilayaName?: string;

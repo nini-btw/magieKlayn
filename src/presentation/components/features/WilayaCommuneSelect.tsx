@@ -204,14 +204,14 @@ export function WilayaCommuneSelect({
           <label className="block text-sm font-medium text-[var(--color-text)]">
             {t("checkout.deliveryType") || "Delivery Type"}
           </label>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <div className="flex gap-3">
             {/* Stop Desk Option */}
             {selectedZone.hasStopDesk && (
               <button
                 type="button"
                 onClick={() => handleTypeSelect("stop_desk")}
                 className={cn(
-                  "relative flex flex-col items-center p-4 rounded-[var(--radius-card)] border-2 transition-all duration-[var(--duration-base)] ease-[var(--ease-luxury)] cursor-pointer",
+                  "relative flex-1 flex flex-col items-center p-4 rounded-[var(--radius-card)] border-2 transition-all duration-[var(--duration-base)] ease-[var(--ease-luxury)] cursor-pointer",
                   selectedType === "stop_desk"
                     ? "border-[var(--color-text)] bg-[var(--color-bg-soft)]"
                     : "border-[var(--color-border)] bg-[var(--color-white)] hover:border-[var(--color-text)]/50",
@@ -264,7 +264,7 @@ export function WilayaCommuneSelect({
                 type="button"
                 onClick={() => handleTypeSelect("home")}
                 className={cn(
-                  "relative flex flex-col items-center p-4 rounded-[var(--radius-card)] border-2 transition-all duration-[var(--duration-base)] ease-[var(--ease-luxury)] cursor-pointer",
+                  "relative flex-1 flex flex-col items-center p-4 rounded-[var(--radius-card)] border-2 transition-all duration-[var(--duration-base)] ease-[var(--ease-luxury)] cursor-pointer",
                   selectedType === "home"
                     ? "border-[var(--color-text)] bg-[var(--color-bg-soft)]"
                     : "border-[var(--color-border)] bg-[var(--color-white)] hover:border-[var(--color-text)]/50",
@@ -317,7 +317,7 @@ export function WilayaCommuneSelect({
                 type="button"
                 onClick={() => handleTypeSelect("store_pickup")}
                 className={cn(
-                  "relative flex flex-col items-center p-4 rounded-[var(--radius-card)] border-2 transition-all duration-[var(--duration-base)] ease-[var(--ease-luxury)] cursor-pointer",
+                  "relative flex-1 flex flex-col items-center p-4 rounded-[var(--radius-card)] border-2 transition-all duration-[var(--duration-base)] ease-[var(--ease-luxury)] cursor-pointer",
                   selectedType === "store_pickup"
                     ? "border-[var(--color-text)] bg-[var(--color-bg-soft)]"
                     : "border-[var(--color-border)] bg-[var(--color-white)] hover:border-[var(--color-text)]/50",
