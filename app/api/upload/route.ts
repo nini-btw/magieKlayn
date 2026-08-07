@@ -10,6 +10,39 @@ import { storageService } from "@/infrastructure/storage/supabase-storage";
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 const MAX_SIZE = 5 * 1024 * 1024;
 
+/**
+ * @swagger
+ * /api/upload:
+ *   post:
+ *     tags: [Upload]
+ *     summary: Upload a product image to Supabase Storage (admin only)
+ *     security: [{ adminSession: [] }]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required: [file]
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *                 description: image/jpeg, image/png, image/webp, or image/gif, max 5MB
+ *     responses:
+ *       200:
+ *         description: Uploaded
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean, example: true }
+ *                 url: { type: string, format: uri }
+ *                 message: { type: string }
+ *       400: { description: No file provided, invalid file type, or file too large }
+ *       401: { description: Unauthorized }
+ */
 export async function POST(request: NextRequest) {
   try {
     const admin = await getAdminSession();

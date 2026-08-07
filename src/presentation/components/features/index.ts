@@ -3,9 +3,6 @@
 export { ProductForm } from "./ProductForm";
 export type { ProductFormData } from "./ProductForm";
 
-export { BoxBuilder } from "./BoxBuilder";
-export type { BoxItem } from "./BoxBuilder";
-
 export { CartDrawer } from "./CartDrawer";
 export { Footer } from "./Footer";
 export { Header } from "./Header";

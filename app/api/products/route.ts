@@ -9,8 +9,37 @@ import { productRepository } from "@/infrastructure/db/product.adapter";
 import { getAdminSession } from "@/infrastructure/auth/supabase-auth";
 
 /**
- * GET /api/products
- * Get all active products with pagination (public endpoint)
+ * @swagger
+ * /api/products:
+ *   get:
+ *     tags: [Products]
+ *     summary: List active products (paginated, public)
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, default: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 20, maximum: 100 }
+ *     responses:
+ *       200:
+ *         description: Paginated list of active products
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean, example: true }
+ *                 data:
+ *                   type: array
+ *                   items: { $ref: '#/components/schemas/Product' }
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     page: { type: integer }
+ *                     limit: { type: integer }
+ *                     totalCount: { type: integer }
+ *                     totalPages: { type: integer }
  */
 export async function GET(request: NextRequest) {
   try {
@@ -53,8 +82,46 @@ export async function GET(request: NextRequest) {
 }
 
 /**
- * POST /api/products
- * Create a new product (admin only)
+ * @swagger
+ * /api/products:
+ *   post:
+ *     tags: [Products]
+ *     summary: Create a product (admin only)
+ *     security: [{ adminSession: [] }]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name, slug, description, price, colorHex, sizeMl, images]
+ *             properties:
+ *               name: { type: string }
+ *               slug: { type: string }
+ *               description: { type: string }
+ *               price: { type: integer }
+ *               colorHex: { type: string, example: "#D0223A" }
+ *               sizeMl: { type: integer }
+ *               images: { type: array, items: { type: string } }
+ *               notes: { type: array, items: { type: string } }
+ *               gender: { type: string, enum: [male, female, unisex] }
+ *               isActive: { type: boolean }
+ *               isNew: { type: boolean }
+ *               isSoldOut: { type: boolean }
+ *     responses:
+ *       201:
+ *         description: Product created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean, example: true }
+ *                 data: { $ref: '#/components/schemas/Product' }
+ *                 message: { type: string }
+ *       400: { description: Missing required field }
+ *       401: { description: Unauthorized }
+ *       409: { description: A product with this slug already exists }
  */
 export async function POST(request: NextRequest) {
   try {

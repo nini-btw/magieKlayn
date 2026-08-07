@@ -83,8 +83,8 @@ All versions below are transcribed directly from `package.json` (exact `dependen
 - **Context**: the developer wanted business logic (cart rules, order/product entities, delivery-fee calculation) decoupled from Next.js and from the specific DB/auth/storage vendor, so the domain rules could be tested or ported independently.
 - **Alternatives considered** (inferred from structure): a conventional flat Next.js layout (`app/` with colocated `lib/`, `components/`, `db/` folders and no formal layer boundaries) — the more common, lower-ceremony Next.js pattern.
 - **Reason for choice**: the layering pays off concretely in a few places — `src/domain/rules/cart.rules.ts` and `src/domain/entities/*.ts` have zero framework imports and are reused by both API routes and (intended to be) server actions; `src/domain/ports/repositories.ts` defines interfaces (`IProductRepository`, `IOrderRepository`, etc.) that `src/infrastructure/db/*.adapter.ts` implement, so swapping Drizzle/Postgres for another store would only touch the infrastructure layer in theory.
-- **Trade-offs accepted**: the layering is only partially followed through. An entire **`src/application/use-cases/` layer exists but is unused** — API routes (`app/api/orders/route.ts`, `app/api/products/route.ts`, etc.) import repositories (`orderRepository`, `productRepository`) directly rather than going through `CreateOrderUseCase`/`GetAllProductsUseCase`. This means the use-case layer is dead weight that adds a false sense of architecture without enforcing it. There's also leftover `create-next-app` scaffold at `src/application/{layout.tsx,page.tsx,favicon.ico}` that is not part of the live route tree at all (Next.js only reads `app/` at the project root) — pure clutter.
-- **Trigger for revisiting**: if the team grows beyond one developer, either fully commit to routing all API routes through use-cases (so the layer earns its keep and is testable in isolation) or delete `src/application/use-cases/` and `src/application/{layout,page}.tsx` entirely to stop the architecture diagram lying about what's actually enforced.
+- **Trade-offs accepted**: the layering was only partially followed through. API routes (`app/api/orders/route.ts`, `app/api/products/route.ts`, etc.) import repositories (`orderRepository`, `productRepository`) directly rather than going through use-case classes. ~~An entire `src/application/use-cases/` layer existed but was unused~~ — **resolved**: that unused use-case layer and the stray `create-next-app` scaffold at `src/application/{layout.tsx,page.tsx,favicon.ico}` were deleted as dead code (see [§20](#20-known-issues--technical-debt)) rather than left as clutter.
+- **Trigger for revisiting**: if the team grows beyond one developer and repository calls scattered across route handlers become hard to test/reuse, reintroduce a use-case layer deliberately (and route every mutation through it), rather than letting one accumulate half-used again.
 
 ### Decision: Server Actions + Route Handlers coexisting for the same operations (no single API style)
 - **Context**: needed both server-rendered pages with direct data access (product listing/detail) and a client-fetchable JSON API (admin dashboard tables, checkout POST, delivery lookups).
@@ -110,9 +110,9 @@ All versions below are transcribed directly from `package.json` (exact `dependen
 ### Decision: `next-intl` locale resolved via manual cookie read, not via Next.js middleware
 - **Context**: needed French/English/Arabic support with a persisted user locale choice.
 - **Alternatives considered**: wire up `next-intl`'s recommended middleware-based locale negotiation (URL-prefixed locales, `Accept-Language` detection).
-- **Reason for choice** (as implemented, likely unintentional): `src/middleware/i18n.ts` does set up `createMiddleware(i18nConfig)` correctly as next-intl expects — but it lives at `src/middleware/i18n.ts`, not at the Next.js-recognized location. **This specific Next.js version (16.2.11) has renamed the `middleware.ts` file convention to `proxy.ts`** (per this repo's own `AGENTS.md` warning to consult `node_modules/next/dist/docs/` before assuming standard Next.js conventions apply). Because there is no `proxy.ts`/`middleware.ts` at the project root or `src/` root, `src/middleware/i18n.ts` is **never executed** — it's dead code. Instead, `app/layout.tsx`'s `getLocaleAndMessages()` reads a `NEXT_LOCALE` cookie server-side (falling back to `defaultLocale = "en"`), and `<LanguageSwitcher>` sets that cookie and reloads the page.
+- **Reason for choice** (as implemented, likely unintentional): a `src/middleware/i18n.ts` file used to set up `createMiddleware(i18nConfig)` correctly as next-intl expects — but it lived at `src/middleware/i18n.ts`, not at the Next.js-recognized location. **This specific Next.js version (16.2.11) has renamed the `middleware.ts` file convention to `proxy.ts`** (per this repo's own `AGENTS.md` warning to consult `node_modules/next/dist/docs/` before assuming standard Next.js conventions apply). Because there was no `proxy.ts`/`middleware.ts` at the project root or `src/` root, that file was **never executed** — it was dead code, and has since been deleted (see [§20](#20-known-issues--technical-debt)). Locale resolution runs entirely through `app/layout.tsx`'s `getLocaleAndMessages()`, which reads a `NEXT_LOCALE` cookie server-side (falling back to `defaultLocale = "en"`), and `<LanguageSwitcher>` sets that cookie and reloads the page.
 - **Trade-offs accepted**: locale detection is cookie-only — a first-time visitor always gets `en` regardless of browser language, until they manually switch. There is also a **second, independent locale mechanism** in `app/template.tsx` that manages `<html dir>` via `localStorage`/a custom event, separate from the cookie the layout reads — the two are not obviously kept in sync (see [§20](#20-known-issues--technical-debt)).
-- **Trigger for revisiting**: either delete `src/middleware/i18n.ts` (accept the cookie-only approach as intentional) or move/rename it to a working `proxy.ts` at the project root to get real `Accept-Language`-based locale negotiation.
+- **Trigger for revisiting**: if real `Accept-Language`-based locale negotiation becomes a requirement, add a working `proxy.ts` at the project root (the current Next.js convention) rather than resurrecting the deleted `src/middleware/i18n.ts` in its old location.
 
 ### Decision: Yalidine parcel creation is fire-and-forget, non-blocking, and best-effort
 - **Context**: order creation must succeed and return quickly to the customer even if the courier API is slow, down, or rejects the request (e.g., an unresolvable stop-desk commune name).
@@ -162,13 +162,12 @@ All versions below are transcribed directly from `package.json` (exact `dependen
                         │  ├─ page.tsx, shop/, cart/  ├─ domain/  (entities,  │
                         │  │   → Server Components &    ports, rules — pure)  │
                         │  │     Server Actions         ├─ application/       │
-                        │  ├─ admin/(dashboard)/      │   (use-cases[unused], │
-                        │  │   → Supabase-gated         │    cart.service)    │
-                        │  │     Server Components      ├─ infrastructure/    │
-                        │  └─ api/**/route.ts         │   ├─ db/*.adapter.ts │
-                        │      → Route Handlers        │   │  (Drizzle repos) │
-                        │      (REST-ish JSON)         │   ├─ auth/           │
-                        │                               │   │  supabase-auth │
+                        │  ├─ admin/(dashboard)/      │   (cart.service)     │
+                        │  │   → Supabase-gated         ├─ infrastructure/    │
+                        │  │     Server Components      │   ├─ db/*.adapter.ts │
+                        │  └─ api/**/route.ts         │   │  (Drizzle repos) │
+                        │      → Route Handlers        │   ├─ auth/           │
+                        │      (REST-ish JSON)         │   │  supabase-auth │
                         │                               │   ├─ storage/       │
                         │                               │   │  supabase-     │
                         │                               │   │  storage       │
@@ -266,7 +265,7 @@ magie_klayn/
 │       ├── delivery/
 │       │   ├── wilayas/route.ts
 │       │   ├── communes/[wilayaCode]/route.ts
-│       │   └── stopdesk-centers/[WilayaCode]/route.ts   (live Yalidine call; untracked in git as of last status)
+│       │   └── stopdesk-centers/[wilayaCode]/route.ts   (live Yalidine call)
 │       ├── orders/
 │       │   ├── route.ts                  GET (admin, filtered) / POST (public checkout)
 │       │   ├── [id]/route.ts              GET/PUT/DELETE (admin)
@@ -304,10 +303,10 @@ magie_klayn/
     │   ├── ports/ (repositories.ts, notifications.ts)     Interfaces the infrastructure layer implements
     │   ├── rules/cart.rules.ts
     │   └── config/features.ts               Feature flags from NEXT_PUBLIC_FEATURE_* env vars
-    ├── application/                          ⚠ Partially dead: use-cases unused by real routes
-    │   ├── use-cases/ (order.use-case.ts, product.use-case.ts)   NOT called by app/api routes
-    │   ├── services/cart.service.ts            Used by the Redux cart slice
-    │   └── layout.tsx, page.tsx, favicon.ico   Stray create-next-app scaffold, not part of routing
+    ├── application/
+    │   └── services/cart.service.ts            Used by the Redux cart slice
+    │       (the unused use-cases/ layer and stray layout.tsx/page.tsx/favicon.ico
+    │        scaffold that used to live here were deleted as dead code — see §20)
     ├── infrastructure/                        Adapters implementing domain ports
     │   ├── db/
     │   │   ├── client.ts                       Drizzle+postgres client, mock-mode fallback
@@ -318,21 +317,20 @@ magie_klayn/
     │   ├── storage/supabase-storage.ts           Supabase Storage upload/delete
     │   ├── telegram/telegram-notification.service.ts
     │   └── yalidine/ (client.ts, config.ts, stopdesk-resolver.ts, types.ts, zone-sync-helpers.ts)
-    ├── middleware/i18n.ts                      ⚠ Dead code — never wired up as a real Next.js middleware/proxy (see §3)
     └── presentation/
         ├── components/
-        │   ├── features/ (Header, Footer, CartDrawer, ProductCard, ProductForm, BoxBuilder[orphaned],
+        │   ├── features/ (Header, Footer, CartDrawer, ProductCard, ProductForm,
         │   │              DiscoverySection, LanguageSwitcher, StepIndicator, ToastContainer,
         │   │              WilayaCommuneSelect, index.ts barrel)
-        │   └── ui/ (Badge, Button, Card[duplicate/orphaned], EmptyState, Input, Logo, QuantityStepper, Select)
-        ├── lib/ (animations.ts, color.ts, colors.ts[orphaned], utils.ts)
+        │   └── ui/ (Badge, Button, EmptyState, Input, Logo, QuantityStepper, Select)
+        ├── lib/ (animations.ts, color.ts, utils.ts)
         └── store/ (index.ts, cart/cart.slice.ts, ui/ui.slice.ts)   Redux Toolkit
 ```
 
 ### Purpose of top-level folders
 - **`app/`** — the actual Next.js App Router tree: every URL-addressable page, layout, and API route lives here (not under `src/`). This is the framework-mandated location and takes priority over `src/application/`'s decoy files.
 - **`src/domain/`** — pure TypeScript business rules and types with zero framework/library imports; the theoretical "core" of the hexagonal architecture.
-- **`src/application/`** — intended to hold use-cases orchestrating domain + ports; in practice only `cart.service.ts` is actually used (by the Redux slice), and it also contains unrelated leftover scaffold files.
+- **`src/application/`** — originally intended to hold use-cases orchestrating domain + ports; now holds only `cart.service.ts` (used by the Redux slice) after the unused `use-cases/` layer and stray `create-next-app` scaffold files (`layout.tsx`, `page.tsx`, `favicon.ico`) that used to live here were deleted as dead code.
 - **`src/infrastructure/`** — all concrete integrations: the database (Drizzle/Postgres/Supabase), auth (Supabase), file storage (Supabase Storage), notifications (Telegram), and the delivery courier (Yalidine).
 - **`src/presentation/`** — all React UI: components, the Redux store, and presentation-only utility/animation helpers. Despite the name suggesting it might contain page-level code, actual pages live in `app/` — `presentation/` supplies the components those pages compose.
 - **`drizzle/`** — generated SQL migration history and Drizzle Kit metadata snapshots; do not hand-edit these files (regenerate via `npm run db:generate`).
@@ -342,7 +340,7 @@ magie_klayn/
 
 ### Naming conventions
 - **Files**: React components use `PascalCase.tsx` (`ProductCard.tsx`, `WilayaCommuneSelect.tsx`); Next.js special files use the framework's required lowercase names (`page.tsx`, `layout.tsx`, `route.ts`, `template.tsx`, `not-found.tsx`); non-component TypeScript modules use `kebab-case.ts` or `camelCase.ts` inconsistently (`supabase-auth.ts`, `cart.slice.ts`, `order.use-case.ts` vs. `client.ts`, `types.ts`).
-- **Routes/folders**: dynamic segments use Next.js bracket syntax (`[slug]`, `[id]`, `[wilayaCode]`) — note `app/api/delivery/stopdesk-centers/[WilayaCode]` uses a capitalized param name (`WilayaCode`) inconsistent with the lowercase `[wilayaCode]` used elsewhere in the same `delivery/` folder — cosmetic but worth normalizing. Route groups use parentheses (`(dashboard)`) to nest a layout without adding a URL segment.
+- **Routes/folders**: dynamic segments use Next.js bracket syntax (`[slug]`, `[id]`, `[wilayaCode]`), consistently lowercase across the whole `app/api/delivery/` folder — `stopdesk-centers` originally used a capitalized `[WilayaCode]` param name, which was **not just cosmetic**: it meant the route handler's destructured `params.wilayaCode` never matched the actual params key (`WilayaCode`), so the route always returned a 400 `"Invalid wilaya code"` error (see [§20](#20-known-issues--technical-debt) item 15 — fixed by renaming the folder to lowercase). Route groups use parentheses (`(dashboard)`) to nest a layout without adding a URL segment.
 - **Domain types**: PascalCase interfaces/types (`Product`, `Order`, `DeliveryZone`, `CreateOrderPayload`), SCREAMING_SNAKE_CASE for true constants (`MAX_BOX_CAPACITY`, `STORE_PICKUP_WILAYAS`).
 - **Redux**: slice files are `<domain>.slice.ts` inside a folder named after the domain (`cart/cart.slice.ts`, `ui/ui.slice.ts`); selectors are prefixed `select*` (`selectCartTotal`, `selectIsBoxEligible`).
 - **DB**: `snake_case` column names in Postgres (via Drizzle's second string argument, e.g. `varchar("color_hex", ...)`), mapped to `camelCase` TypeScript field names by Drizzle automatically.
@@ -379,7 +377,7 @@ magie_klayn/
 | `YALIDINE_OVERRIDE_DESTINATION_IDS` | Comma-separated destination wilaya IDs that trigger the override origin | same |
 | `NEXT_PUBLIC_FEATURE_WEEKLY_DROP` | Feature flag: weekly product drop | `src/domain/config/features.ts` |
 | `NEXT_PUBLIC_FEATURE_VOTE` | Feature flag: community voting | same |
-| `NEXT_PUBLIC_FEATURE_CUSTOM_BUILDER` | Feature flag: custom box builder (`BoxBuilder.tsx`) | same |
+| `NEXT_PUBLIC_FEATURE_CUSTOM_BUILDER` | Feature flag: custom box builder — its former component (`BoxBuilder.tsx`) was deleted as dead code (see §20), so this flag currently gates nothing | same |
 | `NEXT_PUBLIC_FEATURE_ANALYTICS` | Feature flag: admin analytics dashboard | same |
 
 All four `NEXT_PUBLIC_FEATURE_*` flags default to **enabled** unless explicitly set to the string `"false"`.
@@ -618,11 +616,11 @@ All routes are Next.js Route Handlers under `app/api/`. Response envelope conven
 - Response `200`: `{ success: true, data: DeliveryZone[] }`.
 - Auth: none.
 
-**`GET /api/delivery/stopdesk-centers/[WilayaCode]`**
+**`GET /api/delivery/stopdesk-centers/[wilayaCode]`**
 - Purpose: list **live** Yalidine stop-desk pickup centers for a wilaya — calls Yalidine's `getCenters()` directly rather than reading from the DB, since center data isn't persisted locally.
 - Response `200`: `{ success: true, data: StopdeskCenter[] }`.
 - Auth: none.
-- Note: this file was untracked/new in the repository's git status as of the last recorded snapshot — a recent, still-settling addition (matches the current commit's "not for stopdesk" caveat).
+- Note: this route's folder used to be capitalized `[WilayaCode]`, which silently broke it (every request returned a 400 `"Invalid wilaya code"` because the handler destructured the lowercase `wilayaCode` key that never matched) — fixed by renaming the folder to lowercase, matching the sibling `communes/[wilayaCode]` route.
 
 ### Uploads
 
@@ -691,7 +689,7 @@ All routes are Next.js Route Handlers under `app/api/`. Response envelope conven
 **Key reusable components**:
 - `Header` / `Footer` — global site chrome, rendered by `ClientProviders`, hidden on `/admin`.
 - `CartDrawer` — slide-in cart preview, opened from the header cart icon, driven entirely by Redux `ui.cartOpen`.
-- `ProductCard` (`features/`) — the actively-used product-grid tile (hover color-tint, add-to-cart, new/sold-out badges); note a **second, unused duplicate** exists as `ui/Card.tsx` (see [§20](#20-known-issues--technical-debt)).
+- `ProductCard` (`features/`) — the product-grid tile (hover color-tint, add-to-cart, new/sold-out badges); a second, unused duplicate used to also exist as `ui/Card.tsx` but was deleted as dead code (see [§20](#20-known-issues--technical-debt)).
 - `WilayaCommuneSelect` — the cascading wilaya → commune → delivery-type → stop-desk-center selector used at checkout; the most complex single form component in the app, coordinating three chained API calls (`/api/delivery/wilayas`, `/api/delivery/communes/[code]`, `/api/delivery/stopdesk-centers/[code]`).
 - `ProductForm` — admin product create/edit form, including image upload wiring to `/api/upload` and an auto-slugify-from-name behavior.
 - `ToastContainer` — global toast/snackbar rendering off the `ui.toasts` Redux array.
@@ -737,13 +735,13 @@ Beyond this base palette, **the site is deliberately color-led at the product le
 - **Repository pattern**: `src/domain/ports/repositories.ts` defines `IProductRepository`, `IOrderRepository`, `IDeliveryRepository`, `IStorageService` interfaces; `src/infrastructure/db/*.adapter.ts` provide the Drizzle-backed implementations, exported as ready-made singletons (`productRepository`, `orderRepository`, `deliveryRepository`).
 - **Adapter pattern**: the same `*.adapter.ts` files, plus `SupabaseStorageService` and `TelegramNotificationService`, adapt third-party SDKs/APIs to the domain-defined port interfaces (`IStorageService`, `INotificationService`).
 - **Service layer**: `src/application/services/cart.service.ts`'s `CartService` class encapsulates cart mutation/calculation logic, called by the Redux slice rather than having the slice do math directly.
-- **Use-case pattern** (partially applied, largely unused — see [§3](#3-architecture-decisions--trade-offs)): `src/application/use-cases/{order,product}.use-case.ts` define classes like `CreateOrderUseCase`, `GetAllProductsUseCase` that wrap repository calls; **not called by any live API route**, so this pattern exists in name only for now.
+- **Use-case pattern** — no longer present: `src/application/use-cases/{order,product}.use-case.ts` used to define classes like `CreateOrderUseCase`/`GetAllProductsUseCase` wrapping repository calls, but they were never called by any live API route and were deleted as dead code (see [§20](#20-known-issues--technical-debt)).
 - **Singleton pattern**: repository/service/client instances are exported as module-level singletons (`export const productRepository = new ProductRepository()`, `export const yalidineClient = new YalidineClient()`) rather than dependency-injected — simple, but makes swapping implementations (e.g., for tests) require module-level mocking rather than constructor injection.
 - **Compound/barrel export**: `src/presentation/components/features/index.ts` re-exports several (not all) feature components and their prop types from one module.
 
 **Code style/formatting**: no ESLint or Prettier configuration exists — formatting is whatever each commit happened to produce; there is no automated enforcement. TypeScript is in `strict` mode (`tsconfig.json`), so type-level correctness is enforced by the compiler even without lint rules.
 
-**Business logic vs. UI vs. data access separation**: generally well-separated for **domain-level rules** — `src/domain/rules/cart.rules.ts` (coffret eligibility, cart totals) and `src/domain/entities/delivery.ts` (`getDeliveryFee`) are pure functions with no React/DB imports, callable from both Redux selectors and API routes. Separation is **weaker at the request-handling level** — API routes (`app/api/orders/route.ts`) mix validation, business rules (e.g. the store-pickup fee override), and direct repository calls all inline in the handler function, rather than delegating to the (existing but unused) use-case layer.
+**Business logic vs. UI vs. data access separation**: generally well-separated for **domain-level rules** — `src/domain/rules/cart.rules.ts` (coffret eligibility, cart totals) and `src/domain/entities/delivery.ts` (`getDeliveryFee`) are pure functions with no React/DB imports, callable from both Redux selectors and API routes. Separation is **weaker at the request-handling level** — API routes (`app/api/orders/route.ts`) mix validation, business rules (e.g. the store-pickup fee override), and direct repository calls all inline in the handler function, rather than delegating to a dedicated use-case layer (there isn't one anymore — see [§20](#20-known-issues--technical-debt)).
 
 **TypeScript organization**: domain types live in `src/domain/entities/*.ts` (hand-written interfaces: `Product`, `Order`, `DeliveryZone`, `CreateOrderPayload`, etc.); database-shape types are auto-inferred from the Drizzle schema (`typeof products.$inferSelect` etc. in `schema.ts`) — meaning there are **two parallel type systems** for the same underlying data (hand-written domain `Product` vs. Drizzle-inferred `Product` from `schema.ts`) that must be kept structurally compatible by discipline, not by a shared definition. Component prop types are typically inlined per-component (`interface ButtonProps extends ...`) rather than centralized.
 
@@ -752,8 +750,8 @@ Beyond this base palette, **the site is deliberately color-led at the product le
 **Utility functions** (`src/presentation/lib/`):
 - `utils.ts` — `cn()` (Tailwind class merge via `clsx`+`tailwind-merge`), `formatPrice()` (Intl `fr-DZ` currency formatting → "DA" suffix), `formatDate()`, `slugify()`, `truncate()`, `generatePlaceholder()` (base64 SVG blur placeholder), `getLuminance()`.
 - `color.ts` — a second, independently-weighted `getLuminance()`.
-- `colors.ts` — orphaned: `LIQUID_COLOR` constant, `darkenHex()`, `getLiquidStyle()` — not imported anywhere found.
 - `animations.ts` — the Framer Motion variant library (see [§11](#11-ui--ux-design)).
+- ~~`colors.ts`~~ — deleted; was orphaned (`LIQUID_COLOR`/`darkenHex`/`getLiquidStyle`, not imported anywhere) — see [§20](#20-known-issues--technical-debt).
 
 **Constants and enums**: mostly colocated with the domain entity they describe rather than centralized — `MAX_BOX_CAPACITY` and coffret-eligibility logic in `src/domain/rules/cart.rules.ts`; `STORE_PICKUP_WILAYAS`/`STORE_PICKUP_ADDRESSES` in `src/domain/entities/delivery.ts`; Postgres enums (`order_status`, `product_gender`, `delivery_type`, `box_color`, `packaging_type`) defined once in `src/infrastructure/db/schema.ts` via `pgEnum` and reused as the TypeScript source of truth for those unions elsewhere; feature flags centralized in `src/domain/config/features.ts`.
 
@@ -781,7 +779,7 @@ Beyond this base palette, **the site is deliberately color-led at the product le
 
 **Multi-timezone / multi-region assumptions**: the app assumes a **single timezone, `Africa/Algiers`** (hardcoded in `i18n.config.ts`) and a **single country, Algeria** (wilaya/commune delivery model, Yalidine courier, DZD currency formatting hardcoded as `fr-DZ` in `formatPrice()`). Going global/multi-region would require: abstracting the delivery-zone model beyond wilaya/commune, supporting multiple couriers, multi-currency pricing/formatting, and timezone-aware date handling (`order_date`/`created_at` are stored as plain `timestamp` without timezone in Postgres — worth confirming this is intentional given the single-timezone assumption).
 
-**Known technical debt** (full detail in [§20](#20-known-issues--technical-debt)): unused `application/use-cases` layer; disconnected i18n middleware; duplicate order-creation paths (server action vs. API route); orphaned components (`BoxBuilder`, duplicate `Card.tsx`, `colors.ts`); three divergent `getLuminance()` implementations; two parallel DB-migration mechanisms; no shared client/server validation schema; hardcoded synthetic-password auth scheme; "Crumbleivable" brand-name leftovers; TODO placeholder store addresses; capitalized-vs-lowercase route-param naming inconsistency (`[WilayaCode]` vs `[wilayaCode]`).
+**Known technical debt** (full detail in [§20](#20-known-issues--technical-debt)): duplicate order-creation paths (server action vs. API route); three divergent `getLuminance()` implementations; two parallel DB-migration mechanisms; no shared client/server validation schema; hardcoded synthetic-password auth scheme; "Crumbleivable" brand-name leftovers; TODO placeholder store addresses. (The unused `application/use-cases` layer, disconnected i18n middleware, orphaned `BoxBuilder`/`Card.tsx`/`colors.ts`, and the `[WilayaCode]`/`[wilayaCode]` route-param bug have all since been resolved — see [§20](#20-known-issues--technical-debt).)
 
 **Maintenance burden**: low-to-moderate for a single developer who already holds the whole system in their head, but **high for a new developer** without this document, because: (a) the dead-vs-live code paths (use-cases, i18n middleware, `BoxBuilder`) aren't marked as such anywhere in the code itself; (b) there's no test suite to lean on to understand expected behavior or to safely refactor; (c) the two-migration-mechanism DB story requires tribal knowledge to reproduce correctly on a fresh environment. There is no on-call rotation or incident process — Sentry is the only safety net for catching production errors, and Telegram order alerts are the only "is the business working" signal.
 
@@ -922,22 +920,22 @@ No payment provider integration exists (Yalidine handles cash-on-delivery collec
 **Bugs / functional gaps**:
 1. **Stop-desk delivery via Yalidine is currently broken/incomplete** — the current git HEAD commit message states this directly (*"the domicile with yalidine is working but not for stopdesk"*). Home delivery works; stop-desk parcel creation can fail when `resolveStopdeskId` can't match a commune name to a live Yalidine center.
 2. **Duplicate order-creation code paths**: `app/actions.ts`'s `createOrder` server action and `app/api/orders/route.ts`'s `POST` handler both create orders, but **only the API route also creates a Yalidine parcel and applies the store-pickup fee override**. If any UI path calls the server action instead of the route, that order gets no shipment and no anti-tamper fee check.
-3. **`src/middleware/i18n.ts` is dead code** — set up correctly for `next-intl`, but never wired up as an actual Next.js `proxy.ts`/`middleware.ts`, given this Next.js version's `middleware.ts` → `proxy.ts` rename (per `AGENTS.md`'s own warning). Locale is instead handled via a manual cookie read in `app/layout.tsx`.
+3. ~~`src/middleware/i18n.ts` is dead code~~ — **RESOLVED: deleted.** It was set up correctly for `next-intl`, but never wired up as an actual Next.js `proxy.ts`/`middleware.ts`, given this Next.js version's `middleware.ts` → `proxy.ts` rename (per `AGENTS.md`'s own warning). Locale is handled via a manual cookie read in `app/layout.tsx` — that part is unchanged.
 4. **A second, separate RTL/locale mechanism exists in `app/template.tsx`** (localStorage/custom-event based `<html dir>` management), independent of the cookie-based one in `app/layout.tsx` — these two are not obviously guaranteed to stay in sync.
-5. **`BoxBuilder.tsx`** fetches a non-existent endpoint (`/api/products/cookies`) and is not referenced by any live page — orphaned "cookie box" feature from what looks like an earlier product-line pivot (baked-goods → perfume), gated behind `NEXT_PUBLIC_FEATURE_CUSTOM_BUILDER` but with no working backend for it regardless.
+5. ~~`BoxBuilder.tsx` fetches a non-existent endpoint~~ — **RESOLVED: deleted** (along with its exports from `features/index.ts`). It fetched a non-existent `/api/products/cookies` endpoint and wasn't referenced by any live page — an orphaned "cookie box" feature from what looked like an earlier product-line pivot (baked-goods → perfume). `NEXT_PUBLIC_FEATURE_CUSTOM_BUILDER` now gates nothing until a real replacement is built.
 6. **`app/shop/layout.tsx`'s metadata copy references "American-style" baked goods**, mismatched with the actual perfume/fragrance product line — another pivot leftover.
 7. **`app/admin/(dashboard)/layout.tsx`'s page `<title>` still says "Crumbleivable Brum Shop"** — leftover branding from a prior/sibling project this codebase was likely adapted from.
 8. **Cart persistence uses the `localStorage` key `"crumbleivable-cart"`** (`app/providers.tsx`) — same "Crumbleivable" naming leak, functionally harmless but confusing to a new developer grepping for "magie"/"klayn".
 9. **Store-pickup addresses are literal TODO placeholders**: `STORE_PICKUP_ADDRESSES` in `src/domain/entities/delivery.ts` contains `"TODO: Alger store address"` / `"TODO: Oran store address"` — if store pickup is reachable in the UI today, customers may see these placeholder strings.
 10. **Font-variable mismatch**: `globals.css`'s `--font-display`/`--font-body` reference `--font-archivo-black`/`--font-inter`, but `app/layout.tsx` only loads Comfortaa and Noto Kufi Arabic — the referenced font variables are never defined, so text likely renders in fallback fonts rather than the intended brand typeface in CSS-driven sections.
 11. **Three divergent `getLuminance()` implementations** exist (`src/presentation/lib/utils.ts`, `src/presentation/lib/color.ts`, and one inlined in `ProductCard.tsx`), using different luminance-weighting constants — could produce inconsistent white/dark-text contrast decisions depending on which one a given component happens to call.
-12. **Duplicate `ProductCard` implementations**: the actively-used `features/ProductCard.tsx` and an orphaned near-duplicate at `ui/Card.tsx` (mislabeled as a generic `Card` primitive).
-13. **Orphaned `src/presentation/lib/colors.ts`** (`LIQUID_COLOR`/`darkenHex`/`getLiquidStyle`) — not imported anywhere found.
+12. ~~Duplicate `ProductCard` implementations~~ — **RESOLVED: deleted.** `ui/Card.tsx` was an orphaned near-duplicate (mislabeled as a generic `Card` primitive) of the actively-used `features/ProductCard.tsx`, which remains the only one.
+13. ~~Orphaned `src/presentation/lib/colors.ts`~~ — **RESOLVED: deleted.** (`LIQUID_COLOR`/`darkenHex`/`getLiquidStyle`, not imported anywhere.)
 14. **Newsletter signup on the homepage is a non-functional stub** (`handleNewsletterSubmit` just calls `preventDefault()`, with a `// TODO: wire up to your real newsletter endpoint.` comment).
-15. **Inconsistent dynamic-route param casing**: `app/api/delivery/stopdesk-centers/[WilayaCode]` uses a capitalized segment name, unlike the lowercase `[wilayaCode]` used elsewhere in the same `delivery/` API folder.
+15. ~~Inconsistent dynamic-route param casing~~ — **RESOLVED: this was a functional bug, not just cosmetic.** `app/api/delivery/stopdesk-centers/[WilayaCode]` (capitalized) meant the route handler's `(await params).wilayaCode` (lowercase) never matched the real params key, so the route always returned 400 `"Invalid wilaya code"` regardless of input — the stop-desk pickup-point dropdown in checkout was silently broken because of this. Fixed by renaming the folder to lowercase `[wilayaCode]`, matching `communes/[wilayaCode]`.
 16. **`app/api/auth/` and `app/api/messages/` are empty placeholder directories** with no `route.ts` — dead scaffolding, not live endpoints.
-17. **`src/application/{layout.tsx,page.tsx,favicon.ico}`** are leftover `create-next-app` scaffold files, entirely outside the live route tree (Next.js only reads `app/` at the project root) — pure dead code that could confuse a developer searching for "the home page."
-18. **`src/application/use-cases/{order,product}.use-case.ts` are unused** — no live route or server action calls them; only `cart.service.ts` in the same `application/` folder is actually used.
+17. ~~`src/application/{layout.tsx,page.tsx,favicon.ico}` are leftover `create-next-app` scaffold~~ — **RESOLVED: deleted.** They were entirely outside the live route tree (Next.js only reads `app/` at the project root).
+18. ~~`src/application/use-cases/{order,product}.use-case.ts` are unused~~ — **RESOLVED: deleted** (folder removed too). No live route or server action ever called them; `cart.service.ts` remains the only file in `src/application/` and is actively used.
 
 **Process/tooling gaps** (see also [§16](#16-testing), [§18](#18-deployment--devops)):
 - No test suite of any kind, despite `data-testid` scaffolding suggesting one was planned.
@@ -983,7 +981,7 @@ No payment provider integration exists (Yalidine handles cash-on-delivery collec
 **Main folders**:
 - `app/` — Next.js App Router: every page, layout, server action file (`actions.ts`), and API route (`api/**/route.ts`). **This is where routing lives — not `src/app/`.**
 - `src/domain/` — pure business types/rules (entities, ports/interfaces, `cart.rules.ts`), zero framework imports.
-- `src/application/` — `cart.service.ts` (used) + an unused `use-cases/` layer + unrelated leftover `create-next-app` scaffold files (ignore `layout.tsx`/`page.tsx` here — dead).
+- `src/application/` — `cart.service.ts` only (used by the Redux cart slice); the unused `use-cases/` layer and stray `create-next-app` scaffold files that used to live here have been deleted.
 - `src/infrastructure/` — concrete integrations: `db/` (Drizzle schema + repositories), `auth/supabase-auth.ts`, `storage/supabase-storage.ts`, `telegram/`, `yalidine/`.
 - `src/presentation/` — all React UI: `components/{features,ui}/`, `store/` (Redux slices `cart`, `ui`), `lib/` (utils, animations, color helpers).
 - `drizzle/` — generated SQL migrations (0000–0008); **also check** `src/infrastructure/db/migrations/` for two hand-written SQL files not tracked by Drizzle Kit.
@@ -1003,15 +1001,15 @@ No payment provider integration exists (Yalidine handles cash-on-delivery collec
 **How to run locally**: `npm install`, create `.env.local` with at least `DATABASE_URL`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SERVICE_ROLE_KEY` (app runs in a DB-less "mock mode" without `DATABASE_URL`, logging a warning instead of crashing), `npm run db:push` to provision the schema (then manually apply the two stray SQL files in `src/infrastructure/db/migrations/`), insert an `admin_users` row manually (bcrypt hash) since there's no signup UI, then `npm run dev`.
 
 **Main architectural decisions & rationale** (condensed — full detail in [§3](#3-architecture-decisions--trade-offs)):
-- Hexagonal layering under `src/` for testable/portable business logic, **but the `use-cases` layer is unused dead weight** — API routes call repositories directly.
+- Hexagonal layering under `src/` for testable/portable business logic — API routes call repositories directly (the `use-cases` layer that used to exist was unused dead weight and has been deleted).
 - Hybrid Supabase-Auth-plus-custom-table admin auth, using a **hardcoded deterministic synthetic password** to bridge the two — a known, flagged security wart, not a hidden one.
-- `next-intl` is set up for real middleware-based locale negotiation, but **that middleware is never wired up** in this Next.js version (which renamed `middleware.ts` → `proxy.ts`) — locale is cookie-driven instead.
+- `next-intl`'s middleware-based locale negotiation was never wired up in this Next.js version (which renamed `middleware.ts` → `proxy.ts`) — the dead `src/middleware/i18n.ts` that attempted it has been deleted; locale is cookie-driven instead.
 - Yalidine parcel creation and Telegram notification are both deliberately **fire-and-forget/never-throw** from `POST /api/orders`, so checkout always succeeds even if either integration fails — at the cost of silent partial failures with no retry mechanism.
 - No shared validation schema between client (Zod) and server (manual `if` checks) — a deliberate speed-over-rigor trade-off, not an oversight, but a real drift risk.
 
 **Gotchas / non-obvious things to know**:
 - `tsconfig.json`'s `"@/*"` path alias maps to `./src/*` only — it does **not** cover `app/`, which uses relative imports.
 - This Next.js version (16.2.11) has real breaking changes vs. typical training-data knowledge — consult `node_modules/next/dist/docs/` before assuming standard Next.js conventions apply, per this repo's own `AGENTS.md`.
-- `BoxBuilder.tsx`, `ui/Card.tsx`, and `src/presentation/lib/colors.ts` are orphaned/dead — don't build on top of them without first confirming they're actually wired to anything live.
+- `BoxBuilder.tsx`, `ui/Card.tsx`, `src/presentation/lib/colors.ts`, `src/middleware/i18n.ts`, `src/application/use-cases/`, and `src/application/{layout,page}.tsx` were all confirmed orphaned/dead and have been **deleted** — if you see references to them elsewhere (older commits, cached docs), they no longer exist in the repo.
 - Never read or echo the contents of `.env.local`/`.env.sentry-build-plugin` into chat, logs, or generated files — they hold live production credentials.
 - Two duplicate order-creation code paths exist (`app/actions.ts`'s `createOrder` vs. `app/api/orders/route.ts`'s `POST`) with **different side effects** — prefer/extend the API route, since only it creates Yalidine parcels and applies the store-pickup anti-tamper fee override.

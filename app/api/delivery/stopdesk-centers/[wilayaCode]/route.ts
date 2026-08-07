@@ -9,6 +9,35 @@ import type { StopdeskCenter } from "@/domain/entities/delivery";
  * v6 §3 — that guessing approach produces hard Yalidine rejections
  * whenever the customer's commune has no center of its own).
  */
+/**
+ * @swagger
+ * /api/delivery/stopdesk-centers/{wilayaCode}:
+ *   get:
+ *     tags: [Delivery]
+ *     summary: List live Yalidine stop-desk pickup centers for a wilaya (public)
+ *     description: >
+ *       Calls Yalidine's getCenters() directly rather than reading from the
+ *       DB — center data is never persisted locally.
+ *     parameters:
+ *       - in: path
+ *         name: wilayaCode
+ *         required: true
+ *         schema: { type: string, example: "16" }
+ *     responses:
+ *       200:
+ *         description: List of stop-desk centers
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean, example: true }
+ *                 data:
+ *                   type: array
+ *                   items: { $ref: '#/components/schemas/StopdeskCenter' }
+ *       400: { description: Invalid wilaya code }
+ *       500: { description: Failed to fetch stop-desk centers from Yalidine }
+ */
 export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ wilayaCode: string }> },

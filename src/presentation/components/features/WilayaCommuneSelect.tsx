@@ -129,6 +129,33 @@ export function WilayaCommuneSelect({
     fetchCenters();
   }, [selectedWilaya]);
 
+  // Auto-select Stop Desk as the default delivery type once it's offerable
+  // for the selected commune (same condition as showing the button —
+  // stopDeskOfferable below), sparing the customer a click. Guarded on
+  // `selectedType === null` so it never overrides a type the customer
+  // already picked themselves, and re-fires correctly if centers are
+  // still loading when the commune is first chosen (centers.length goes
+  // 0 -> N once the fetch resolves, re-running this effect).
+  React.useEffect(() => {
+    if (!selectedCommune) return;
+    if (selectedType !== null) return;
+    if (centers.length === 0) return;
+    setSelectedType("stop_desk");
+    onChange(null); // matches handleTypeSelect("stop_desk") — waits for a center
+  }, [selectedCommune, centers.length, selectedType]);
+
+  // Once Stop Desk is the active type (whether picked manually or by the
+  // effect above), auto-pick the first available center so the whole
+  // selection is complete with zero clicks — the customer can still
+  // change it via the dropdown, which calls handleCenterSelect normally.
+  React.useEffect(() => {
+    if (selectedType !== "stop_desk") return;
+    if (selectedCenterId) return;
+    if (centers.length === 0) return;
+    handleCenterSelect(String(centers[0].centerId));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedType, centers, selectedCenterId]);
+
   // Reset commune and type when wilaya changes
   const handleWilayaChange = (value: string) => {
     setSelectedWilaya(value);
@@ -304,6 +331,9 @@ export function WilayaCommuneSelect({
                     : "border-[var(--color-border)] bg-[var(--color-white)] hover:border-[var(--color-text)]/50",
                 )}
               >
+                <span className="absolute top-2 left-2 px-1.5 py-0.5 rounded-full text-[10px] font-medium leading-none bg-[var(--color-text)] text-[var(--color-white)]">
+                  {t("checkout.stopDeskRecommended") || "Recommended"}
+                </span>
                 <StoreIcon
                   className={cn(
                     "w-8 h-8 mb-2",

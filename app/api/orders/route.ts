@@ -13,8 +13,41 @@ import { telegramNotificationService } from "@/infrastructure/telegram/telegram-
 import { createParcelForOrder } from "@/../scripts/create-parcel"; // adjust path to your actual import alias
 
 /**
- * GET /api/orders
- * Get all orders (admin only) with optional filters
+ * @swagger
+ * /api/orders:
+ *   get:
+ *     tags: [Orders]
+ *     summary: List orders with optional filters (admin only)
+ *     security: [{ adminSession: [] }]
+ *     parameters:
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 100 }
+ *       - in: query
+ *         name: wilayaCode
+ *         schema: { type: string }
+ *       - in: query
+ *         name: status
+ *         schema: { type: string, enum: [pending, confirmed, preparing, ready, delivered, cancelled] }
+ *       - in: query
+ *         name: startDate
+ *         schema: { type: string, format: date }
+ *       - in: query
+ *         name: endDate
+ *         schema: { type: string, format: date }
+ *     responses:
+ *       200:
+ *         description: List of orders
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean, example: true }
+ *                 data:
+ *                   type: array
+ *                   items: { $ref: '#/components/schemas/Order' }
+ *       401: { description: Unauthorized }
  */
 export async function GET(request: NextRequest) {
   try {
@@ -62,8 +95,69 @@ export async function GET(request: NextRequest) {
 }
 
 /**
- * POST /api/orders
- * Create a new order
+ * @swagger
+ * /api/orders:
+ *   post:
+ *     tags: [Orders]
+ *     summary: Create an order (checkout, public)
+ *     description: >
+ *       deliveryFee is recomputed server-side to 0 when deliveryType is
+ *       store_pickup, regardless of the submitted value. When deliveryType
+ *       is stop_desk, stopdeskCenterId and stopdeskCommuneName are
+ *       required — they identify the real Yalidine pickup center the
+ *       customer chose (see WilayaCommuneSelect), and are what
+ *       scripts/create-parcel.ts uses to create the actual Yalidine
+ *       parcel for that order.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [customer, items, deliveryZoneId, deliveryType, deliveryFee]
+ *             properties:
+ *               customer:
+ *                 type: object
+ *                 required: [firstName, lastName, phone]
+ *                 properties:
+ *                   firstName: { type: string }
+ *                   lastName: { type: string }
+ *                   phone: { type: string, example: "0550123456" }
+ *               notes:
+ *                 type: object
+ *                 properties:
+ *                   giftNote: { type: string }
+ *               items:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     product: { type: object }
+ *                     quantity: { type: integer }
+ *               deliveryZoneId: { type: string, format: uuid }
+ *               deliveryType: { type: string, enum: [stop_desk, home, store_pickup] }
+ *               deliveryFee: { type: number }
+ *               stopdeskCenterId:
+ *                 type: integer
+ *                 description: Required when deliveryType = stop_desk
+ *               stopdeskCommuneName:
+ *                 type: string
+ *                 description: Required when deliveryType = stop_desk — the center's own commune
+ *               packagingType: { type: string, enum: [standard, luxury_coffret] }
+ *               coffretFee: { type: integer }
+ *               boxColor: { type: string, enum: [white, black] }
+ *     responses:
+ *       201:
+ *         description: Order created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean, example: true }
+ *                 data: { $ref: '#/components/schemas/Order' }
+ *                 message: { type: string }
+ *       400: { description: Validation failure (missing customer/delivery/coffret/stop-desk fields, or invalid delivery zone) }
  */
 export async function POST(request: NextRequest) {
   try {
@@ -109,6 +203,19 @@ export async function POST(request: NextRequest) {
       if (!body.boxColor) {
         return NextResponse.json(
           { success: false, error: "Please select a box color" },
+          { status: 400 },
+        );
+      }
+    }
+
+    // Stop-desk orders must carry the real Yalidine center the customer
+    // picked in WilayaCommuneSelect — without it, createParcelForOrder
+    // (scripts/create-parcel.ts) has no reliable way to find the right
+    // center or the correct to_commune_name to send Yalidine.
+    if (body.deliveryType === "stop_desk") {
+      if (!body.stopdeskCenterId || !body.stopdeskCommuneName) {
+        return NextResponse.json(
+          { success: false, error: "Please select a pickup point" },
           { status: 400 },
         );
       }

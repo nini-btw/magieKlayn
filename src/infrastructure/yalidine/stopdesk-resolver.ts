@@ -1,6 +1,15 @@
 /**
- * Resolves a default stopdesk_id for a commune, server-side — the
- * customer never picks one (see integration state doc v5 §2.1).
+ * FALLBACK ONLY as of the stop-desk fix: the customer now picks a real
+ * center directly in WilayaCommuneSelect at checkout (see its
+ * handleCenterSelect), and that choice is stored on the order as
+ * stopdeskCenterId/stopdeskCommuneName — scripts/create-parcel.ts uses
+ * those directly and only calls this function for orders placed before
+ * those columns existed (see its fallback branch).
+ *
+ * Resolves a default stopdesk_id for a commune, server-side, by guessing
+ * from the customer's own commune name — this is inherently unreliable
+ * since centers only exist in a handful of communes per wilaya, which is
+ * exactly why the primary flow no longer relies on it.
  *
  * CAVEAT: delivery_zones has no Yalidine commune_id column, only names,
  * so matching is by commune_name string equality. Names are normalized

@@ -4,6 +4,14 @@
  * Skips entirely for store_pickup orders. Never throws to its caller —
  * catches everything internally and logs, same discipline as
  * telegramNotificationService.notifyNewOrder.
+ *
+ * Stop-desk orders: uses order.stopdeskCenterId/stopdeskCommuneName
+ * (the real center the customer picked at checkout, in
+ * WilayaCommuneSelect) directly — both for the stopdesk_id AND for
+ * to_commune_name, which Yalidine requires to match the CENTER's own
+ * commune, not the customer's delivery address. Falls back to
+ * resolveStopdeskId() only for orders placed before those columns
+ * existed on the order.
  */
 import { yalidineClient } from "../src/infrastructure/yalidine/client";
 import { getOriginWilayaId } from "../src/infrastructure/yalidine/config";
@@ -45,15 +53,31 @@ export async function createParcelForOrder(order: Order): Promise<void> {
 
     const isStopdesk = order.deliveryType === "stop_desk";
     let stopdeskId: number | undefined;
+    // The commune Yalidine's to_commune_name must match for this order —
+    // the center's own commune for stop-desk, the customer's for home.
+    let toCommuneName = order.communeName;
     if (isStopdesk) {
-      const resolved = await resolveStopdeskId(destWilayaId, order.communeName);
-      if (!resolved) {
-        console.error(
-          `[create-parcel] No stop-desk centers for wilaya ${destWilayaId} — skipping order ${order.id}.`,
+      if (order.stopdeskCenterId && order.stopdeskCommuneName) {
+        // Primary path: the customer already picked a real center in
+        // WilayaCommuneSelect at checkout — use it directly, no re-fetch.
+        stopdeskId = order.stopdeskCenterId;
+        toCommuneName = order.stopdeskCommuneName;
+      } else {
+        // Fallback for orders placed before stopdeskCenterId/
+        // stopdeskCommuneName existed on the order — best-effort guess
+        // from the customer's own commune, which may not have a center.
+        console.warn(
+          `[create-parcel] Order ${order.id} has no stopdeskCenterId — falling back to resolveStopdeskId by customer commune "${order.communeName}".`,
         );
-        return;
+        const resolved = await resolveStopdeskId(destWilayaId, order.communeName);
+        if (!resolved) {
+          console.error(
+            `[create-parcel] No stop-desk center match for wilaya ${destWilayaId} — skipping order ${order.id}.`,
+          );
+          return;
+        }
+        stopdeskId = resolved;
       }
-      stopdeskId = resolved;
     }
 
     // price = COD amount collected from customer. Confirmed via test
@@ -68,8 +92,8 @@ export async function createParcelForOrder(order: Order): Promise<void> {
       familyname:
         order.lastName || order.fullName.split(" ").slice(1).join(" ") || "-",
       contact_phone: order.phone,
-      address: order.communeName,
-      to_commune_name: order.communeName,
+      address: toCommuneName,
+      to_commune_name: toCommuneName,
       to_wilaya_name: order.wilayaName,
       product_list: order.items
         .map((i) => `${i.productName} x${i.quantity}`)

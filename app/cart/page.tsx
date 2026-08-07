@@ -286,6 +286,14 @@ export default function CartPage() {
           deliveryZoneId: data.deliveryZoneId,
           deliveryType: data.deliveryType,
           deliveryFee: data.deliveryFee,
+          // Sourced from deliverySelection (not the RHF `data` object) —
+          // these aren't independently validated form fields, they're the
+          // real Yalidine center the customer picked in WilayaCommuneSelect
+          // once deliveryType === "stop_desk". Required for stop-desk
+          // parcel creation to actually find the right center — see
+          // scripts/create-parcel.ts.
+          stopdeskCenterId: deliverySelection?.stopdeskCenterId,
+          stopdeskCommuneName: deliverySelection?.stopdeskCommuneName,
           packagingType: boxColor ? "luxury_coffret" : "standard",
           coffretFee: boxColor ? COFFRET_FEE : undefined,
           boxColor: boxColor ?? undefined,

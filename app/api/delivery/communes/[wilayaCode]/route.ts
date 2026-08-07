@@ -11,8 +11,29 @@ interface Params {
 }
 
 /**
- * GET /api/delivery/communes/[wilayaCode]
- * Get all communes for a specific wilaya
+ * @swagger
+ * /api/delivery/communes/{wilayaCode}:
+ *   get:
+ *     tags: [Delivery]
+ *     summary: List communes (with fees/flags) for a wilaya (public)
+ *     parameters:
+ *       - in: path
+ *         name: wilayaCode
+ *         required: true
+ *         schema: { type: string, example: "16" }
+ *     responses:
+ *       200:
+ *         description: List of delivery zones (communes) within the wilaya
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean, example: true }
+ *                 data:
+ *                   type: array
+ *                   items: { $ref: '#/components/schemas/DeliveryZone' }
+ *       400: { description: Wilaya code is required }
  */
 export async function GET(request: NextRequest, { params }: Params) {
   try {

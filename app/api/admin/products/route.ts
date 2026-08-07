@@ -8,8 +8,25 @@ import { productRepository } from "@/infrastructure/db/product.adapter";
 import { getAdminSession } from "@/infrastructure/auth/supabase-auth";
 
 /**
- * GET /api/admin/products
- * Get all products including inactive (admin only)
+ * @swagger
+ * /api/admin/products:
+ *   get:
+ *     tags: [Products]
+ *     summary: List ALL products, including inactive ones (admin only)
+ *     security: [{ adminSession: [] }]
+ *     responses:
+ *       200:
+ *         description: All products
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean, example: true }
+ *                 data:
+ *                   type: array
+ *                   items: { $ref: '#/components/schemas/Product' }
+ *       401: { description: Unauthorized }
  */
 export async function GET() {
   try {

@@ -15,8 +15,29 @@ interface Params {
 }
 
 /**
- * GET /api/orders/[id]
- * Get order by ID (admin only)
+ * @swagger
+ * /api/orders/{id}:
+ *   get:
+ *     tags: [Orders]
+ *     summary: Get an order by ID (admin only)
+ *     security: [{ adminSession: [] }]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *     responses:
+ *       200:
+ *         description: The order
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean, example: true }
+ *                 data: { $ref: '#/components/schemas/Order' }
+ *       401: { description: Unauthorized }
+ *       404: { description: Order not found }
  */
 export async function GET(request: NextRequest, { params }: Params) {
   try {
@@ -50,8 +71,30 @@ export async function GET(request: NextRequest, { params }: Params) {
 }
 
 /**
- * PUT /api/orders/[id]
- * Update order status (admin only)
+ * @swagger
+ * /api/orders/{id}:
+ *   put:
+ *     tags: [Orders]
+ *     summary: Update an order's status (admin only)
+ *     security: [{ adminSession: [] }]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [status]
+ *             properties:
+ *               status: { type: string, enum: [pending, confirmed, preparing, ready, delivered, cancelled] }
+ *     responses:
+ *       200: { description: Status updated }
+ *       400: { description: Missing or invalid status }
+ *       401: { description: Unauthorized }
  */
 export async function PUT(request: NextRequest, { params }: Params) {
   try {
@@ -100,8 +143,21 @@ export async function PUT(request: NextRequest, { params }: Params) {
 }
 
 /**
- * DELETE /api/orders/[id]
- * Delete order (admin only)
+ * @swagger
+ * /api/orders/{id}:
+ *   delete:
+ *     tags: [Orders]
+ *     summary: Delete an order (admin only). Only cancelled orders can be deleted.
+ *     security: [{ adminSession: [] }]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *     responses:
+ *       200: { description: Order deleted }
+ *       401: { description: Unauthorized }
+ *       500: { description: "Order not found, or not cancelled (only cancelled orders can be deleted)" }
  */
 export async function DELETE(request: NextRequest, { params }: Params) {
   try {

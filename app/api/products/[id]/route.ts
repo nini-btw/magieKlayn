@@ -14,8 +14,27 @@ interface Params {
 }
 
 /**
- * GET /api/products/[id]
- * Get product by ID
+ * @swagger
+ * /api/products/{id}:
+ *   get:
+ *     tags: [Products]
+ *     summary: Get a product by ID (public)
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *     responses:
+ *       200:
+ *         description: The product
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean, example: true }
+ *                 data: { $ref: '#/components/schemas/Product' }
+ *       404: { description: Product not found }
  */
 export async function GET(request: NextRequest, { params }: Params) {
   try {
@@ -40,8 +59,36 @@ export async function GET(request: NextRequest, { params }: Params) {
 }
 
 /**
- * PUT /api/products/[id]
- * Update product (admin only)
+ * @swagger
+ * /api/products/{id}:
+ *   put:
+ *     tags: [Products]
+ *     summary: Update a product (admin only)
+ *     security: [{ adminSession: [] }]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             description: Partial Product fields to update
+ *     responses:
+ *       200:
+ *         description: Updated product
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean, example: true }
+ *                 data: { $ref: '#/components/schemas/Product' }
+ *       401: { description: Unauthorized }
+ *       409: { description: A product with this slug already exists }
  */
 export async function PUT(request: NextRequest, { params }: Params) {
   try {
@@ -80,8 +127,20 @@ export async function PUT(request: NextRequest, { params }: Params) {
 }
 
 /**
- * DELETE /api/products/[id]
- * Delete product (admin only)
+ * @swagger
+ * /api/products/{id}:
+ *   delete:
+ *     tags: [Products]
+ *     summary: Delete a product (admin only)
+ *     security: [{ adminSession: [] }]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *     responses:
+ *       200: { description: Product deleted }
+ *       401: { description: Unauthorized }
  */
 export async function DELETE(request: NextRequest, { params }: Params) {
   try {

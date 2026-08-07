@@ -64,6 +64,13 @@
       "when": 1786056213578,
       "tag": "0008_groovy_bastion",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1786127168402,
+      "tag": "0009_low_zaladane",
+      "breakpoints": true
     }
   ]
 }

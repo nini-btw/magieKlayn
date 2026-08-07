@@ -116,6 +116,13 @@ export const orders = pgTable("orders", {
   wilayaCode: varchar("wilaya_code", { length: 2 }),
   wilayaName: varchar("wilaya_name", { length: 255 }),
   communeName: varchar("commune_name", { length: 255 }),
+  // The customer-picked Yalidine stop-desk center (only set when
+  // deliveryType = "stop_desk"). stopdeskCommuneName is the CENTER's own
+  // commune (not the customer's) — Yalidine's createParcels requires
+  // to_commune_name to match the center, not the delivery address. See
+  // src/domain/entities/delivery.ts's DeliverySelection doc comment.
+  stopdeskCenterId: integer("stopdesk_center_id"),
+  stopdeskCommuneName: varchar("stopdesk_commune_name", { length: 255 }),
   yalidineTracking: varchar("yalidine_tracking", { length: 50 }),
 
   orderDate: timestamp("order_date").defaultNow(),

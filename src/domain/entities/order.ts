@@ -46,6 +46,11 @@ export interface Order {
   wilayaCode?: string;
   wilayaName?: string;
   communeName?: string;
+  // The customer-picked Yalidine stop-desk center (only set when
+  // deliveryType === "stop_desk"). stopdeskCommuneName is the CENTER's own
+  // commune, not the customer's — see CreateOrderPayload below.
+  stopdeskCenterId?: number;
+  stopdeskCommuneName?: string;
   yalidineTracking?: string;
   orderDate?: Date;
   createdAt: Date;
@@ -112,6 +117,14 @@ export interface CreateOrderPayload {
   wilayaCode?: string;
   wilayaName?: string;
   communeName?: string;
+  // Required when deliveryType === "stop_desk" — the real Yalidine center
+  // the customer picked in WilayaCommuneSelect (handleCenterSelect).
+  // stopdeskCommuneName is the CENTER's own commune, which is what
+  // Yalidine's createParcels needs as to_commune_name for stop-desk
+  // orders; it is NOT necessarily the same as `communeName` above (the
+  // customer's own address commune).
+  stopdeskCenterId?: number;
+  stopdeskCommuneName?: string;
 }
 
 /**

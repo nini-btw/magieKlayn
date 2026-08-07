@@ -8,8 +8,36 @@ import { orderRepository } from "@/infrastructure/db/order.adapter";
 import { getAdminSession } from "@/infrastructure/auth/supabase-auth";
 
 /**
- * GET /api/orders/stats
- * Get order statistics (admin only)
+ * @swagger
+ * /api/orders/stats:
+ *   get:
+ *     tags: [Orders]
+ *     summary: Order statistics (admin only)
+ *     description: >
+ *       With ?type=wilayas, returns the top N wilayas by order count/revenue.
+ *       Without it, returns totalOrders/totalRevenue/pendingOrders computed
+ *       in-memory over all orders (see PROJECT_DOCUMENTATION.md §7 for the
+ *       scaling caveat on this path).
+ *     security: [{ adminSession: [] }]
+ *     parameters:
+ *       - in: query
+ *         name: type
+ *         schema: { type: string, enum: [wilayas] }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 5 }
+ *         description: Only used with type=wilayas
+ *     responses:
+ *       200:
+ *         description: Statistics
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean, example: true }
+ *                 data: { type: object }
+ *       401: { description: Unauthorized }
  */
 export async function GET(request: NextRequest) {
   try {

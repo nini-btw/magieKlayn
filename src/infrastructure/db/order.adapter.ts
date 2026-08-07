@@ -55,6 +55,8 @@ export class OrderRepository implements IOrderRepository {
         wilayaCode: payload.wilayaCode,
         wilayaName: payload.wilayaName,
         communeName: payload.communeName,
+        stopdeskCenterId: payload.stopdeskCenterId,
+        stopdeskCommuneName: payload.stopdeskCommuneName,
         orderDate: new Date(),
       })
       .returning();
@@ -257,6 +259,8 @@ export class OrderRepository implements IOrderRepository {
       wilayaCode: order.wilayaCode || undefined,
       wilayaName: order.wilayaName || undefined,
       communeName: order.communeName || undefined,
+      stopdeskCenterId: order.stopdeskCenterId || undefined,
+      stopdeskCommuneName: order.stopdeskCommuneName || undefined,
       orderDate: order.orderDate ? new Date(order.orderDate) : undefined,
       createdAt: new Date(order.createdAt),
       updatedAt: new Date(order.updatedAt),

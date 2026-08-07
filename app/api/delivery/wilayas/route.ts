@@ -7,8 +7,28 @@ import { NextResponse } from "next/server";
 import { deliveryRepository } from "@/infrastructure/db/delivery.adapter";
 
 /**
- * GET /api/delivery/wilayas
- * Get all distinct wilayas for delivery
+ * @swagger
+ * /api/delivery/wilayas:
+ *   get:
+ *     tags: [Delivery]
+ *     summary: List distinct deliverable wilayas (public)
+ *     description: Distinct wilayas that have at least one delivery_zones row.
+ *     responses:
+ *       200:
+ *         description: List of wilayas
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean, example: true }
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       wilayaCode: { type: string }
+ *                       wilayaName: { type: string }
  */
 export async function GET() {
   try {
