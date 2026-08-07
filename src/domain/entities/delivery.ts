@@ -45,7 +45,29 @@ export interface DeliveryZone {
 }
 
 /**
- * Delivery selection made by customer during checkout
+ * A real Yalidine stop-desk center — the physical pickup point. Fetched
+ * live from Yalidine's `getCenters(wilayaId)`, never stored in
+ * delivery_zones. `communeName` here is the CENTER's own commune (e.g.
+ * "Chlef"), which is not necessarily the customer's commune — this is
+ * the value Yalidine's createParcels requires as `to_commune_name` for
+ * stop-desk orders, per §3 of the integration state doc.
+ */
+export interface StopdeskCenter {
+  centerId: number;
+  name: string;
+  communeName: string;
+  address?: string;
+}
+
+/**
+ * Delivery selection made by customer during checkout.
+ *
+ * For type === "stop_desk", stopdeskCenterId/stopdeskCommuneName are
+ * REQUIRED — they identify the actual physical center the customer
+ * chose, and must be passed through unchanged to Yalidine's
+ * createParcels payload (stopdesk_id + to_commune_name). Do not
+ * substitute the customer's home commune here; Yalidine validates that
+ * to_commune_name matches the center, not the customer's address.
  */
 export interface DeliverySelection {
   zoneId: string;
@@ -54,6 +76,8 @@ export interface DeliverySelection {
   wilayaCode: string;
   wilayaName: string;
   communeName: string;
+  stopdeskCenterId?: number;
+  stopdeskCommuneName?: string;
 }
 
 /**

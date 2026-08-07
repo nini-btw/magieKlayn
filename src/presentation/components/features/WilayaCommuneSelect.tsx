@@ -8,6 +8,7 @@ import type {
   DeliveryZone,
   DeliveryType,
   DeliverySelection,
+  StopdeskCenter,
 } from "@/domain/entities/delivery";
 import {
   getDeliveryFee,
@@ -36,6 +37,12 @@ export function WilayaCommuneSelect({
   );
   const [loadingWilayas, setLoadingWilayas] = React.useState(true);
   const [loadingCommunes, setLoadingCommunes] = React.useState(false);
+
+  // Stop-desk centers for the selected wilaya — fetched live from Yalidine,
+  // independent of delivery_zones.hasStopDesk (see integration state v6 §3).
+  const [centers, setCenters] = React.useState<StopdeskCenter[]>([]);
+  const [loadingCenters, setLoadingCenters] = React.useState(false);
+  const [selectedCenterId, setSelectedCenterId] = React.useState<string>("");
 
   // Fetch wilayas on mount
   React.useEffect(() => {
@@ -90,11 +97,44 @@ export function WilayaCommuneSelect({
     fetchCommunes();
   }, [selectedWilaya]);
 
+  // Fetch real stop-desk centers when wilaya changes — independent of
+  // which commune is picked, since centers only exist in a handful of
+  // communes per wilaya (e.g. wilaya 2: Boukadir, Chlef, Ténès only).
+  React.useEffect(() => {
+    if (!selectedWilaya) {
+      setCenters([]);
+      setSelectedCenterId("");
+      return;
+    }
+
+    async function fetchCenters() {
+      setLoadingCenters(true);
+      try {
+        const response = await fetch(
+          `/api/delivery/stopdesk-centers/${selectedWilaya}`,
+        );
+        const result = await response.json();
+        if (result.success) {
+          setCenters(result.data);
+        } else {
+          setCenters([]);
+        }
+      } catch (error) {
+        console.error("Failed to fetch stop-desk centers:", error);
+        setCenters([]);
+      } finally {
+        setLoadingCenters(false);
+      }
+    }
+    fetchCenters();
+  }, [selectedWilaya]);
+
   // Reset commune and type when wilaya changes
   const handleWilayaChange = (value: string) => {
     setSelectedWilaya(value);
     setSelectedCommune("");
     setSelectedType(null);
+    setSelectedCenterId("");
     onChange(null);
   };
 
@@ -102,10 +142,12 @@ export function WilayaCommuneSelect({
   const handleCommuneChange = (value: string) => {
     setSelectedCommune(value);
     setSelectedType(null);
+    setSelectedCenterId("");
     onChange(null);
   };
 
-  // Update parent when type is selected
+  // Update parent when type is selected (non-stop-desk paths finalize
+  // immediately; stop-desk waits for a center pick, see handleCenterSelect)
   const handleTypeSelect = (type: DeliveryType) => {
     const selectedZone = communes.find((c) => c.id === selectedCommune);
     if (!selectedZone) return;
@@ -115,6 +157,15 @@ export function WilayaCommuneSelect({
     );
 
     setSelectedType(type);
+    setSelectedCenterId("");
+
+    if (type === "stop_desk") {
+      // Wait for center selection before calling onChange — a
+      // DeliverySelection for stop_desk isn't complete without one.
+      onChange(null);
+      return;
+    }
+
     const fee = getDeliveryFee(selectedZone, type);
     onChange({
       zoneId: selectedZone.id,
@@ -127,6 +178,32 @@ export function WilayaCommuneSelect({
     });
   };
 
+  // Fires once the customer picks an actual center for stop-desk —
+  // this is what makes the DeliverySelection complete for stop_desk.
+  const handleCenterSelect = (centerIdValue: string) => {
+    setSelectedCenterId(centerIdValue);
+
+    const selectedZone = communes.find((c) => c.id === selectedCommune);
+    const center = centers.find((c) => String(c.centerId) === centerIdValue);
+    const selectedWilayaData = wilayas.find(
+      (w) => w.wilayaCode === selectedWilaya,
+    );
+    if (!selectedZone || !center) return;
+
+    const fee = getDeliveryFee(selectedZone, "stop_desk");
+    onChange({
+      zoneId: selectedZone.id,
+      type: "stop_desk",
+      fee,
+      wilayaCode: selectedZone.wilayaCode,
+      wilayaName:
+        selectedWilayaData?.wilayaNameAscii || selectedZone.wilayaNameAscii,
+      communeName: selectedZone.communeNameAscii,
+      stopdeskCenterId: center.centerId,
+      stopdeskCommuneName: center.communeName,
+    });
+  };
+
   // Prepare options for Select components
   const wilayaOptions = wilayas.map((w) => ({
     value: w.wilayaCode,
@@ -136,6 +213,11 @@ export function WilayaCommuneSelect({
   const communeOptions = communes.map((c) => ({
     value: c.id,
     label: c.communeNameAscii,
+  }));
+
+  const centerOptions = centers.map((c) => ({
+    value: String(c.centerId),
+    label: `${c.name} — ${c.communeName}`,
   }));
 
   // Get selected zone for displaying fees
@@ -156,6 +238,11 @@ export function WilayaCommuneSelect({
   const storePickupAvailable = selectedZone
     ? isStorePickupAvailable(selectedZone.wilayaCode)
     : false;
+
+  // Stop-desk offered if this wilaya has any real centers at all — not
+  // based on the per-commune hasStopDesk flag, which reflects fee-zone
+  // coverage rather than actual center presence (see v6 §3).
+  const stopDeskOfferable = centers.length > 0;
 
   return (
     <div className="space-y-4">
@@ -206,7 +293,7 @@ export function WilayaCommuneSelect({
           </label>
           <div className="flex gap-3">
             {/* Stop Desk Option */}
-            {selectedZone.hasStopDesk && (
+            {stopDeskOfferable && (
               <button
                 type="button"
                 onClick={() => handleTypeSelect("stop_desk")}
@@ -364,6 +451,33 @@ export function WilayaCommuneSelect({
               </button>
             )}
           </div>
+
+          {/* Center picker — shown once Stop Desk is selected, required
+              to complete a valid stop-desk DeliverySelection */}
+          {selectedType === "stop_desk" && (
+            <div
+              className={cn(
+                "pt-1",
+                loadingCenters && "opacity-50 pointer-events-none",
+              )}
+            >
+              <Select
+                value={selectedCenterId}
+                onChange={handleCenterSelect}
+                options={centerOptions}
+                label={t("checkout.stopDeskCenter") || "Pickup point"}
+                placeholder={
+                  loadingCenters
+                    ? t("common.loading") || "Loading..."
+                    : t("checkout.selectCenter") || "Select a pickup point"
+                }
+              />
+              <p className="text-xs text-[var(--color-text-secondary)] mt-1">
+                {t("checkout.stopDeskHint") ||
+                  "Pickup points are only available in certain towns within this wilaya."}
+              </p>
+            </div>
+          )}
 
           {/* Store address, shown once store_pickup is selected */}
           {selectedType === "store_pickup" && (
