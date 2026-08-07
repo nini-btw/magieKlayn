@@ -16,12 +16,43 @@ export type DeliveryType = "stop_desk" | "home" | "store_pickup";
 export const STORE_PICKUP_WILAYAS = ["16", "31"] as const;
 
 /**
- * Hardcoded store addresses, one per wilaya that offers pickup.
+ * A physical store location that offers in-store pickup.
+ * Address/phone/maps-link data lives here (single source of truth) rather
+ * than duplicated across messages/*.json — it doesn't change per language,
+ * only surrounding labels (e.g. "Address", "Call us") need translation.
+ */
+export interface StoreLocation {
+  wilayaCode: string;
+  name: string;
+  addressLine: string;
+  /** Human-readable phone, e.g. "05 41 88 76 10" */
+  phoneDisplay: string;
+  /** tel: href value, e.g. "+213541887610" */
+  phoneHref: string;
+  mapsUrl: string;
+}
+
+/**
+ * Hardcoded store locations, one per wilaya that offers pickup.
  * Not DB-driven — update here if a store moves or a new one opens.
  */
-export const STORE_PICKUP_ADDRESSES: Record<string, string> = {
-  "16": "TODO: Alger store address",
-  "31": "TODO: Oran store address",
+export const STORE_LOCATIONS: Record<string, StoreLocation> = {
+  "16": {
+    wilayaCode: "16",
+    name: "Note Cosmétique Algeria",
+    addressLine: "38 Rue Didouche Mourad, Alger Centre 16000",
+    phoneDisplay: "05 41 88 76 10",
+    phoneHref: "+213541887610",
+    mapsUrl: "https://maps.app.goo.gl/ynVj7jEsPvYQKtDc6",
+  },
+  "31": {
+    wilayaCode: "31",
+    name: "Note Cosmétique Oran",
+    addressLine: "PCF5+6CX, Oran",
+    phoneDisplay: "05 41 88 76 10",
+    phoneHref: "+213541887610",
+    mapsUrl: "https://maps.app.goo.gl/AxXd77JZ17gJ9x2N7",
+  },
 };
 
 export function isStorePickupAvailable(wilayaCode: string): boolean {

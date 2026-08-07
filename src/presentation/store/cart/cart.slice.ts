@@ -7,26 +7,31 @@ import { createSlice, createSelector, PayloadAction } from "@reduxjs/toolkit";
 import type { SerializedProduct } from "@/domain/entities/product";
 import type { CartItem } from "@/domain/entities/order";
 import { cartService } from "@/application/services/cart.service";
-import { MAX_BOX_CAPACITY } from "@/domain/rules/cart.rules";
+import { getMaxBoxCount } from "@/domain/rules/cart.rules";
 
 /**
- * Box color choice — null means no box selected (default)
+ * Box color choice for a single box
  */
 export type BoxColor = "white" | "black";
 
 /**
- * Cart state interface
+ * Cart state interface.
+ *
+ * `boxColors` is one entry per box the customer has chosen to add — its
+ * length is the box count (0 = no coffret packaging). Each box always
+ * holds exactly MAX_BOX_CAPACITY bottles; any cart quantity beyond
+ * `boxColors.length * MAX_BOX_CAPACITY` ships without a box.
  */
 export interface CartState {
   items: CartItem[];
   giftNote: string | null;
-  boxColor: BoxColor | null;
+  boxColors: BoxColor[];
 }
 
 const initialState: CartState = {
   items: [],
   giftNote: null,
-  boxColor: null,
+  boxColors: [],
 };
 
 export const cartSlice = createSlice({
@@ -41,16 +46,23 @@ export const cartSlice = createSlice({
       const result = cartService.addItem(state.items, product, quantity);
       state.items = result.items;
 
-      // If the cart now exceeds box capacity, drop any box selection
-      const totalQty = result.items.reduce((s, i) => s + i.quantity, 0);
-      if (totalQty > MAX_BOX_CAPACITY) {
-        state.boxColor = null;
+      // Trim any boxes that are no longer fillable rather than wiping the
+      // whole selection — shouldn't normally shrink on addItem, but keeps
+      // the invariant honest if this ever runs after a quantity decrease.
+      const maxBoxes = getMaxBoxCount(result.items);
+      if (state.boxColors.length > maxBoxes) {
+        state.boxColors = state.boxColors.slice(0, maxBoxes);
       }
     },
 
     removeItem: (state, action: PayloadAction<string>) => {
       const result = cartService.removeItem(state.items, action.payload);
       state.items = result.items;
+
+      const maxBoxes = getMaxBoxCount(result.items);
+      if (state.boxColors.length > maxBoxes) {
+        state.boxColors = state.boxColors.slice(0, maxBoxes);
+      }
     },
 
     updateQuantity: (
@@ -65,10 +77,11 @@ export const cartSlice = createSlice({
       );
       state.items = result.items;
 
-      // If the cart now exceeds box capacity, drop any box selection
-      const totalQty = result.items.reduce((s, i) => s + i.quantity, 0);
-      if (totalQty > MAX_BOX_CAPACITY) {
-        state.boxColor = null;
+      // If the cart no longer supports as many boxes as chosen, trim the
+      // selection down to what still fits instead of wiping it entirely.
+      const maxBoxes = getMaxBoxCount(result.items);
+      if (state.boxColors.length > maxBoxes) {
+        state.boxColors = state.boxColors.slice(0, maxBoxes);
       }
     },
 
@@ -76,21 +89,23 @@ export const cartSlice = createSlice({
       const result = cartService.clearCart();
       state.items = result.items;
       state.giftNote = null;
-      state.boxColor = null;
+      state.boxColors = [];
     },
 
     setGiftNote: (state, action: PayloadAction<string | null>) => {
       state.giftNote = action.payload;
     },
 
-    setBoxColor: (state, action: PayloadAction<BoxColor | null>) => {
-      state.boxColor = action.payload;
+    /** Full replace — the cart page manages box count + per-box color
+     * together and dispatches the whole array at once. */
+    setBoxColors: (state, action: PayloadAction<BoxColor[]>) => {
+      state.boxColors = action.payload;
     },
 
     hydrateCart: (state, action: PayloadAction<CartState>) => {
       state.items = action.payload.items;
       state.giftNote = action.payload.giftNote;
-      state.boxColor = action.payload.boxColor ?? null;
+      state.boxColors = action.payload.boxColors ?? [];
     },
   },
 });
@@ -101,15 +116,15 @@ export const {
   updateQuantity,
   clearCart,
   setGiftNote,
-  setBoxColor,
+  setBoxColors,
   hydrateCart,
 } = cartSlice.actions;
 
 export const selectCartItems = (state: { cart: CartState }) => state.cart.items;
 export const selectGiftNote = (state: { cart: CartState }) =>
   state.cart.giftNote;
-export const selectBoxColor = (state: { cart: CartState }) =>
-  state.cart.boxColor;
+export const selectBoxColors = (state: { cart: CartState }) =>
+  state.cart.boxColors;
 
 export const selectCartSummary = createSelector([selectCartItems], (items) =>
   cartService.getCartSummary(items),
@@ -126,11 +141,20 @@ export const selectCartTotal = createSelector(
 );
 
 /**
- * Whether the cart currently qualifies for box packaging (max 4 bottles)
+ * How many full boxes (each exactly MAX_BOX_CAPACITY bottles) the current
+ * cart can support.
+ */
+export const selectMaxBoxCount = createSelector([selectCartItems], (items) =>
+  getMaxBoxCount(items),
+);
+
+/**
+ * Whether coffret packaging is offerable at all (needs >=1 full box worth
+ * of bottles in the cart).
  */
 export const selectIsBoxEligible = createSelector(
-  [selectTotalItemCount],
-  (itemCount) => itemCount > 0 && itemCount <= MAX_BOX_CAPACITY,
+  [selectMaxBoxCount],
+  (maxBoxes) => maxBoxes >= 1,
 );
 
 export default cartSlice.reducer;

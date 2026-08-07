@@ -37,7 +37,9 @@ export interface Order {
   totalAmount: number;
   packagingType: PackagingType;
   coffretFee?: number;
-  boxColor?: BoxColor; // <-- new
+  // One entry per box (each box holds exactly MAX_BOX_CAPACITY bottles,
+  // see src/domain/rules/cart.rules.ts); empty/undefined = no coffret.
+  boxColors?: BoxColor[];
 
   // Delivery details
   deliveryZoneId: string;
@@ -109,7 +111,8 @@ export interface CreateOrderPayload {
   items: CartItem[];
   packagingType?: PackagingType;
   coffretFee?: number;
-  boxColor?: BoxColor; // <-- new
+  // One entry per box the customer chose (see Order.boxColors above).
+  boxColors?: BoxColor[];
 
   deliveryZoneId: string;
   deliveryType: "stop_desk" | "home" | "store_pickup";

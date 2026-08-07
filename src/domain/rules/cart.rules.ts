@@ -45,11 +45,32 @@ export function getTotalItemCount(items: CartItem[]): number {
   return items.reduce((sum, item) => sum + item.quantity, 0);
 }
 
-/** A coffret (gift box) can hold at most this many bottles */
+/**
+ * A coffret (gift box) always holds exactly this many bottles — not more,
+ * not less. A cart with more than this many bottles can still box some of
+ * them (see getMaxBoxCount); the remainder always ships without a box.
+ */
 export const MAX_BOX_CAPACITY = 4;
 
-/** Whether the current cart is eligible for coffret packaging */
+/**
+ * How many full boxes of MAX_BOX_CAPACITY the current cart can fill.
+ * E.g. 7 bottles -> 1 (4 boxed, 3 ship normally); 8 bottles -> 2 (both
+ * boxable, or the customer can choose fewer and ship the rest normally).
+ */
+export function getMaxBoxCount(items: CartItem[]): number {
+  return Math.floor(getTotalItemCount(items) / MAX_BOX_CAPACITY);
+}
+
+/** Whether coffret packaging is offerable at all (needs >=1 full box) */
 export function isBoxPackagingEligible(items: CartItem[]): boolean {
-  const count = getTotalItemCount(items);
-  return count > 0 && count <= MAX_BOX_CAPACITY;
+  return getMaxBoxCount(items) >= 1;
+}
+
+/** Flat fee per box (not per bottle) — shared by client cart UI and the
+ * orders API's server-side fee recomputation, so they can never drift. */
+export const BOX_FEE = 800;
+
+/** Total coffret fee for a given number of chosen boxes. */
+export function calculateCoffretFee(boxCount: number): number {
+  return BOX_FEE * boxCount;
 }

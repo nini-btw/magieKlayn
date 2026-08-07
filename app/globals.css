@@ -1057,50 +1057,56 @@
    Story / About
    ========================================================================== */
 
-.story {
+/* Namespaced ".about-story*" (not ".story*") — the homepage's own story
+   section (further down this file, "Story glow field") uses the same-looking
+   class names for a completely different, position:relative/100vw layout.
+   Keeping these distinct avoids the two colliding since the later-loaded
+   rule would otherwise win for both usages. */
+.about-story {
   padding: clamp(4rem, 9vw, 7rem) var(--space-2xl);
   margin: 0 auto;
   width: "100vw";
 }
 
-.story-inner {
+.about-story-inner {
   display: flex;
   align-items: center;
   gap: clamp(2.5rem, 6vw, 5rem);
   flex-wrap: wrap;
 }
 
-.story-swatches {
-  flex: 0 0 auto;
-  width: min(36vw, 340px);
-  aspect-ratio: 1;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: clamp(0.6rem, 1.6vw, 1.1rem);
-}
-
-.story-swatches span {
-  border-radius: 50%;
-  background-color: var(--c);
-  box-shadow: var(--shadow-card);
-}
-.story-swatches span:nth-child(2n) {
-  align-self: end;
-}
-.story-swatches span:nth-child(3n) {
-  align-self: center;
-}
-
-.story-text {
+.about-story-text {
   flex: 1 1 380px;
   max-width: 480px;
 }
-.story-text .section-description {
+.about-story-text .section-description {
   max-width: 100%;
 }
-.story-text em {
+.about-story-text em {
   font-style: italic;
   color: var(--color-text);
+}
+
+/* Curved, thin (~1rem) color strip built from real product colors —
+   replaces the old hardcoded 3x3 swatch grid. */
+.story-color-strip {
+  flex: 0 0 auto;
+  width: min(28vw, 220px);
+  margin: 0 auto;
+}
+.story-color-strip-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+.story-color-strip-segment {
+  cursor: pointer;
+  transition: filter var(--duration-base) var(--ease-luxury);
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.15));
+}
+.story-color-strip-segment:hover {
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.25));
 }
 
 /* ==========================================================================
@@ -1240,16 +1246,16 @@
     margin: var(--space-lg) auto 0;
   }
 
-  .story-inner {
+  .about-story-inner {
     justify-content: center;
     text-align: center;
   }
-  .story-text {
+  .about-story-text {
     display: flex;
     flex-direction: column;
     align-items: center;
   }
-  .story-text .section-description {
+  .about-story-text .section-description {
     text-align: center;
   }
 }
@@ -1310,8 +1316,8 @@
     align-items: center;
   }
 
-  .story-swatches {
-    width: min(70vw, 260px);
+  .story-color-strip {
+    width: min(50vw, 180px);
   }
 
   .footer-top {

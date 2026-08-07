@@ -106,7 +106,9 @@ export const orders = pgTable("orders", {
     .notNull(),
   // Only populated when packagingType = 'luxury_coffret'
   coffretFee: integer("coffret_fee"),
-  boxColor: boxColorEnum("box_color"), // <-- new, only set when packagingType = 'luxury_coffret'
+  // One entry per box (each box holds exactly 4 bottles); empty/null when
+  // packagingType = 'standard'. Postgres enum array, e.g. {white,black}.
+  boxColors: boxColorEnum("box_colors").array(),
 
   deliveryZoneId: uuid("delivery_zone_id")
     .references(() => deliveryZones.id)

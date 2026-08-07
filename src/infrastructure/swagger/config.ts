@@ -99,7 +99,11 @@ export function getApiDocs() {
               totalAmount: { type: "integer" },
               packagingType: { type: "string", enum: ["standard", "luxury_coffret"] },
               coffretFee: { type: "integer", nullable: true },
-              boxColor: { type: "string", enum: ["white", "black"], nullable: true },
+              boxColors: {
+                type: "array",
+                items: { type: "string", enum: ["white", "black"] },
+                nullable: true,
+              },
               deliveryZoneId: { type: "string", format: "uuid" },
               deliveryType: { type: "string", enum: ["stop_desk", "home", "store_pickup"] },
               deliveryFee: { type: "integer", nullable: true },

@@ -3,9 +3,12 @@
 import * as React from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { STORE_LOCATIONS } from "@/domain/entities/delivery";
 
 export default function ShippingPage() {
   const t = useTranslations();
+  const algiers = STORE_LOCATIONS["16"];
+  const oran = STORE_LOCATIONS["31"];
 
   return (
     <>
@@ -110,7 +113,7 @@ export default function ShippingPage() {
                 {t("shipping.addressLabel")}
               </span>
               <span className="store-detail-value">
-                {t("shipping.storeAlgiers.address")}
+                {algiers.name}, {algiers.addressLine}
               </span>
             </div>
 
@@ -128,14 +131,12 @@ export default function ShippingPage() {
                 {t("shipping.phoneLabel")}
               </span>
               <span className="store-detail-value">
-                <a href={`tel:${t("shipping.storeAlgiers.phoneHref")}`}>
-                  {t("shipping.storeAlgiers.phone")}
-                </a>
+                <a href={`tel:${algiers.phoneHref}`}>{algiers.phoneDisplay}</a>
               </span>
             </div>
 
             <a
-              href={t("shipping.storeAlgiers.mapUrl")}
+              href={algiers.mapsUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="store-map-link"
@@ -155,7 +156,7 @@ export default function ShippingPage() {
                 {t("shipping.addressLabel")}
               </span>
               <span className="store-detail-value">
-                {t("shipping.storeOran.address")}
+                {oran.name}, {oran.addressLine}
               </span>
             </div>
 
@@ -173,14 +174,12 @@ export default function ShippingPage() {
                 {t("shipping.phoneLabel")}
               </span>
               <span className="store-detail-value">
-                <a href={`tel:${t("shipping.storeOran.phoneHref")}`}>
-                  {t("shipping.storeOran.phone")}
-                </a>
+                <a href={`tel:${oran.phoneHref}`}>{oran.phoneDisplay}</a>
               </span>
             </div>
 
             <a
-              href={t("shipping.storeOran.mapUrl")}
+              href={oran.mapsUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="store-map-link"

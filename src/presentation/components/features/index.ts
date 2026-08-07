@@ -10,3 +10,5 @@ export { LanguageSwitcher } from "./LanguageSwitcher";
 export { ProductCard } from "./ProductCard";
 export { StepIndicator } from "./StepIndicator";
 export { ToastContainer } from "./ToastContainer";
+export { StoryColorStrip } from "./StoryColorStrip";
+export type { StoryColorStripItem } from "./StoryColorStrip";

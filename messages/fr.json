@@ -165,12 +165,13 @@
 
   "cart": {
     "packaging": {
-      "selectedNote": "Cliquez sur le × pour retirer le coffret.",
-      "remove": "Retirer le coffret",
       "title": "Coffret de Luxe",
-      "capacityNote": "Le coffret peut contenir jusqu'à 4 flacons maximum.",
-      "notEligible": "Le coffret n'est disponible que pour 4 flacons ou moins (vous en avez {count}).",
-      "none": "Sans coffret",
+      "capacityNote": "Chaque coffret contient exactement 4 flacons.",
+      "notEligible": "Les coffrets nécessitent au moins 4 flacons dans votre panier (vous en avez {count}).",
+      "boxLabel": "Coffret {n}",
+      "addBox": "Ajouter un coffret",
+      "summary": "{boxed} flacon(s) en coffret, {rest} expédié(s) normalement.",
+      "noneSelected": "Aucun coffret sélectionné — tous les flacons seront expédiés normalement.",
       "white": "Blanc",
       "black": "Noir",
       "fee": "Coffret"
@@ -202,11 +203,11 @@
     "selectCommune": "Sélectionner la commune",
     "deliveryType": "Type de Livraison",
     "stopDesk": "Stop Desk",
-    "stopDeskRecommended": "Recommandé",
     "stopDeskCenter": "Point de retrait",
     "selectCenter": "Choisir un point de retrait",
     "stopDeskHint": "Les points de retrait ne sont disponibles que dans certaines villes de cette wilaya.",
     "homeDelivery": "Livraison à Domicile",
+    "getDirections": "Itinéraire",
     "selectDelivery": "Sélectionner la livraison",
     "noWilayas": "Zones de livraison indisponibles. Veuillez contacter le support.",
     "giftNote": "Message Cadeau (facultatif)",
@@ -480,7 +481,7 @@
     "value3Desc": "Des formules longue tenue, douces pour la peau et les cheveux, pensées pour un usage quotidien.",
     "findUsEyebrow": "Venez Nous Voir",
     "findUsTitle": "Retrouvez-nous en Boutique",
-    "findUsDesc": "Disponible chez une sélection de points de vente à travers le pays — consultez notre page Points de Vente pour trouver le plus proche de vous.",
+    "findUsDesc": "Venez nous rendre visite à Alger ou à Oran — consultez notre page Livraison & Retrait pour les adresses complètes et les horaires.",
     "ctaTitle": "Prêt(e) à trouver votre couleur ?",
     "ctaDesc": "Explorez les quatorze brumes et trouvez celle qui correspond à votre humeur.",
     "ctaButton": "Découvrir la Collection"
@@ -528,16 +529,24 @@
             "a": "Nous livrons dans les 58 wilayas via Stop Desk ou livraison à domicile. Les options disponibles s'affichent automatiquement lors du paiement selon votre adresse."
           },
           {
+            "q": "Combien coûte la livraison ?",
+            "a": "Les frais de livraison dépendent de votre wilaya et du mode choisi (Stop Desk ou domicile) — le montant exact est calculé et affiché lors du paiement avant confirmation. Le retrait en boutique à Alger ou à Oran est toujours gratuit."
+          },
+          {
             "q": "Combien de temps prend la livraison ?",
             "a": "Les commandes Stop Desk arrivent généralement sous 2 à 4 jours ouvrables. La livraison à domicile peut prendre un peu plus de temps selon votre région."
           },
           {
             "q": "Puis-je suivre ma commande ?",
-            "a": "Oui. Dès l'expédition de votre commande, vous recevrez les informations de suivi par téléphone ou e-mail afin de la suivre à chaque étape."
+            "a": "Oui. Dès l'expédition de votre commande, vous recevrez les informations de suivi par téléphone ou e-mail afin de la suivre à chaque étape. Vous pouvez aussi nous joindre directement au 05 41 88 76 10."
           },
           {
             "q": "Quels moyens de paiement acceptez-vous ?",
             "a": "Nous acceptons actuellement le paiement à la livraison pour toutes les commandes, le paiement par carte arrivera bientôt."
+          },
+          {
+            "q": "Puis-je retirer ma commande en boutique ?",
+            "a": "Oui — le retrait gratuit en boutique est disponible à Alger et à Oran. Consultez notre page Livraison & Retrait pour les adresses complètes et les horaires."
           }
         ]
       },
@@ -546,8 +555,8 @@
         "sublabel": "Notes de Fond",
         "items": [
           {
-            "q": "Puis-je composer un coffret personnalisé ?",
-            "a": "Oui. Utilisez Composez Votre Coffret pour choisir une taille et combiner les brumes de votre choix en un seul coffret, idéal pour offrir ou pour en essayer plusieurs à la fois."
+            "q": "Puis-je avoir un coffret cadeau ?",
+            "a": "Oui. Un coffret contient toujours exactement 4 flacons. Ajoutez 4 flacons ou plus à votre panier et un coffret blanc ou noir vous sera proposé pour 800 DA. Au-delà de 4, vous pouvez choisir le nombre de coffrets souhaité (chacun contenant toujours exactement 4 flacons, dans sa propre couleur) — le reste est expédié sans coffret."
           },
           {
             "q": "Comment conserver ma brume ?",
@@ -583,20 +592,12 @@
     "storeAlgiers": {
       "badge": "Boutique",
       "city": "Alger",
-      "address": "12 Rue Didouche Mourad, Alger 16000",
-      "hours": "Lun–Sam, 10h00 – 19h00",
-      "phone": "+213 21 00 00 00",
-      "phoneHref": "+21321000000",
-      "mapUrl": "https://maps.app.goo.gl/8Z4rURyqWBcNkdFN6"
+      "hours": "Lun–Sam, 10h00 – 19h00"
     },
     "storeOran": {
       "badge": "Boutique",
       "city": "Oran",
-      "address": "8 Boulevard de l'ALN, Oran 31000",
-      "hours": "Lun–Sam, 10h00 – 19h00",
-      "phone": "+213 41 00 00 00",
-      "phoneHref": "+21341000000",
-      "mapUrl": "https://maps.app.goo.gl/7nTjBh27SqT7rgRR7"
+      "hours": "Lun–Sam, 10h00 – 19h00"
     },
     "ctaEyebrow": "Des Questions ?",
     "ctaTitle": "Vous ne trouvez pas ce que vous cherchez ?",

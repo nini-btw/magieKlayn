@@ -11,6 +11,7 @@ import { getAdminSession } from "@/infrastructure/auth/supabase-auth";
 import type { CreateOrderPayload, OrderFilters } from "@/domain/entities/order";
 import { telegramNotificationService } from "@/infrastructure/telegram/telegram-notification.service";
 import { createParcelForOrder } from "@/../scripts/create-parcel"; // adjust path to your actual import alias
+import { getMaxBoxCount, calculateCoffretFee } from "@/domain/rules/cart.rules";
 
 /**
  * @swagger
@@ -144,8 +145,11 @@ export async function GET(request: NextRequest) {
  *                 type: string
  *                 description: Required when deliveryType = stop_desk — the center's own commune
  *               packagingType: { type: string, enum: [standard, luxury_coffret] }
- *               coffretFee: { type: integer }
- *               boxColor: { type: string, enum: [white, black] }
+ *               coffretFee: { type: integer, description: Recomputed server-side as 800 x boxColors.length }
+ *               boxColors:
+ *                 type: array
+ *                 items: { type: string, enum: [white, black] }
+ *                 description: One entry per box (each box holds exactly 4 bottles); required when packagingType = luxury_coffret
  *     responses:
  *       201:
  *         description: Order created
@@ -187,25 +191,33 @@ export async function POST(request: NextRequest) {
       );
     }
     if (body.packagingType === "luxury_coffret") {
-      const totalQty = body.items.reduce(
-        (s: number, i: any) => s + i.quantity,
-        0,
-      );
-      if (totalQty > 4) {
+      const maxBoxes = getMaxBoxCount(body.items);
+      const boxColors = body.boxColors ?? [];
+
+      if (
+        !Array.isArray(boxColors) ||
+        boxColors.length === 0 ||
+        boxColors.some((c) => c !== "white" && c !== "black")
+      ) {
+        return NextResponse.json(
+          { success: false, error: "Please select a box color for each box" },
+          { status: 400 },
+        );
+      }
+      if (boxColors.length > maxBoxes) {
         return NextResponse.json(
           {
             success: false,
-            error: "Coffret packaging is only available for up to 4 bottles",
+            error: `A box holds exactly 4 bottles — your cart only supports ${maxBoxes} box(es)`,
           },
           { status: 400 },
         );
       }
-      if (!body.boxColor) {
-        return NextResponse.json(
-          { success: false, error: "Please select a box color" },
-          { status: 400 },
-        );
-      }
+
+      // Recompute the coffret fee server-side (800 DA per box) rather than
+      // trusting the client-sent value.
+      body.coffretFee = calculateCoffretFee(boxColors.length);
+      body.boxColors = boxColors;
     }
 
     // Stop-desk orders must carry the real Yalidine center the customer

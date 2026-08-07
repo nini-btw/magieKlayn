@@ -175,12 +175,13 @@
     "note": "Special requests? Add them at checkout",
     "clearCart": "Clear Cart",
     "packaging": {
-      "selectedNote": "Click the × to remove the gift box.",
-      "remove": "Remove gift box",
       "title": "Luxury Box",
-      "capacityNote": "The box can hold up to 4 bottles maximum.",
-      "notEligible": "The gift box is only available for 4 bottles or fewer (you have {count}).",
-      "none": "No box",
+      "capacityNote": "Each box holds exactly 4 bottles.",
+      "notEligible": "Gift boxes require at least 4 bottles in your cart (you have {count}).",
+      "boxLabel": "Box {n}",
+      "addBox": "Add a box",
+      "summary": "{boxed} bottle(s) boxed, {rest} shipped normally.",
+      "noneSelected": "No box selected — all bottles will ship normally.",
       "white": "White",
       "black": "Black",
       "fee": "Gift box"
@@ -202,11 +203,11 @@
     "selectCommune": "Select commune",
     "deliveryType": "Delivery Type",
     "stopDesk": "Stop Desk",
-    "stopDeskRecommended": "Recommended",
     "stopDeskCenter": "Pickup point",
     "selectCenter": "Select a pickup point",
     "stopDeskHint": "Pickup points are only available in certain towns within this wilaya.",
     "homeDelivery": "Home Delivery",
+    "getDirections": "Get directions",
     "selectDelivery": "Select delivery",
     "noWilayas": "Delivery zones not available. Please contact support.",
     "giftNote": "Gift Note (optional)",
@@ -480,7 +481,7 @@
     "value3Desc": "Long-lasting, skin- and hair-safe formulas designed for everyday wear.",
     "findUsEyebrow": "Visit Us",
     "findUsTitle": "Find Us In Store",
-    "findUsDesc": "Available at select stockists across the country — check our Stockists page for locations near you.",
+    "findUsDesc": "Visit us in person in Algiers or Oran — see our Shipping & Pickup page for full addresses and opening hours.",
     "ctaTitle": "Ready to find your color?",
     "ctaDesc": "Explore all fourteen mists and find the one that matches your mood.",
     "ctaButton": "Shop the Collection"
@@ -528,16 +529,24 @@
             "a": "We deliver across all 58 wilayas via Stop Desk or Home Delivery. Available options are shown automatically at checkout based on your address."
           },
           {
+            "q": "How much does delivery cost?",
+            "a": "Delivery fees depend on your wilaya and whether you choose Stop Desk or Home Delivery — the exact fee is calculated and shown at checkout before you confirm your order. Picking up in person at our Algiers or Oran store is always free."
+          },
+          {
             "q": "How long does delivery take?",
             "a": "Stop Desk orders typically arrive within 2 to 4 business days. Home delivery may take slightly longer depending on your area."
           },
           {
             "q": "Can I track my order?",
-            "a": "Yes. Once your order ships, you'll receive tracking details by phone or email so you can follow it every step of the way."
+            "a": "Yes. Once your order ships, you'll receive tracking details by phone or email so you can follow it every step of the way. You can also reach us directly at 05 41 88 76 10."
           },
           {
             "q": "What payment methods do you accept?",
             "a": "We currently accept cash on delivery for all orders, with card payment coming soon."
+          },
+          {
+            "q": "Can I pick up my order in store?",
+            "a": "Yes — free store pickup is available in Algiers and Oran. See our Shipping & Pickup page for the full addresses and opening hours."
           }
         ]
       },
@@ -546,8 +555,8 @@
         "sublabel": "Base Notes",
         "items": [
           {
-            "q": "Can I build a custom box?",
-            "a": "Yes. Use Build Your Box to select a size and mix any mists you like into one coffret, perfect for gifting or trying several at once."
+            "q": "Can I get a gift box (coffret)?",
+            "a": "Yes. A coffret always holds exactly 4 bottles. Add 4 or more to your cart and you'll be offered a box in white or black for 800 DA. With more than 4, you can choose how many boxes you want (each still holding exactly 4, in its own color) — anything left over ships without a box."
           },
           {
             "q": "How should I store my mist?",
@@ -583,20 +592,12 @@
     "storeAlgiers": {
       "badge": "Boutique",
       "city": "Algiers",
-      "address": "12 Rue Didouche Mourad, Algiers 16000",
-      "hours": "Mon–Sat, 10:00 – 19:00",
-      "phone": "+213 21 00 00 00",
-      "phoneHref": "+21321000000",
-      "mapUrl": "https://maps.app.goo.gl/8Z4rURyqWBcNkdFN6"
+      "hours": "Mon–Sat, 10:00 – 19:00"
     },
     "storeOran": {
       "badge": "Boutique",
       "city": "Oran",
-      "address": "8 Boulevard de l'ALN, Oran 31000",
-      "hours": "Mon–Sat, 10:00 – 19:00",
-      "phone": "+213 41 00 00 00",
-      "phoneHref": "+21341000000",
-      "mapUrl": "https://maps.app.goo.gl/7nTjBh27SqT7rgRR7"
+      "hours": "Mon–Sat, 10:00 – 19:00"
     },
     "ctaEyebrow": "Questions?",
     "ctaTitle": "Can't find what you're looking for?",

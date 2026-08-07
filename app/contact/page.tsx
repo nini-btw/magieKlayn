@@ -87,7 +87,7 @@ export default function ContactPage() {
                   {t("contact.phoneLabel")}
                 </p>
                 <p className="contact-info-item-value">
-                  <a href="tel:+213000000000">+213 0 00 00 00 00</a>
+                  <a href="tel:+213541887610">05 41 88 76 10</a>
                 </p>
               </div>
               <div>

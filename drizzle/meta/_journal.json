@@ -71,6 +71,20 @@
       "when": 1786127168402,
       "tag": "0009_low_zaladane",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1786139069018,
+      "tag": "0010_fearless_giant_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1786139089943,
+      "tag": "0011_dashing_sunfire",
+      "breakpoints": true
     }
   ]
 }

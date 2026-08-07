@@ -72,7 +72,7 @@ function CartPersistenceProvider() {
           hydrateCart({
             items,
             giftNote: parsed.giftNote || null,
-            boxColor: parsed.boxColor || null,
+            boxColors: Array.isArray(parsed.boxColors) ? parsed.boxColors : [],
           }),
         );
       }

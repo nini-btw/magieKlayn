@@ -84,8 +84,8 @@ export class TelegramNotificationService implements INotificationService {
       .join("\n");
 
     const packagingLine =
-      order.packagingType === "luxury_coffret"
-        ? `🎁 Coffret de luxe${order.boxColor ? ` (${order.boxColor})` : ""}`
+      order.packagingType === "luxury_coffret" && order.boxColors?.length
+        ? `🎁 ${order.boxColors.length}× Coffret de luxe (${order.boxColors.join(", ")})`
         : "";
 
     const deliveryLine = [

@@ -1,23 +1,30 @@
 "use client";
 
 import * as React from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-
-const STORY_SWATCHES = [
-  "#C43A63",
-  "#D0223A",
-  "#EFAE7D",
-  "#F4CE55",
-  "#A98AE0",
-  "#7A3E9E",
-  "#2FB6A8",
-  "#1B1B1B",
-  "#E8C9DC",
-];
+import type { Product } from "@/domain/entities/product";
+import { StoryColorStrip } from "@/presentation/components/features/StoryColorStrip";
 
 export default function AboutPage() {
   const t = useTranslations();
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const response = await fetch("/api/products");
+        const result = await response.json();
+        if (result.success) {
+          setProducts(result.data.filter((p: Product) => p.isActive));
+        }
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+      }
+    }
+    fetchProducts();
+  }, []);
 
   return (
     <>
@@ -31,14 +38,12 @@ export default function AboutPage() {
         <p className="section-description">{t("about.pageIntro")}</p>
       </section>
 
-      <section className="story">
-        <div className="story-inner">
-          <div className="story-swatches" aria-hidden="true">
-            {STORY_SWATCHES.map((c, i) => (
-              <span key={i} style={{ "--c": c } as React.CSSProperties} />
-            ))}
-          </div>
-          <div className="story-text">
+      <section className="about-story">
+        <div className="about-story-inner">
+          <StoryColorStrip
+            items={products.map((p) => ({ colorHex: p.colorHex, name: p.name }))}
+          />
+          <div className="about-story-text">
             <p className="eyebrow">{t("about.eyebrow")}</p>
             <h2 className="section-title">
               {t("about.titleLine1")}
@@ -99,6 +104,9 @@ export default function AboutPage() {
           {t("about.findUsTitle")}
         </h2>
         <p className="section-description">{t("about.findUsDesc")}</p>
+        <Link href="/shipping" className="btn btn-secondary">
+          {t("shipping.title") || "Shipping & Pickup"}
+        </Link>
       </section>
 
       <section className="page-cta">

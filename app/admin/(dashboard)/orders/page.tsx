@@ -468,17 +468,21 @@ function OrderDetailSidebar({
                       {t("admin.orders.orderDetails.luxuryCoffret")}
                     </p>
                     <div className="admin-note-body-row">
-                      {order.boxColor && (
-                        <span className="admin-box-color-chip">
+                      {order.boxColors?.map((color, i) => (
+                        <span
+                          key={i}
+                          className="admin-box-color-chip"
+                          title={`${t("admin.orders.orderDetails.luxuryCoffret")} ${i + 1}`}
+                        >
                           <span
                             className="admin-box-color-dot"
                             style={{
-                              backgroundColor: BOX_COLOR_SWATCH[order.boxColor],
+                              backgroundColor: BOX_COLOR_SWATCH[color],
                             }}
                           />
-                          {t(`cart.packaging.${order.boxColor}`)}
+                          {t(`cart.packaging.${color}`)}
                         </span>
-                      )}
+                      ))}
                       {order.coffretFee !== undefined && (
                         <p className="admin-note-body">
                           {formatPrice(order.coffretFee)}

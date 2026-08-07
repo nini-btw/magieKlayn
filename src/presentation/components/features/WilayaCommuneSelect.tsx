@@ -13,9 +13,26 @@ import type {
 import {
   getDeliveryFee,
   isStorePickupAvailable,
-  STORE_PICKUP_ADDRESSES,
+  STORE_LOCATIONS,
 } from "@/domain/entities/delivery";
 import { StoreIcon, HomeIcon, MapPinIcon } from "lucide-react";
+
+// Same normalization as src/infrastructure/yalidine/stopdesk-resolver.ts's
+// server-side fallback matcher — diacritics/case/whitespace-insensitive,
+// since Yalidine's own commune_name spellings (e.g. "Aïn El Turck") can
+// diverge from ours (e.g. "Ain El Turk").
+function normalizeCommuneName(name: string): string {
+  // Combining diacritical marks are code points 0x0300-0x036f; strip them
+  // via numeric comparison rather than a \uXXXX regex literal, which is
+  // error-prone to keep as literal escape text across editor tooling.
+  const stripped = Array.from(name.trim().toLowerCase().normalize("NFD"))
+    .filter((ch) => {
+      const code = ch.codePointAt(0) ?? 0;
+      return code < 0x0300 || code > 0x036f;
+    })
+    .join("");
+  return stripped.replace(/[\s-]+/g, " ");
+}
 
 interface WilayaCommuneSelectProps {
   onChange: (selection: DeliverySelection | null) => void;
@@ -145,16 +162,31 @@ export function WilayaCommuneSelect({
   }, [selectedCommune, centers.length, selectedType]);
 
   // Once Stop Desk is the active type (whether picked manually or by the
-  // effect above), auto-pick the first available center so the whole
-  // selection is complete with zero clicks — the customer can still
-  // change it via the dropdown, which calls handleCenterSelect normally.
+  // effect above), auto-pick a center so the whole selection is complete
+  // with zero clicks — the customer can still change it via the dropdown,
+  // which calls handleCenterSelect normally. Default is the wilaya-level
+  // "main" center: the one whose commune matches the wilaya's own name
+  // (e.g. wilaya "Chlef" -> a center located in commune "Chlef"), since
+  // that's typically the central/main Yalidine center for the wilaya.
+  // Falls back to the first center in the list when no center's commune
+  // matches the wilaya name.
   React.useEffect(() => {
     if (selectedType !== "stop_desk") return;
     if (selectedCenterId) return;
     if (centers.length === 0) return;
-    handleCenterSelect(String(centers[0].centerId));
+
+    const wilayaData = wilayas.find((w) => w.wilayaCode === selectedWilaya);
+    const normalizedWilayaName = wilayaData
+      ? normalizeCommuneName(wilayaData.wilayaNameAscii)
+      : "";
+    const matchingCenter = centers.find(
+      (c) => normalizeCommuneName(c.communeName) === normalizedWilayaName,
+    );
+    const target = matchingCenter ?? centers[0];
+
+    handleCenterSelect(String(target.centerId));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedType, centers, selectedCenterId]);
+  }, [selectedType, centers, selectedCenterId, selectedWilaya, wilayas]);
 
   // Reset commune and type when wilaya changes
   const handleWilayaChange = (value: string) => {
@@ -331,9 +363,6 @@ export function WilayaCommuneSelect({
                     : "border-[var(--color-border)] bg-[var(--color-white)] hover:border-[var(--color-text)]/50",
                 )}
               >
-                <span className="absolute top-2 left-2 px-1.5 py-0.5 rounded-full text-[10px] font-medium leading-none bg-[var(--color-text)] text-[var(--color-white)]">
-                  {t("checkout.stopDeskRecommended") || "Recommended"}
-                </span>
                 <StoreIcon
                   className={cn(
                     "w-8 h-8 mb-2",
@@ -510,12 +539,38 @@ export function WilayaCommuneSelect({
           )}
 
           {/* Store address, shown once store_pickup is selected */}
-          {selectedType === "store_pickup" && (
-            <p className="text-xs text-[var(--color-text-secondary)] mt-1">
-              {t("checkout.storePickupAddress") || "Pickup address"}:{" "}
-              {STORE_PICKUP_ADDRESSES[selectedZone.wilayaCode]}
-            </p>
-          )}
+          {selectedType === "store_pickup" &&
+            STORE_LOCATIONS[selectedZone.wilayaCode] &&
+            (() => {
+              const location = STORE_LOCATIONS[selectedZone.wilayaCode];
+              return (
+                <div className="text-xs text-[var(--color-text-secondary)] mt-1 space-y-0.5">
+                  <p>
+                    <span className="font-medium text-[var(--color-text)]">
+                      {t("checkout.storePickupAddress") || "Pickup address"}:
+                    </span>{" "}
+                    {location.name}, {location.addressLine}
+                  </p>
+                  <p>
+                    <a
+                      href={`tel:${location.phoneHref}`}
+                      className="underline hover:text-[var(--color-text)]"
+                    >
+                      {location.phoneDisplay}
+                    </a>
+                    {" · "}
+                    <a
+                      href={location.mapsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline hover:text-[var(--color-text)]"
+                    >
+                      {t("checkout.getDirections") || "Get directions"}
+                    </a>
+                  </p>
+                </div>
+              );
+            })()}
         </div>
       )}
     </div>
