@@ -28,11 +28,11 @@ const sizeClasses: Record<NonNullable<SelectProps["size"]>, string> = {
 
 const variantClasses: Record<NonNullable<SelectProps["variant"]>, string> = {
   default:
-    "bg-white border-[var(--color-text)]/20 hover:border-[var(--color-text)]/50",
+    "bg-white border-foreground/20 hover:border-foreground/50",
   outline:
-    "bg-transparent border-[var(--color-text)]/30 hover:border-[var(--color-text)]",
+    "bg-transparent border-foreground/30 hover:border-foreground",
   filled:
-    "bg-[var(--color-bg-soft)] border-transparent hover:bg-[var(--color-border)]",
+    "bg-(--color-bg-soft) border-transparent hover:bg-(--color-border)",
 };
 
 export const Select: React.FC<SelectProps> = ({
@@ -66,7 +66,7 @@ export const Select: React.FC<SelectProps> = ({
   return (
     <div className={cn("relative", className)} ref={dropdownRef}>
       {label && (
-        <label className="mb-1.5 block text-sm font-medium text-[var(--color-text)]">
+        <label className="mb-1.5 block text-sm font-medium text-foreground">
           {label}
         </label>
       )}
@@ -77,27 +77,27 @@ export const Select: React.FC<SelectProps> = ({
         aria-haspopup="listbox"
         aria-expanded={isOpen}
         className={cn(
-          "flex w-full cursor-pointer items-center justify-between rounded-full border transition-all duration-[var(--duration-base)] ease-[var(--ease-luxury)]",
+          "flex w-full cursor-pointer items-center justify-between rounded-full border transition-all duration-(--duration-base) ease-(--ease-luxury)",
           sizeClasses[size],
           variantClasses[variant],
-          selectedOption && !isOpen && "border-[var(--color-text)]",
+          selectedOption && !isOpen && "border-foreground",
           isOpen &&
-            "border-[var(--color-text)] ring-2 ring-[var(--color-text)]/10",
+            "border-foreground ring-2 ring-foreground/10",
         )}
       >
         <span
           className={cn(
             "truncate font-medium",
             selectedOption
-              ? "text-[var(--color-text)]"
-              : "text-[var(--color-text-secondary)]",
+              ? "text-foreground"
+              : "text-(--color-text-secondary)",
           )}
         >
           {selectedOption?.label || placeholder}
         </span>
         <ChevronDownIcon
           className={cn(
-            "ml-2 h-4 w-4 shrink-0 text-[var(--color-text-secondary)] transition-transform duration-[var(--duration-base)]",
+            "ml-2 h-4 w-4 shrink-0 text-(--color-text-secondary) transition-transform duration-(--duration-base)",
             isOpen && "rotate-180",
           )}
         />
@@ -106,7 +106,7 @@ export const Select: React.FC<SelectProps> = ({
       {isOpen && (
         <div
           role="listbox"
-          className="absolute top-full left-0 right-0 z-50 mt-2 max-h-64 overflow-hidden rounded-2xl border border-[var(--color-border)] bg-white shadow-[var(--shadow-card)]"
+          className="absolute top-full left-0 right-0 z-50 mt-2 max-h-64 overflow-hidden rounded-2xl border border-(--color-border) bg-white shadow-(--shadow-card)"
         >
           <div className="max-h-64 overflow-y-auto py-1">
             {options.map((option) => {
@@ -122,17 +122,17 @@ export const Select: React.FC<SelectProps> = ({
                     setIsOpen(false);
                   }}
                   className={cn(
-                    "flex w-full cursor-pointer items-center justify-between px-4 py-2.5 text-left transition-colors duration-[var(--duration-base)] ease-[var(--ease-luxury)]",
+                    "flex w-full cursor-pointer items-center justify-between px-4 py-2.5 text-left transition-colors duration-(--duration-base) ease-(--ease-luxury)",
                     isSelected
-                      ? "bg-[var(--color-bg-soft)]"
-                      : "bg-white hover:bg-[var(--color-bg-soft)]",
+                      ? "bg-(--color-bg-soft)"
+                      : "bg-white hover:bg-(--color-bg-soft)",
                   )}
                 >
-                  <span className="text-sm font-medium text-[var(--color-text)]">
+                  <span className="text-sm font-medium text-foreground">
                     {option.label}
                   </span>
                   {isSelected && (
-                    <CheckIcon className="h-4 w-4 shrink-0 text-[var(--color-text)]" />
+                    <CheckIcon className="h-4 w-4 shrink-0 text-foreground" />
                   )}
                 </button>
               );

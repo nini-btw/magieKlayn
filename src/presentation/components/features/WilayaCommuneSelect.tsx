@@ -285,8 +285,8 @@ export function WilayaCommuneSelect({
   // Show message if no wilayas available
   if (!loadingWilayas && wilayas.length === 0) {
     return (
-      <div className="p-4 bg-[var(--color-bg-soft)] border border-[var(--color-border)] rounded-[var(--radius-card)]">
-        <p className="text-sm text-[var(--color-text-secondary)]">
+      <div className="p-4 bg-(--color-bg-soft) border border-(--color-border) rounded-(--radius-card)">
+        <p className="text-sm text-(--color-text-secondary)">
           {t("checkout.noWilayas") ||
             "Delivery zones not available. Please contact support."}
         </p>
@@ -347,7 +347,7 @@ export function WilayaCommuneSelect({
       {/* Delivery Type Selection */}
       {selectedZone && (
         <div className="space-y-3">
-          <label className="block text-sm font-medium text-[var(--color-text)]">
+          <label className="block text-sm font-medium text-foreground">
             {t("checkout.deliveryType") || "Delivery Type"}
           </label>
           <div className="flex gap-3">
@@ -357,37 +357,37 @@ export function WilayaCommuneSelect({
                 type="button"
                 onClick={() => handleTypeSelect("stop_desk")}
                 className={cn(
-                  "relative flex-1 flex flex-col items-center p-4 rounded-[var(--radius-card)] border-2 transition-all duration-[var(--duration-base)] ease-[var(--ease-luxury)] cursor-pointer",
+                  "relative flex-1 flex flex-col items-center p-4 rounded-(--radius-card) border-2 transition-all duration-(--duration-base) ease-(--ease-luxury) cursor-pointer",
                   selectedType === "stop_desk"
-                    ? "border-[var(--color-text)] bg-[var(--color-bg-soft)]"
-                    : "border-[var(--color-border)] bg-[var(--color-white)] hover:border-[var(--color-text)]/50",
+                    ? "border-foreground bg-(--color-bg-soft)"
+                    : "border-(--color-border) bg-(--color-white) hover:border-foreground/50",
                 )}
               >
                 <StoreIcon
                   className={cn(
                     "w-8 h-8 mb-2",
                     selectedType === "stop_desk"
-                      ? "text-[var(--color-text)]"
-                      : "text-[var(--color-text-secondary)]",
+                      ? "text-foreground"
+                      : "text-(--color-text-secondary)",
                   )}
                 />
                 <span
                   className={cn(
                     "font-medium text-sm",
                     selectedType === "stop_desk"
-                      ? "text-[var(--color-text)]"
-                      : "text-[var(--color-text-secondary)]",
+                      ? "text-foreground"
+                      : "text-(--color-text-secondary)",
                   )}
                 >
                   {t("checkout.stopDesk") || "Stop Desk"}
                 </span>
-                <span className="text-xs text-[var(--color-text-secondary)] mt-1">
+                <span className="text-xs text-(--color-text-secondary) mt-1">
                   {formatPrice(selectedZone.stopDeskFee)}
                 </span>
                 {selectedType === "stop_desk" && (
-                  <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[var(--color-text)] flex items-center justify-center">
+                  <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-foreground flex items-center justify-center">
                     <svg
-                      className="w-3 h-3 text-[var(--color-white)]"
+                      className="w-3 h-3 text-(--color-white)"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -410,37 +410,37 @@ export function WilayaCommuneSelect({
                 type="button"
                 onClick={() => handleTypeSelect("home")}
                 className={cn(
-                  "relative flex-1 flex flex-col items-center p-4 rounded-[var(--radius-card)] border-2 transition-all duration-[var(--duration-base)] ease-[var(--ease-luxury)] cursor-pointer",
+                  "relative flex-1 flex flex-col items-center p-4 rounded-(--radius-card) border-2 transition-all duration-(--duration-base) ease-(--ease-luxury) cursor-pointer",
                   selectedType === "home"
-                    ? "border-[var(--color-text)] bg-[var(--color-bg-soft)]"
-                    : "border-[var(--color-border)] bg-[var(--color-white)] hover:border-[var(--color-text)]/50",
+                    ? "border-foreground bg-(--color-bg-soft)"
+                    : "border-(--color-border) bg-(--color-white) hover:border-foreground/50",
                 )}
               >
                 <HomeIcon
                   className={cn(
                     "w-8 h-8 mb-2",
                     selectedType === "home"
-                      ? "text-[var(--color-text)]"
-                      : "text-[var(--color-text-secondary)]",
+                      ? "text-foreground"
+                      : "text-(--color-text-secondary)",
                   )}
                 />
                 <span
                   className={cn(
                     "font-medium text-sm",
                     selectedType === "home"
-                      ? "text-[var(--color-text)]"
-                      : "text-[var(--color-text-secondary)]",
+                      ? "text-foreground"
+                      : "text-(--color-text-secondary)",
                   )}
                 >
                   {t("checkout.homeDelivery") || "Home Delivery"}
                 </span>
-                <span className="text-xs text-[var(--color-text-secondary)] mt-1">
+                <span className="text-xs text-(--color-text-secondary) mt-1">
                   {formatPrice(selectedZone.homeFee)}
                 </span>
                 {selectedType === "home" && (
-                  <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[var(--color-text)] flex items-center justify-center">
+                  <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-foreground flex items-center justify-center">
                     <svg
-                      className="w-3 h-3 text-[var(--color-white)]"
+                      className="w-3 h-3 text-(--color-white)"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -463,37 +463,37 @@ export function WilayaCommuneSelect({
                 type="button"
                 onClick={() => handleTypeSelect("store_pickup")}
                 className={cn(
-                  "relative flex-1 flex flex-col items-center p-4 rounded-[var(--radius-card)] border-2 transition-all duration-[var(--duration-base)] ease-[var(--ease-luxury)] cursor-pointer",
+                  "relative flex-1 flex flex-col items-center p-4 rounded-(--radius-card) border-2 transition-all duration-(--duration-base) ease-(--ease-luxury) cursor-pointer",
                   selectedType === "store_pickup"
-                    ? "border-[var(--color-text)] bg-[var(--color-bg-soft)]"
-                    : "border-[var(--color-border)] bg-[var(--color-white)] hover:border-[var(--color-text)]/50",
+                    ? "border-foreground bg-(--color-bg-soft)"
+                    : "border-(--color-border) bg-(--color-white) hover:border-foreground/50",
                 )}
               >
                 <MapPinIcon
                   className={cn(
                     "w-8 h-8 mb-2",
                     selectedType === "store_pickup"
-                      ? "text-[var(--color-text)]"
-                      : "text-[var(--color-text-secondary)]",
+                      ? "text-foreground"
+                      : "text-(--color-text-secondary)",
                   )}
                 />
                 <span
                   className={cn(
                     "font-medium text-sm",
                     selectedType === "store_pickup"
-                      ? "text-[var(--color-text)]"
-                      : "text-[var(--color-text-secondary)]",
+                      ? "text-foreground"
+                      : "text-(--color-text-secondary)",
                   )}
                 >
                   {t("checkout.storePickup") || "Store Pickup"}
                 </span>
-                <span className="text-xs text-[var(--color-text-secondary)] mt-1">
+                <span className="text-xs text-(--color-text-secondary) mt-1">
                   {t("common.free") || "Free"}
                 </span>
                 {selectedType === "store_pickup" && (
-                  <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[var(--color-text)] flex items-center justify-center">
+                  <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-foreground flex items-center justify-center">
                     <svg
-                      className="w-3 h-3 text-[var(--color-white)]"
+                      className="w-3 h-3 text-(--color-white)"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -531,7 +531,7 @@ export function WilayaCommuneSelect({
                     : t("checkout.selectCenter") || "Select a pickup point"
                 }
               />
-              <p className="text-xs text-[var(--color-text-secondary)] mt-1">
+              <p className="text-xs text-(--color-text-secondary) mt-1">
                 {t("checkout.stopDeskHint") ||
                   "Pickup points are only available in certain towns within this wilaya."}
               </p>
@@ -550,16 +550,16 @@ export function WilayaCommuneSelect({
                     ? t("shipping.storeOran.hours")
                     : null;
               return (
-                <div className="text-xs text-[var(--color-text-secondary)] mt-1 space-y-0.5">
+                <div className="text-xs text-(--color-text-secondary) mt-1 space-y-0.5">
                   <p>
-                    <span className="font-medium text-[var(--color-text)]">
+                    <span className="font-medium text-foreground">
                       {t("checkout.storePickupAddress") || "Pickup address"}:
                     </span>{" "}
                     {location.name}, {location.addressLine}
                   </p>
                   {hours && (
                     <p>
-                      <span className="font-medium text-[var(--color-text)]">
+                      <span className="font-medium text-foreground">
                         {t("shipping.hoursLabel")}:
                       </span>{" "}
                       {hours}
@@ -568,7 +568,7 @@ export function WilayaCommuneSelect({
                   <p>
                     <a
                       href={`tel:${location.phoneHref}`}
-                      className="underline hover:text-[var(--color-text)]"
+                      className="underline hover:text-foreground"
                     >
                       {location.phoneDisplay}
                     </a>
@@ -577,7 +577,7 @@ export function WilayaCommuneSelect({
                       href={location.mapsUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="underline hover:text-[var(--color-text)]"
+                      className="underline hover:text-foreground"
                     >
                       {t("checkout.getDirections") || "Get directions"}
                     </a>

@@ -49,13 +49,13 @@ export const ToastContainer: React.FC = () => {
             initial="initial"
             animate="animate"
             exit="exit"
-            className="flex min-w-[280px] items-center gap-3 rounded-[var(--radius-card)] bg-[var(--color-text)] px-5 py-3.5 text-sm font-medium text-[var(--color-white)] shadow-[var(--shadow-card)]"
+            className="flex min-w-[280px] items-center gap-3 rounded-(--radius-card) bg-foreground px-5 py-3.5 text-sm font-medium text-(--color-white) shadow-(--shadow-card)"
           >
             {toast.type && toastIcons[toast.type]}
             <span className="flex-1">{toast.message}</span>
             <button
               onClick={() => dispatch(removeToast(toast.id))}
-              className="rounded-full p-1 transition-colors duration-[var(--duration-base)] ease-[var(--ease-luxury)] hover:bg-white/10"
+              className="rounded-full p-1 transition-colors duration-(--duration-base) ease-(--ease-luxury) hover:bg-white/10"
             >
               <XIcon className="h-4 w-4" />
             </button>

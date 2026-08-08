@@ -89,7 +89,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     >
       <Link
         href={`/shop/${product.slug}`}
-        className="product-card group relative flex h-full flex-col overflow-hidden rounded-[var(--radius-card)] border border-[var(--color-border)] transition-colors duration-700 ease-[var(--ease-luxury)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)]"
+        className="product-card group relative flex h-full flex-col overflow-hidden rounded-(--radius-card) border border-(--color-border) transition-colors duration-700 ease-(--ease-luxury) hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)]"
         style={{ backgroundColor: isHovered ? accentColor : "#ffffff" }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -97,11 +97,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         {(isNew || isSoldOut) && (
           <div className="absolute top-3 left-3 z-10">
             {isSoldOut ? (
-              <span className="inline-flex items-center rounded-full border border-[var(--color-border)] bg-white/90 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wider text-[var(--color-text-muted)] backdrop-blur-sm">
+              <span className="inline-flex items-center rounded-full border border-(--color-border) bg-white/90 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wider text-(--color-text-muted) backdrop-blur-sm">
                 {t("shop.soldOut")}
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-border)] bg-white/90 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wider text-[var(--color-text)] backdrop-blur-sm">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-(--color-border) bg-white/90 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wider text-foreground backdrop-blur-sm">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                 {t("shop.new")}
               </span>
@@ -110,12 +110,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         )}
 
         {hasPhoto ? (
-          <div className="relative aspect-[4/5] w-full shrink-0 overflow-hidden bg-[var(--color-bg-soft)]">
+          <div className="relative aspect-[4/5] w-full shrink-0 overflow-hidden bg-(--color-bg-soft)">
             <Image
               src={product.images[0]}
               alt={product.name}
               fill
-              className={`object-cover transition-opacity duration-700 ease-[var(--ease-luxury)] ${
+              className={`object-cover transition-opacity duration-700 ease-(--ease-luxury) ${
                 isSoldOut ? "opacity-50 grayscale" : ""
               }`}
               sizes="(max-width: 700px) 50vw, (max-width: 1024px) 33vw, 25vw"
@@ -124,7 +124,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         ) : (
           <div
-            className={`bottle relative flex aspect-[4/5] w-full shrink-0 items-center justify-center transition-opacity duration-700 ease-[var(--ease-luxury)] ${
+            className={`bottle relative flex aspect-[4/5] w-full shrink-0 items-center justify-center transition-opacity duration-700 ease-(--ease-luxury) ${
               isSoldOut ? "opacity-50 grayscale" : ""
             }`}
             style={
@@ -146,7 +146,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         <div className="relative z-[2] flex min-h-[76px] items-start justify-between gap-2 p-4">
           <div className="min-w-0">
             <p
-              className="product-name truncate transition-colors duration-700 ease-[var(--ease-luxury)]"
+              className="product-name truncate transition-colors duration-700 ease-(--ease-luxury)"
               style={{
                 color: isHovered && needsWhiteText ? "#ffffff" : undefined,
               }}
@@ -154,7 +154,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               {product.name}
             </p>
             <p
-              className="product-meta transition-colors duration-700 ease-[var(--ease-luxury)]"
+              className="product-meta transition-colors duration-700 ease-(--ease-luxury)"
               style={{
                 color: isHovered && needsWhiteText ? "#ffffff" : undefined,
               }}

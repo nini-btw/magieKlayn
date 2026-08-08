@@ -52,7 +52,7 @@ export const ProductDetail: React.FC<{ product: Product }> = ({ product }) => {
   return (
     <div
       data-testid="product-detail"
-      className="mx-auto my-4 grid max-w-[1440px] gap-12 px-[var(--space-md)] py-[var(--space-lg)] sm:px-[var(--space-lg)] lg:grid-cols-2 lg:px-[var(--space-2xl)]"
+      className="mx-auto my-4 grid max-w-[1440px] gap-12 px-(--space-md) py-(--space-lg) sm:px-(--space-lg) lg:grid-cols-2 lg:px-(--space-2xl)"
     >
       {/* Visual */}
       <motion.div
@@ -130,7 +130,7 @@ export const ProductDetail: React.FC<{ product: Product }> = ({ product }) => {
         )}
 
         {/* Price */}
-        <p className="text-[var(--color-text)] text-3xl font-extrabold tabular-nums">
+        <p className="text-foreground text-3xl font-extrabold tabular-nums">
           {formatPrice(product.price)}
         </p>
 
@@ -175,9 +175,9 @@ export const ProductDetail: React.FC<{ product: Product }> = ({ product }) => {
         </div>
 
         {/* Quantity & Add to Cart */}
-        <div className="border-[var(--color-border)] space-y-4 border-t pt-6">
+        <div className="border-(--color-border) space-y-4 border-t pt-6">
           <div className="flex items-center gap-4">
-            <span className="text-[var(--color-text)] text-sm font-semibold">
+            <span className="text-foreground text-sm font-semibold">
               {t("product.quantity")}:
             </span>
             <QuantityStepper
@@ -194,8 +194,8 @@ export const ProductDetail: React.FC<{ product: Product }> = ({ product }) => {
             disabled={product.isSoldOut}
             className={`!border-2 ${
               product.isSoldOut
-                ? "!border-[var(--color-border)] !bg-[var(--color-bg-soft)] !text-[var(--color-text-secondary)]"
-                : "!border-[var(--color-text)] !bg-[var(--color-text)] !text-[var(--color-white)] hover:!bg-transparent hover:!text-[var(--color-text)]"
+                ? "!border-(--color-border) !bg-(--color-bg-soft) !text-(--color-text-secondary)"
+                : "!border-foreground !bg-foreground !text-(--color-white) hover:!bg-transparent hover:!text-foreground"
             }`}
           >
             {product.isSoldOut ? t("shop.soldOut") : t("shop.addToCart")}

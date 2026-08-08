@@ -81,7 +81,7 @@ const ProductThumb: React.FC<{
   name: string;
 }> = ({ image, colorHex, name }) => (
   <div
-    className="relative w-20 h-20 rounded-[var(--radius-main)] overflow-hidden flex-shrink-0"
+    className="relative w-20 h-20 rounded-(--radius-main) overflow-hidden shrink-0"
     style={{
       background: image
         ? `color-mix(in srgb, ${colorHex} 14%, white)`
@@ -112,10 +112,10 @@ const BoxColorCard: React.FC<{
     <button
       type="button"
       onClick={onSelect}
-      className={`group relative flex flex-col items-center justify-center gap-2 h-44 px-2 rounded-[var(--radius-main)] border-2 overflow-hidden transition-all duration-[var(--duration-base)] ease-[var(--ease-luxury)] cursor-pointer ${
+      className={`group relative flex flex-col items-center justify-center gap-2 h-44 px-2 rounded-(--radius-main) border-2 overflow-hidden transition-all duration-(--duration-base) ease-(--ease-luxury) cursor-pointer ${
         isSelected
-          ? "border-[var(--color-text)] shadow-[0_8px_24px_-6px_rgba(0,0,0,0.25)] scale-[1.02]"
-          : "border-[var(--color-border)] hover:border-[var(--color-text-secondary)] hover:-translate-y-0.5 hover:shadow-[0_6px_18px_-8px_rgba(0,0,0,0.18)]"
+          ? "border-foreground shadow-[0_8px_24px_-6px_rgba(0,0,0,0.25)] scale-[1.02]"
+          : "border-(--color-border) hover:border-(--color-text-secondary) hover:-translate-y-0.5 hover:shadow-[0_6px_18px_-8px_rgba(0,0,0,0.18)]"
       }`}
       style={{ background: CARD_BG[color] }}
     >
@@ -125,14 +125,14 @@ const BoxColorCard: React.FC<{
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 4 }}
-            className="absolute bottom-2 left-2 w-5 h-5 rounded-full bg-[var(--color-text)] text-[var(--color-white)] flex items-center justify-center z-10"
+            className="absolute bottom-2 left-2 w-5 h-5 rounded-full bg-foreground text-(--color-white) flex items-center justify-center z-10"
           >
             <CheckIcon className="w-3 h-3" />
           </motion.span>
         )}
       </AnimatePresence>
 
-      <div className="relative w-28 h-24 transition-transform duration-[var(--duration-base)] ease-[var(--ease-luxury)] group-hover:scale-105">
+      <div className="relative w-28 h-24 transition-transform duration-(--duration-base) ease-(--ease-luxury) group-hover:scale-105">
         <Image
           src={BOX_IMAGES[color]}
           alt={
@@ -144,7 +144,7 @@ const BoxColorCard: React.FC<{
           className="object-contain scale-150 drop-shadow-[0_6px_10px_rgba(0,0,0,0.18)]"
         />
       </div>
-      <span className="text-xs font-medium text-[var(--color-text)] capitalize tracking-wide">
+      <span className="text-xs font-medium text-foreground capitalize tracking-wide">
         {color === "white"
           ? t("cart.packaging.white") || "Blanc"
           : t("cart.packaging.black") || "Noir"}
@@ -188,10 +188,10 @@ const BoxPackagingSelector: React.FC<{
   };
 
   return (
-    <div className="mt-4 p-5 bg-[var(--color-white)] rounded-[var(--radius-card)] border border-[var(--color-border)] shadow-[var(--shadow-soft)]">
+    <div className="mt-4 p-5 bg-(--color-white) rounded-(--radius-card) border border-(--color-border) shadow-(--shadow-soft)">
       <div className="flex items-center gap-2 mb-1">
-        <PackageIcon className="w-4 h-4 text-[var(--color-text-secondary)]" />
-        <h3 className="font-bold text-[var(--color-text)] text-sm">
+        <PackageIcon className="w-4 h-4 text-(--color-text-secondary)" />
+        <h3 className="font-bold text-foreground text-sm">
           {t("cart.packaging.title") || "Coffret cadeau (optionnel)"}
         </h3>
       </div>
@@ -202,7 +202,7 @@ const BoxPackagingSelector: React.FC<{
         </p>
       ) : (
         <>
-          <p className="text-xs text-[var(--color-text-secondary)] mb-4">
+          <p className="text-xs text-(--color-text-secondary) mb-4">
             {t("cart.packaging.capacityNote") ||
               `Each box holds exactly ${MAX_BOX_CAPACITY} bottles.`}
           </p>
@@ -212,7 +212,7 @@ const BoxPackagingSelector: React.FC<{
               const isLast = i === boxColors.length - 1;
               return (
                 <div key={i}>
-                  <p className="text-xs font-medium text-[var(--color-text-secondary)] mb-2">
+                  <p className="text-xs font-medium text-(--color-text-secondary) mb-2">
                     {t("cart.packaging.boxLabel", { n: i + 1 })}
                   </p>
                   <div className="grid grid-cols-2 gap-4">
@@ -236,7 +236,7 @@ const BoxPackagingSelector: React.FC<{
 
             {hasNextSlot && (
               <div>
-                <p className="text-xs font-medium text-[var(--color-text-secondary)] mb-2">
+                <p className="text-xs font-medium text-(--color-text-secondary) mb-2">
                   {t("cart.packaging.addBox") || "Add a box"}
                 </p>
                 <div className="grid grid-cols-2 gap-4">
@@ -254,7 +254,7 @@ const BoxPackagingSelector: React.FC<{
             )}
           </div>
 
-          <p className="text-xs text-[var(--color-text-secondary)]">
+          <p className="text-xs text-(--color-text-secondary)">
             {boxCount > 0
               ? t("cart.packaging.summary", {
                   boxed: boxedCount,
@@ -374,33 +374,33 @@ export default function CartPage() {
 
   if (orderComplete) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[var(--color-bg)]">
-        <div className="mx-auto w-full px-[var(--space-md)] max-w-lg">
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="mx-auto w-full px-(--space-md) max-w-lg">
           <motion.div
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="bg-[var(--color-white)] rounded-[var(--radius-card)] shadow-[var(--shadow-soft)] p-8 text-center border border-[var(--color-border)]"
+            className="bg-(--color-white) rounded-(--radius-card) shadow-(--shadow-soft) p-8 text-center border border-(--color-border)"
             data-testid="order-success"
           >
-            <div className="w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-6 bg-[var(--color-bg-soft)]">
-              <CheckCircleIcon className="w-8 h-8 text-[var(--color-text)]" />
+            <div className="w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-6 bg-(--color-bg-soft)">
+              <CheckCircleIcon className="w-8 h-8 text-foreground" />
             </div>
-            <h1 className="font-display text-3xl text-[var(--color-text)] mb-4">
+            <h1 className="font-display text-3xl text-foreground mb-4">
               {t("checkout.success")}
             </h1>
-            <p className="text-[var(--color-text-secondary)] mb-2">
+            <p className="text-(--color-text-secondary) mb-2">
               {t("footer.tagline")}
             </p>
             {orderId && (
-              <p className="text-sm text-[var(--color-text-secondary)] mb-6">
+              <p className="text-sm text-(--color-text-secondary) mb-6">
                 {t("admin.orders.orderId")}: {orderId.slice(0, 8)}
               </p>
             )}
             <Link href="/shop" className="cursor-pointer">
               <Button
                 fullWidth
-                className="!border-2 !border-[var(--color-text)] !bg-[var(--color-text)] !text-[var(--color-white)] hover:!bg-transparent hover:!text-[var(--color-text)] cursor-pointer transition-colors duration-[var(--duration-base)] ease-[var(--ease-luxury)]"
+                className="!border-2 !border-foreground !bg-foreground !text-(--color-white) hover:!bg-transparent hover:!text-foreground cursor-pointer transition-colors duration-(--duration-base) ease-(--ease-luxury)"
               >
                 {t("cart.continueShopping")}
               </Button>
@@ -413,17 +413,17 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[var(--color-bg)]">
-        <div className="mx-auto w-full px-[var(--space-md)] max-w-lg text-center">
-          <ShoppingBagIcon className="w-16 h-16 text-[var(--color-border)] mx-auto mb-6" />
-          <h1 className="font-display text-3xl text-[var(--color-text)] mb-4">
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="mx-auto w-full px-(--space-md) max-w-lg text-center">
+          <ShoppingBagIcon className="w-16 h-16 text-(--color-border) mx-auto mb-6" />
+          <h1 className="font-display text-3xl text-foreground mb-4">
             {t("cart.empty")}
           </h1>
-          <p className="text-[var(--color-text-secondary)] mb-8">
+          <p className="text-(--color-text-secondary) mb-8">
             {t("shop.subtitle")}
           </p>
           <Link href="/shop" className="cursor-pointer">
-            <Button className="!border-2 !border-[var(--color-text)] !bg-[var(--color-text)] !text-[var(--color-white)] hover:!bg-transparent hover:!text-[var(--color-text)] cursor-pointer transition-colors duration-[var(--duration-base)] ease-[var(--ease-luxury)]">
+            <Button className="!border-2 !border-foreground !bg-foreground !text-(--color-white) hover:!bg-transparent hover:!text-foreground cursor-pointer transition-colors duration-(--duration-base) ease-(--ease-luxury)">
               {t("home.hero.shopNow")}
             </Button>
           </Link>
@@ -433,18 +433,18 @@ export default function CartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg)]">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <section className="bg-[var(--color-bg-soft)] py-12">
-        <div className="mx-auto w-full px-[var(--space-2xl)] max-w-[1440px]">
+      <section className="bg-(--color-bg-soft) py-12">
+        <div className="mx-auto w-full px-(--space-2xl) max-w-[1440px]">
           <Link
             href="/shop"
-            className="inline-flex items-center gap-2 text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition-colors duration-[var(--duration-base)] ease-[var(--ease-luxury)] mb-4 cursor-pointer"
+            className="inline-flex items-center gap-2 text-(--color-text-secondary) hover:text-foreground transition-colors duration-(--duration-base) ease-(--ease-luxury) mb-4 cursor-pointer"
           >
             <ArrowLeftIcon className="w-4 h-4" />
             {t("cart.continueShopping")}
           </Link>
-          <h1 className="font-display text-4xl sm:text-5xl text-[var(--color-text)]">
+          <h1 className="font-display text-4xl sm:text-5xl text-foreground">
             {t("cart.title")}
           </h1>
         </div>
@@ -452,11 +452,11 @@ export default function CartPage() {
 
       {/* Cart Content */}
       <section className="py-16 lg:py-24">
-        <div className="mx-auto w-full px-[var(--space-2xl)] max-w-[1440px]">
+        <div className="mx-auto w-full px-(--space-2xl) max-w-[1440px]">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
             {/* Left: Order Summary */}
             <motion.div variants={fadeInUp} initial="initial" animate="animate">
-              <h2 className="font-display text-2xl text-[var(--color-text)] mb-6">
+              <h2 className="font-display text-2xl text-foreground mb-6">
                 {t("cart.orderSummary")}
               </h2>
 
@@ -464,7 +464,7 @@ export default function CartPage() {
                 {items.map((item) => (
                   <div
                     key={item.product.id}
-                    className="flex gap-4 p-4 bg-[var(--color-white)] rounded-[var(--radius-card)] border border-[var(--color-border)]"
+                    className="flex gap-4 p-4 bg-(--color-white) rounded-(--radius-card) border border-(--color-border)"
                   >
                     <ProductThumb
                       image={item.product.images?.[0]}
@@ -473,10 +473,10 @@ export default function CartPage() {
                     />
 
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-bold text-[var(--color-text)] text-sm truncate">
+                      <h4 className="font-bold text-foreground text-sm truncate">
                         {item.product.name}
                       </h4>
-                      <p className="text-[var(--color-text-secondary)] text-xs mt-0.5">
+                      <p className="text-(--color-text-secondary) text-xs mt-0.5">
                         {formatPrice(item.product.price)}
                       </p>
 
@@ -494,7 +494,7 @@ export default function CartPage() {
                         />
                         <button
                           onClick={() => dispatch(removeItem(item.product.id))}
-                          className="p-2 text-[var(--color-text-secondary)] hover:text-red-500 transition-colors duration-[var(--duration-base)] ease-[var(--ease-luxury)] cursor-pointer"
+                          className="p-2 text-(--color-text-secondary) hover:text-red-500 transition-colors duration-(--duration-base) ease-(--ease-luxury) cursor-pointer"
                           aria-label="Remove item"
                         >
                           <Trash2Icon className="w-4 h-4" />
@@ -522,7 +522,7 @@ export default function CartPage() {
               animate="animate"
               transition={{ delay: 0.1 }}
             >
-              <h2 className="font-display text-2xl text-[var(--color-text)] mb-6">
+              <h2 className="font-display text-2xl text-foreground mb-6">
                 {t("checkout.title")}
               </h2>
 
@@ -562,41 +562,41 @@ export default function CartPage() {
                   t={t}
                 />
 
-                <div className="bg-[var(--color-white)] rounded-[var(--radius-card)] p-6 border border-[var(--color-border)] mt-6">
+                <div className="bg-(--color-white) rounded-(--radius-card) p-6 border border-(--color-border) mt-6">
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-[var(--color-text-secondary)]">
+                    <span className="text-(--color-text-secondary)">
                       {t("common.subtotal")}
                     </span>
-                    <span className="text-[var(--color-text)]">
+                    <span className="text-foreground">
                       {formatPrice(subtotal)}
                     </span>
                   </div>
                   {boxColors.length > 0 && (
                     <div className="flex justify-between items-center mb-2">
-                      <span className="text-[var(--color-text-secondary)]">
+                      <span className="text-(--color-text-secondary)">
                         {t("cart.packaging.fee") || "Coffret"}
                         {boxColors.length > 1 ? ` ×${boxColors.length}` : ""}
                       </span>
-                      <span className="text-[var(--color-text)]">
+                      <span className="text-foreground">
                         {formatPrice(coffretFee)}
                       </span>
                     </div>
                   )}
                   <div className="flex justify-between items-center mb-4">
-                    <span className="text-[var(--color-text-secondary)]">
+                    <span className="text-(--color-text-secondary)">
                       {t("common.delivery")}
                     </span>
-                    <span className="text-[var(--color-text)]">
+                    <span className="text-foreground">
                       {deliveryFee > 0
                         ? formatPrice(deliveryFee)
                         : t("common.free")}
                     </span>
                   </div>
-                  <div className="border-t border-[var(--color-border)] pt-4 flex justify-between items-center">
-                    <span className="font-bold text-[var(--color-text)]">
+                  <div className="border-t border-(--color-border) pt-4 flex justify-between items-center">
+                    <span className="font-bold text-foreground">
                       {t("common.total")}
                     </span>
-                    <span className="text-2xl font-extrabold text-[var(--color-text)]">
+                    <span className="text-2xl font-extrabold text-foreground">
                       {formatPrice(orderTotal)}
                     </span>
                   </div>
@@ -608,7 +608,7 @@ export default function CartPage() {
                   fullWidth
                   isLoading={isSubmitting}
                   disabled={!deliverySelection}
-                  className="!border-2 !border-[var(--color-text)] !bg-[var(--color-text)] !text-[var(--color-white)] hover:!bg-transparent hover:!text-[var(--color-text)] disabled:!bg-[var(--color-bg-soft)] disabled:!border-[var(--color-border)] disabled:!text-[var(--color-text-secondary)] cursor-pointer transition-colors duration-[var(--duration-base)] ease-[var(--ease-luxury)]"
+                  className="!border-2 !border-foreground !bg-foreground !text-(--color-white) hover:!bg-transparent hover:!text-foreground disabled:!bg-(--color-bg-soft) disabled:!border-(--color-border) disabled:!text-(--color-text-secondary) cursor-pointer transition-colors duration-(--duration-base) ease-(--ease-luxury)"
                   data-testid="place-order-button"
                 >
                   {!deliverySelection
@@ -616,7 +616,7 @@ export default function CartPage() {
                     : t("checkout.placeOrder")}
                 </Button>
 
-                <p className="text-xs text-[var(--color-text-secondary)] text-center">
+                <p className="text-xs text-(--color-text-secondary) text-center">
                   {t("footer.tagline")}
                 </p>
               </form>

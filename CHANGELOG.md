@@ -7,10 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-Everything below reflects the current working tree against the last commit (`c65466f`) — nothing here has been tagged/deployed yet.
+### Changed
+- Repo-wide Tailwind v4 class-syntax cleanup (no visual/behavioral change): arbitrary CSS-variable values written as `text-[var(--foo)]` converted to the shorter `text-(--foo)` syntax across 10 files (`ProductForm.tsx`, `WilayaCommuneSelect.tsx`, `ProductDetail.tsx`, admin `products/page.tsx`, `CartDrawer.tsx`, `LanguageSwitcher.tsx`, `ProductCard.tsx`, `ToastContainer.tsx`, `Select.tsx`, `app/cart/page.tsx`); `--color-text`/`--color-bg` (which have a real mapping to Tailwind's `foreground`/`background` theme tokens via `app/globals.css`'s `@theme inline` bridge) converted to those semantic utility names instead. `flex-shrink-0` renamed to its v4 alias `shrink-0` in the 3 files that used it.
+- `CLAUDE.md`'s Documentation Sync Policy sharpened to explicitly cover the *after*-commit side: `CHANGELOG.md`'s `[Unreleased]` section should be converted into a real dated version entry once its contents are actually committed/pushed, not left open-ended indefinitely.
+
+## [0.2.0] - 2026-08-08
+
+Everything below was committed as `3ed4350` and pushed to `origin/yalidine`.
 
 ### Added
-- Optional `inspiredBy` fragrance-icon field on products (e.g. `"Dior Lucky"`) — new `products.inspired_by` column (migration `0012_chemical_maginty`), threaded through the domain entity, repository, `POST`/`PUT /api/products`, the admin product form, and a new "Inspired By" block on the product detail page (`app/shop/[slug]/ProductDetail.tsx`), styled as a soft pill with a sparkle mark.
+- Optional `inspiredBy` fragrance-icon field on products (e.g. `"Dior Lucky"`) — new `products.inspired_by` column (migration `0012_chemical_maginty`), threaded through the domain entity, repository, `POST`/`PUT /api/products`, and the admin product form. On the product detail page (`app/shop/[slug]/ProductDetail.tsx`), it's folded inline into the end of the description paragraph — colored with the product's own signature `colorHex` — rather than shown as a separate block.
+- `AUTH_DOCUMENTATION.md` — full audit of the admin authentication system (login flow, the synthetic-Supabase-password bridge, session verification, route protection, and a ranked list of known security gaps with recommendations).
 - `gender` selector in the admin product form (`ProductForm.tsx`) — the field existed on the `Product` entity/schema already but had no way to be set from the admin UI until now.
 - `scripts/seed-inspired-by.ts` — one-time, dry-run-by-default backfill script that populates `products.inspired_by` for the 14 launch mists from their original mist→inspiration pairing.
 - Real Instagram (`@magie.klayn.algerie`) and TikTok (`@magieklaynalgerie`) links on the footer's social icons (previously `href="#"` placeholders).

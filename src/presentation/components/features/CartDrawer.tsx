@@ -29,7 +29,7 @@ const ProductThumb: React.FC<{
   name: string;
 }> = ({ image, colorHex, name }) => (
   <div
-    className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-[var(--radius-main)]"
+    className="relative h-20 w-20 shrink-0 overflow-hidden rounded-(--radius-main)"
     style={{
       background: image
         ? `color-mix(in srgb, ${colorHex} 14%, white)`
@@ -74,7 +74,7 @@ export const CartDrawer: React.FC = () => {
             initial="initial"
             animate="animate"
             exit="exit"
-            className="absolute inset-0 bg-[var(--color-text)]/40 backdrop-blur-sm"
+            className="absolute inset-0 bg-foreground/40 backdrop-blur-sm"
             onClick={() => dispatch(closeCart())}
           />
 
@@ -83,26 +83,26 @@ export const CartDrawer: React.FC = () => {
             initial="initial"
             animate="animate"
             exit="exit"
-            className="absolute top-0 right-0 bottom-0 flex w-full max-w-md flex-col bg-[var(--color-white)] shadow-[var(--shadow-soft)]"
+            className="absolute top-0 right-0 bottom-0 flex w-full max-w-md flex-col bg-(--color-white) shadow-(--shadow-soft)"
           >
-            <div className="flex items-center justify-between border-b border-[var(--color-border)] p-5">
-              <h2 className="font-display text-2xl text-[var(--color-text)]">
+            <div className="flex items-center justify-between border-b border-(--color-border) p-5">
+              <h2 className="font-display text-2xl text-foreground">
                 {t("cart.title")}
               </h2>
               <button
                 onClick={() => dispatch(closeCart())}
-                className="cursor-pointer rounded-full p-2 transition-colors duration-[var(--duration-base)] ease-[var(--ease-luxury)] hover:bg-[var(--color-bg-soft)]"
+                className="cursor-pointer rounded-full p-2 transition-colors duration-(--duration-base) ease-(--ease-luxury) hover:bg-(--color-bg-soft)"
                 aria-label="Close cart"
               >
-                <XIcon className="h-5 w-5 text-[var(--color-text)]" />
+                <XIcon className="h-5 w-5 text-foreground" />
               </button>
             </div>
 
             <div className="flex-1 space-y-4 overflow-y-auto p-5">
               {items.length === 0 ? (
                 <div className="flex h-full flex-col items-center justify-center text-center">
-                  <ShoppingBagIcon className="mb-4 h-16 w-16 text-[var(--color-border)]" />
-                  <p className="text-[var(--color-text-secondary)]">
+                  <ShoppingBagIcon className="mb-4 h-16 w-16 text-(--color-border)" />
+                  <p className="text-(--color-text-secondary)">
                     {t("cart.empty")}
                   </p>
                 </div>
@@ -110,7 +110,7 @@ export const CartDrawer: React.FC = () => {
                 items.map((item) => (
                   <div
                     key={item.product.id}
-                    className="flex gap-4 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-white)] p-3"
+                    className="flex gap-4 rounded-(--radius-card) border border-(--color-border) bg-(--color-white) p-3"
                   >
                     <ProductThumb
                       image={item.product.images?.[0]}
@@ -119,10 +119,10 @@ export const CartDrawer: React.FC = () => {
                     />
 
                     <div className="min-w-0 flex-1">
-                      <h4 className="truncate text-sm font-bold text-[var(--color-text)]">
+                      <h4 className="truncate text-sm font-bold text-foreground">
                         {item.product.name}
                       </h4>
-                      <p className="mt-0.5 text-xs text-[var(--color-text-secondary)]">
+                      <p className="mt-0.5 text-xs text-(--color-text-secondary)">
                         {formatPrice(item.product.price)}
                       </p>
 
@@ -140,7 +140,7 @@ export const CartDrawer: React.FC = () => {
                         />
                         <button
                           onClick={() => dispatch(removeItem(item.product.id))}
-                          className="cursor-pointer p-2 text-[var(--color-text-secondary)] transition-colors duration-[var(--duration-base)] ease-[var(--ease-luxury)] hover:text-red-500"
+                          className="cursor-pointer p-2 text-(--color-text-secondary) transition-colors duration-(--duration-base) ease-(--ease-luxury) hover:text-red-500"
                           aria-label="Remove item"
                         >
                           <Trash2Icon className="h-4 w-4" />
@@ -152,8 +152,8 @@ export const CartDrawer: React.FC = () => {
               )}
             </div>
 
-            <div className="space-y-3 border-t border-[var(--color-border)] p-5">
-              <div className="flex justify-between text-lg font-bold text-[var(--color-text)]">
+            <div className="space-y-3 border-t border-(--color-border) p-5">
+              <div className="flex justify-between text-lg font-bold text-foreground">
                 <span>{t("common.total")}</span>
                 <span>{formatPrice(total)}</span>
               </div>
@@ -161,7 +161,7 @@ export const CartDrawer: React.FC = () => {
                 <Button
                   fullWidth
                   disabled={items.length === 0}
-                  className="!border-2 !border-[var(--color-text)] !bg-[var(--color-text)] !text-[var(--color-white)] hover:!bg-transparent hover:!text-[var(--color-text)] disabled:!bg-[var(--color-bg-soft)] disabled:!border-[var(--color-border)] disabled:!text-[var(--color-text-secondary)] cursor-pointer transition-colors duration-[var(--duration-base)] ease-[var(--ease-luxury)]"
+                  className="!border-2 !border-foreground !bg-foreground !text-(--color-white) hover:!bg-transparent hover:!text-foreground disabled:!bg-(--color-bg-soft) disabled:!border-(--color-border) disabled:!text-(--color-text-secondary) cursor-pointer transition-colors duration-(--duration-base) ease-(--ease-luxury)"
                   data-testid="checkout-button"
                 >
                   {t("cart.checkout")}

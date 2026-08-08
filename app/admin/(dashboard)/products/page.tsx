@@ -139,7 +139,7 @@ function EmptyProductsState({
         <Button
           variant="primary"
           onClick={onAddProduct}
-          className="!bg-[var(--color-text)] !text-[var(--color-white)] hover:!opacity-90 mt-2"
+          className="!bg-foreground !text-(--color-white) hover:!opacity-90 mt-2"
         >
           <PlusIcon className="mr-2 h-4 w-4" />
           {t("admin.products.addProduct")}
@@ -532,7 +532,7 @@ export default function AdminProductsPage() {
         <Button
           variant="primary"
           onClick={handleCreate}
-          className="!bg-[var(--color-text)] !text-[var(--color-white)] hover:!opacity-90"
+          className="!bg-foreground !text-(--color-white) hover:!opacity-90"
         >
           <PlusIcon className="mr-2 h-4 w-4" />
           {t("admin.products.addProduct")}

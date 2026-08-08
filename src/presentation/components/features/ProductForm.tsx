@@ -126,7 +126,7 @@ export function ProductForm({
     <form onSubmit={handleSubmit} className="space-y-4">
       {/* Image Upload */}
       <div className="mt-2">
-        <label className="mb-2 block text-xs font-bold tracking-widest text-[var(--color-text-secondary)] uppercase">
+        <label className="mb-2 block text-xs font-bold tracking-widest text-(--color-text-secondary) uppercase">
           {t("admin.products.form.productImage")}
         </label>
         <input
@@ -139,14 +139,14 @@ export function ProductForm({
 
         <div className="flex gap-3">
           {formData.images[0] && (
-            <div className="group relative h-32 w-32 flex-shrink-0 overflow-hidden rounded-2xl border-2 border-[var(--color-text)]">
+            <div className="group relative h-32 w-32 shrink-0 overflow-hidden rounded-2xl border-2 border-foreground">
               <img
                 src={formData.images[0]}
                 alt="Preview"
                 className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105"
               />
               <div className="absolute inset-0 rounded-2xl bg-black/0 transition-colors duration-200 group-hover:bg-black/25" />
-              <span className="absolute bottom-1.5 left-1.5 rounded-full bg-[var(--color-text)] px-1.5 py-0.5 text-[10px] font-semibold text-white shadow">
+              <span className="absolute bottom-1.5 left-1.5 rounded-full bg-foreground px-1.5 py-0.5 text-[10px] font-semibold text-white shadow">
                 Main
               </span>
               <button
@@ -163,14 +163,14 @@ export function ProductForm({
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={isUploading}
-            className="flex h-32 flex-1 cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-[var(--color-border)] transition-colors hover:border-[var(--color-text)] hover:bg-[var(--color-bg-soft)] disabled:opacity-50"
+            className="flex h-32 flex-1 cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-(--color-border) transition-colors hover:border-foreground hover:bg-(--color-bg-soft) disabled:opacity-50"
           >
             {isUploading ? (
-              <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--color-text)] border-t-transparent" />
+              <div className="h-8 w-8 animate-spin rounded-full border-2 border-foreground border-t-transparent" />
             ) : (
               <>
-                <UploadIcon className="h-8 w-8 text-[var(--color-text-secondary)]" />
-                <span className="text-sm text-[var(--color-text-secondary)]">
+                <UploadIcon className="h-8 w-8 text-(--color-text-secondary)" />
+                <span className="text-sm text-(--color-text-secondary)">
                   {formData.images[0]
                     ? "Replace image"
                     : t("admin.products.form.uploadImage")}
@@ -183,7 +183,7 @@ export function ProductForm({
 
       {/* Name */}
       <div>
-        <label className="mb-2 block text-xs font-bold tracking-widest text-[var(--color-text-secondary)] uppercase">
+        <label className="mb-2 block text-xs font-bold tracking-widest text-(--color-text-secondary) uppercase">
           {t("admin.products.form.nameLabel")} *
         </label>
         <input
@@ -191,14 +191,14 @@ export function ProductForm({
           required
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          className="w-full rounded-2xl border-2 border-[var(--color-border)] bg-white px-4 py-3 text-[var(--color-text)] focus:border-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-text)]/10 focus:outline-none"
+          className="w-full rounded-2xl border-2 border-(--color-border) bg-white px-4 py-3 text-foreground focus:border-foreground focus:ring-2 focus:ring-foreground/10 focus:outline-none"
         />
       </div>
 
       {/* Price & Size */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
-          <label className="mb-2 block text-xs font-bold tracking-widest text-[var(--color-text-secondary)] uppercase">
+          <label className="mb-2 block text-xs font-bold tracking-widest text-(--color-text-secondary) uppercase">
             {t("admin.products.form.priceLabel")} *
           </label>
           <input
@@ -210,12 +210,12 @@ export function ProductForm({
               setFormData({ ...formData, price: Number(e.target.value) })
             }
             onWheel={(e) => e.currentTarget.blur()}
-            className="w-full rounded-2xl border-2 border-[var(--color-border)] bg-white px-4 py-3 text-[var(--color-text)] focus:border-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-text)]/10 focus:outline-none"
+            className="w-full rounded-2xl border-2 border-(--color-border) bg-white px-4 py-3 text-foreground focus:border-foreground focus:ring-2 focus:ring-foreground/10 focus:outline-none"
           />
         </div>
 
         <div>
-          <label className="mb-2 block text-xs font-bold tracking-widest text-[var(--color-text-secondary)] uppercase">
+          <label className="mb-2 block text-xs font-bold tracking-widest text-(--color-text-secondary) uppercase">
             {t("admin.products.form.sizeLabel")} *
           </label>
           <input
@@ -227,14 +227,14 @@ export function ProductForm({
               setFormData({ ...formData, sizeMl: Number(e.target.value) })
             }
             onWheel={(e) => e.currentTarget.blur()}
-            className="w-full rounded-2xl border-2 border-[var(--color-border)] bg-white px-4 py-3 text-[var(--color-text)] focus:border-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-text)]/10 focus:outline-none"
+            className="w-full rounded-2xl border-2 border-(--color-border) bg-white px-4 py-3 text-foreground focus:border-foreground focus:ring-2 focus:ring-foreground/10 focus:outline-none"
           />
         </div>
       </div>
 
       {/* Description */}
       <div>
-        <label className="mb-2 block text-xs font-bold tracking-widest text-[var(--color-text-secondary)] uppercase">
+        <label className="mb-2 block text-xs font-bold tracking-widest text-(--color-text-secondary) uppercase">
           {t("admin.products.form.description")} *
         </label>
         <textarea
@@ -244,14 +244,14 @@ export function ProductForm({
             setFormData({ ...formData, description: e.target.value })
           }
           rows={3}
-          className="w-full resize-none rounded-2xl border-2 border-[var(--color-border)] bg-white px-4 py-3 text-[var(--color-text)] focus:border-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-text)]/10 focus:outline-none"
+          className="w-full resize-none rounded-2xl border-2 border-(--color-border) bg-white px-4 py-3 text-foreground focus:border-foreground focus:ring-2 focus:ring-foreground/10 focus:outline-none"
         />
       </div>
 
       {/* Signature color & Notes */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
-          <label className="mb-2 block text-xs font-bold tracking-widest text-[var(--color-text-secondary)] uppercase">
+          <label className="mb-2 block text-xs font-bold tracking-widest text-(--color-text-secondary) uppercase">
             {t("admin.products.form.colorLabel")}
           </label>
           <div className="flex items-center gap-3">
@@ -261,7 +261,7 @@ export function ProductForm({
               onChange={(e) =>
                 setFormData({ ...formData, colorHex: e.target.value })
               }
-              className="h-11 w-11 cursor-pointer rounded-xl border-2 border-[var(--color-border)] bg-white p-1"
+              className="h-11 w-11 cursor-pointer rounded-xl border-2 border-(--color-border) bg-white p-1"
             />
             <input
               type="text"
@@ -269,13 +269,13 @@ export function ProductForm({
               onChange={(e) =>
                 setFormData({ ...formData, colorHex: e.target.value })
               }
-              className="w-full rounded-2xl border-2 border-[var(--color-border)] bg-white px-4 py-3 text-[var(--color-text)] uppercase focus:border-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-text)]/10 focus:outline-none"
+              className="w-full rounded-2xl border-2 border-(--color-border) bg-white px-4 py-3 text-foreground uppercase focus:border-foreground focus:ring-2 focus:ring-foreground/10 focus:outline-none"
             />
           </div>
         </div>
 
         <div>
-          <label className="mb-2 block text-xs font-bold tracking-widest text-[var(--color-text-secondary)] uppercase">
+          <label className="mb-2 block text-xs font-bold tracking-widest text-(--color-text-secondary) uppercase">
             {t("admin.products.form.notesLabel")}
           </label>
           <input
@@ -291,7 +291,7 @@ export function ProductForm({
               })
             }
             placeholder={t("admin.products.form.notesPlaceholder")}
-            className="w-full rounded-2xl border-2 border-[var(--color-border)] bg-white px-4 py-3 text-[var(--color-text)] focus:border-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-text)]/10 focus:outline-none"
+            className="w-full rounded-2xl border-2 border-(--color-border) bg-white px-4 py-3 text-foreground focus:border-foreground focus:ring-2 focus:ring-foreground/10 focus:outline-none"
           />
         </div>
       </div>
@@ -299,7 +299,7 @@ export function ProductForm({
       {/* Gender & Inspired By */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
-          <label className="mb-2 block text-xs font-bold tracking-widest text-[var(--color-text-secondary)] uppercase">
+          <label className="mb-2 block text-xs font-bold tracking-widest text-(--color-text-secondary) uppercase">
             {t("admin.products.form.genderLabel")}
           </label>
           <select
@@ -310,7 +310,7 @@ export function ProductForm({
                 gender: e.target.value as ProductGenderOption,
               })
             }
-            className="w-full rounded-2xl border-2 border-[var(--color-border)] bg-white px-4 py-3 text-[var(--color-text)] focus:border-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-text)]/10 focus:outline-none"
+            className="w-full rounded-2xl border-2 border-(--color-border) bg-white px-4 py-3 text-foreground focus:border-foreground focus:ring-2 focus:ring-foreground/10 focus:outline-none"
           >
             <option value="">{t("admin.products.form.genderUnset")}</option>
             <option value="male">{t("product.gender.male")}</option>
@@ -320,7 +320,7 @@ export function ProductForm({
         </div>
 
         <div>
-          <label className="mb-2 block text-xs font-bold tracking-widest text-[var(--color-text-secondary)] uppercase">
+          <label className="mb-2 block text-xs font-bold tracking-widest text-(--color-text-secondary) uppercase">
             {t("admin.products.form.inspiredByLabel")}
           </label>
           <input
@@ -330,54 +330,54 @@ export function ProductForm({
               setFormData({ ...formData, inspiredBy: e.target.value })
             }
             placeholder={t("admin.products.form.inspiredByPlaceholder")}
-            className="w-full rounded-2xl border-2 border-[var(--color-border)] bg-white px-4 py-3 text-[var(--color-text)] focus:border-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-text)]/10 focus:outline-none"
+            className="w-full rounded-2xl border-2 border-(--color-border) bg-white px-4 py-3 text-foreground focus:border-foreground focus:ring-2 focus:ring-foreground/10 focus:outline-none"
           />
         </div>
       </div>
 
       {/* Checkboxes */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <label className="flex cursor-pointer items-center gap-3 rounded-2xl border-2 border-[var(--color-border)] p-3 transition-colors hover:border-[var(--color-text)]/50">
+        <label className="flex cursor-pointer items-center gap-3 rounded-2xl border-2 border-(--color-border) p-3 transition-colors hover:border-foreground/50">
           <input
             type="checkbox"
             checked={formData.isActive}
             onChange={(e) =>
               setFormData({ ...formData, isActive: e.target.checked })
             }
-            className="h-4 w-4 rounded border-2 border-[var(--color-border)] accent-[var(--color-text)] focus:ring-[var(--color-text)]"
+            className="h-4 w-4 rounded border-2 border-(--color-border) accent-foreground focus:ring-foreground"
             data-testid="product-toggle"
           />
-          <span className="text-sm text-[var(--color-text)]">
+          <span className="text-sm text-foreground">
             {t("admin.products.form.activeLabel")}
           </span>
         </label>
 
         {!isVoteMode && (
           <>
-            <label className="flex cursor-pointer items-center gap-3 rounded-2xl border-2 border-[var(--color-border)] p-3 transition-colors hover:border-[var(--color-text)]/50">
+            <label className="flex cursor-pointer items-center gap-3 rounded-2xl border-2 border-(--color-border) p-3 transition-colors hover:border-foreground/50">
               <input
                 type="checkbox"
                 checked={formData.isNew}
                 onChange={(e) =>
                   setFormData({ ...formData, isNew: e.target.checked })
                 }
-                className="h-4 w-4 rounded border-2 border-[var(--color-border)] accent-[var(--color-text)] focus:ring-[var(--color-text)]"
+                className="h-4 w-4 rounded border-2 border-(--color-border) accent-foreground focus:ring-foreground"
               />
-              <span className="text-sm text-[var(--color-text)]">
+              <span className="text-sm text-foreground">
                 {t("admin.products.form.markAsNew")}
               </span>
             </label>
 
-            <label className="flex cursor-pointer items-center gap-3 rounded-2xl border-2 border-[var(--color-border)] p-3 transition-colors hover:border-[var(--color-text)]/50">
+            <label className="flex cursor-pointer items-center gap-3 rounded-2xl border-2 border-(--color-border) p-3 transition-colors hover:border-foreground/50">
               <input
                 type="checkbox"
                 checked={formData.isSoldOut}
                 onChange={(e) =>
                   setFormData({ ...formData, isSoldOut: e.target.checked })
                 }
-                className="h-4 w-4 rounded border-2 border-[var(--color-border)] accent-[var(--color-text)] focus:ring-[var(--color-text)]"
+                className="h-4 w-4 rounded border-2 border-(--color-border) accent-foreground focus:ring-foreground"
               />
-              <span className="text-sm text-[var(--color-text)]">
+              <span className="text-sm text-foreground">
                 {t("admin.products.form.markAsSoldOut")}
               </span>
             </label>
@@ -387,7 +387,7 @@ export function ProductForm({
 
       {/* Vote mode info box */}
       {isVoteMode && (
-        <div className="rounded-xl bg-[var(--color-bg-soft)] p-3 text-sm text-[var(--color-text)]">
+        <div className="rounded-xl bg-(--color-bg-soft) p-3 text-sm text-foreground">
           <p className="mb-1 font-medium">
             {t("admin.votes.quickAdd.whatHappens")}
           </p>

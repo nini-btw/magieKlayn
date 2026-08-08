@@ -66,7 +66,7 @@ export function LanguageSwitcher({
       <div className="relative" ref={dropdownRef}>
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium text-white/70 hover:bg-white/10 hover:text-white transition-all duration-[var(--duration-base)] ease-[var(--ease-luxury)] w-full cursor-pointer"
+          className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium text-white/70 hover:bg-white/10 hover:text-white transition-all duration-(--duration-base) ease-(--ease-luxury) w-full cursor-pointer"
         >
           <GlobeIcon className="w-5 h-5" />
           <span className="flex-1 text-left">
@@ -76,32 +76,32 @@ export function LanguageSwitcher({
             {currentLocale}
           </span>
           <ChevronDownIcon
-            className={`w-4 h-4 transition-transform duration-[var(--duration-base)] ${isOpen ? "rotate-180" : ""}`}
+            className={`w-4 h-4 transition-transform duration-(--duration-base) ${isOpen ? "rotate-180" : ""}`}
           />
         </button>
 
         {isOpen && (
-          <div className="absolute bottom-full left-0 right-0 mb-2 bg-[var(--color-white)] rounded-[var(--radius-card)] shadow-[var(--shadow-card)] border border-[var(--color-border)] overflow-hidden z-50">
+          <div className="absolute bottom-full left-0 right-0 mb-2 bg-(--color-white) rounded-(--radius-card) shadow-(--shadow-card) border border-(--color-border) overflow-hidden z-50">
             {languages.map((language) => (
               <button
                 key={language.code}
                 onClick={() =>
                   handleLanguageChange(language.code, language.dir)
                 }
-                className={`w-full px-4 py-3 text-left flex items-center gap-3 transition-colors duration-[var(--duration-base)] ease-[var(--ease-luxury)] cursor-pointer ${
+                className={`w-full px-4 py-3 text-left flex items-center gap-3 transition-colors duration-(--duration-base) ease-(--ease-luxury) cursor-pointer ${
                   currentLocale === language.code
-                    ? "bg-[var(--color-bg-soft)]"
-                    : "hover:bg-[var(--color-bg-soft)]"
+                    ? "bg-(--color-bg-soft)"
+                    : "hover:bg-(--color-bg-soft)"
                 }`}
               >
-                <span className="text-[0.68rem] font-bold uppercase text-[var(--color-text-secondary)] w-6">
+                <span className="text-[0.68rem] font-bold uppercase text-(--color-text-secondary) w-6">
                   {language.code}
                 </span>
-                <span className="text-sm font-medium text-[var(--color-text)]">
+                <span className="text-sm font-medium text-foreground">
                   {language.label}
                 </span>
                 {currentLocale === language.code && (
-                  <span className="ml-auto text-[var(--color-text)]">✓</span>
+                  <span className="ml-auto text-foreground">✓</span>
                 )}
               </button>
             ))}
@@ -116,29 +116,29 @@ export function LanguageSwitcher({
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 rounded-full border border-[var(--color-border)] bg-[var(--color-white)] hover:border-[var(--color-text)] hover:bg-[var(--color-bg-soft)] transition-colors duration-[var(--duration-base)] ease-[var(--ease-luxury)] cursor-pointer"
+        className="flex items-center gap-2 px-3 py-2 rounded-full border border-(--color-border) bg-(--color-white) hover:border-foreground hover:bg-(--color-bg-soft) transition-colors duration-(--duration-base) ease-(--ease-luxury) cursor-pointer"
         aria-label="Change language"
       >
-        <GlobeIcon className="w-4 h-4 text-[var(--color-text)]" />
-        <span className="text-xs font-bold uppercase text-[var(--color-text)]">
+        <GlobeIcon className="w-4 h-4 text-foreground" />
+        <span className="text-xs font-bold uppercase text-foreground">
           {currentLang.code}
         </span>
       </button>
 
       {isOpen && (
-        <div className="absolute top-full right-0 mt-2 w-48 bg-[var(--color-white)] rounded-[var(--radius-card)] shadow-[var(--shadow-card)] border border-[var(--color-border)] py-2 z-50">
+        <div className="absolute top-full right-0 mt-2 w-48 bg-(--color-white) rounded-(--radius-card) shadow-(--shadow-card) border border-(--color-border) py-2 z-50">
           {languages.map((lang) => (
             <button
               key={lang.code}
               onClick={() => handleLanguageChange(lang.code, lang.dir)}
-              className={`w-full flex items-center justify-between px-4 py-2.5 text-sm transition-colors duration-[var(--duration-base)] ease-[var(--ease-luxury)] cursor-pointer ${
+              className={`w-full flex items-center justify-between px-4 py-2.5 text-sm transition-colors duration-(--duration-base) ease-(--ease-luxury) cursor-pointer ${
                 currentLocale === lang.code
-                  ? "bg-[var(--color-bg-soft)] text-[var(--color-text)] font-semibold"
-                  : "text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-soft)] hover:text-[var(--color-text)]"
+                  ? "bg-(--color-bg-soft) text-foreground font-semibold"
+                  : "text-(--color-text-secondary) hover:bg-(--color-bg-soft) hover:text-foreground"
               }`}
             >
               <span className="flex items-center gap-2">
-                <span className="text-[0.68rem] font-bold uppercase text-[var(--color-text-secondary)] w-6">
+                <span className="text-[0.68rem] font-bold uppercase text-(--color-text-secondary) w-6">
                   {lang.code}
                 </span>
                 <span className={lang.code === "ar" ? "font-arabic" : ""}>
