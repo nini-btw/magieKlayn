@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Jest test suite** — the project's first automated tests. `jest.config.ts` (via `next/jest`, split into `node` and `jsdom` projects) and `jest.setup.ts`; new `npm run test`/`test:watch`/`test:coverage` scripts. 214 tests across 25 suites: pure business logic in depth (`cart.rules.ts`, delivery/order entity helpers, both zod validation schemas, `cart.service.ts`, the rate limiter, Yalidine config), Redux slices (`cart.slice.ts`, `ui.slice.ts`), API-route integration tests with adapters mocked at the module boundary (`POST /api/orders` — including a dedicated test proving the security audit's price-tamper fix holds, rate-limit exhaustion, coffret/zod/store-pickup edge cases — plus `products`, `products/[id]`, and `upload`, the latter gaining an exported `sniffImageType()` specifically to unit-test each magic-byte signature), and React Testing Library component tests (all `ui/` primitives plus `ProductCard`/`CartDrawer`/`Header`, via a new shared `src/presentation/test-utils.tsx` render helper). See `PROJECT_DOCUMENTATION.md` §16 for exactly what's covered vs. explicitly out of scope (Server Components, Server Actions, E2E).
+- A test (`app/api/products/[id]/route.test.ts`) documents a real, pre-existing bug found while writing it: `updateProductSchema` (`createProductSchema.partial()`) still applies the base schema's field defaults to a `PUT` body's omitted fields, so a genuinely partial update silently resets other fields instead of leaving them alone. Not triggered by the current UI (which always submits the full form), but a live trap for any future partial-update caller. Deliberately left unfixed — flagged in the test's own comments and in `PROJECT_DOCUMENTATION.md` §16 rather than fixed silently, since fixing behavior was out of scope for a test-suite-only pass.
+
+### Fixed
+- `scripts/fix-auth.ts`'s TypeScript build error (`admins.find((a) => ...)` implicit-any) — surfaced by `npm run build`'s type-check while adding the test suite.
+
+## [0.2.5] - 2026-08-08
+
+Everything below was committed as `00ec0b2` on `main`.
+
 ### Changed
 - `scripts/fix-auth.ts` rewritten to work correctly with the new per-admin shadow-secret auth model (see `0.2.4` below): it no longer computes and pushes its own password formula directly onto the Supabase Auth user (a formula that already didn't match `adminLogin()`'s, and which would now permanently desync login since the password is no longer overwritten every login). It now just clears the target admin's `admin_users.supabase_auth_secret`, letting the real `adminLogin()` flow regenerate and re-sync it on next login. No-arg invocation lists known admin emails instead of defaulting to a hardcoded (and, as discovered, already-wrong) email.
 

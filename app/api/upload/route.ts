@@ -16,7 +16,7 @@ const MAX_SIZE = 5 * 1024 * 1024;
  * can't be trusted on its own; this confirms the actual file bytes match
  * one of the allowed formats before it's accepted.
  */
-function sniffImageType(buffer: Buffer): string | null {
+export function sniffImageType(buffer: Buffer): string | null {
   if (buffer.length < 12) return null;
 
   if (buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff) {
