@@ -662,7 +662,7 @@ All routes are Next.js Route Handlers under `app/api/`. Response envelope conven
 **Session check** (`getAdminSession()`): reads the current Supabase session (`supabase.auth.getUser()`); if present, **re-verifies** the user's email still exists in `admin_users` before returning a session object `{ id, email, role: "admin" }`. This re-check is what prevents a stray/legacy Supabase Auth user (not in `admin_users`) from passing as an admin.
 
 **Route protection**:
-- **Frontend/pages**: `app/admin/(dashboard)/layout.tsx` (a Server Component) calls Supabase's `auth.getUser()` directly and `redirect("/admin/login")` if unauthenticated — this route group is the actual gate for every admin page nested under it.
+- **Frontend/pages**: `app/admin/(dashboard)/layout.tsx` (a Server Component) calls `requireAdmin()` — which re-verifies `admin_users` membership, not just "has a Supabase session" — and redirects to `/admin/login` if that fails. (Previously called `supabase.auth.getUser()` directly, which only checked for *a* valid Supabase session; fixed to match every admin API route's stricter check.) `/api-docs` (the Swagger UI console) is gated the same way via its own `app/api-docs/layout.tsx`.
 - **API routes**: no shared middleware; every admin-only Route Handler calls `getAdminSession()` at the top of its own handler and returns `401` if it's `null`.
 - **`requireAdmin()`** is a redirect-based helper (used by server components that need to hard-require an admin session, redirecting rather than returning `null`).
 - **`isAuthenticated(request)`** exists specifically "for middleware" (reads an `sb-access-token` cookie), but as noted in [§3](#3-architecture-decisions--trade-offs)/[§20](#20-known-issues--technical-debt), there is **no active root middleware/proxy file**, so this helper is currently unused/unreachable in the request pipeline.
@@ -674,7 +674,7 @@ All routes are Next.js Route Handlers under `app/api/`. Response envelope conven
 **Security assumptions and known limitations** (see also [§14](#14-security--data-privacy)):
 - The synthetic-password scheme (`auth_${email}_fixed_password_v1`) is **not a secret** — it's derivable by anyone who has the source code and an admin's email. It's mitigated only by the fact that `getAdminSession()` cross-checks `admin_users` membership on every request, and by the service-role key being required to actually provision it. This is explicitly called out in the code's own comment as not production-grade (`"In production, use a more secure approach"`).
 - The service-role key (`SUPABASE_SERVICE_ROLE_KEY`) — which bypasses all Row Level Security — is used at login time from server-side code only, which is correct practice, but its presence anywhere in `.env.local` is a high-value secret that must never leak client-side.
-- No rate limiting on `/admin/login` or on `POST /api/orders` — brute-force login attempts or checkout spam are not mitigated at the application layer (would rely on Vercel/Supabase platform-level protections, if any).
+- ~~No rate limiting on `/admin/login` or on `POST /api/orders`~~ — **RESOLVED.** Both now rate-limited per-IP via `src/infrastructure/rate-limit/limiter.ts` (5 login attempts/15 min, 10 orders/10 min) — see [§14](#14-security--data-privacy) for the limiter's known cross-instance limitation.
 - No CSRF token mechanism beyond what Next.js Server Actions provide natively (Server Actions have built-in origin checking); plain Route Handlers (`POST /api/orders`, etc.) have no explicit CSRF protection, relying on same-origin `fetch()` calls from the app's own frontend and the absence of cookie-based auth on the public-facing write endpoint (checkout is unauthenticated, so CSRF is less relevant there specifically — but admin mutating routes rely on the Supabase session cookie plus browser same-origin behavior, with no additional CSRF token).
 
 ---
@@ -809,9 +809,9 @@ Beyond this base palette, **the site is deliberately color-led at the product le
 
 **Input validation/sanitization**:
 - Client-side: `zod` schemas validate the checkout form (Algerian phone regex, name length, UUID format for delivery zone, enum for delivery type) and the contact form (email format, message length).
-- Server-side: **hand-written `if` checks**, not Zod, validate `POST /api/orders` and `POST /api/products` — meaning the server does not automatically inherit the client's regex/format guarantees (e.g., the server does not itself re-validate the phone-number format with the same regex the client uses; it only checks presence). A malformed but "truthy" phone string could reach the database even though the UI would have blocked it.
+- Server-side: **now has a `zod` layer too** — `src/domain/validation/checkout.schema.ts` (`POST /api/orders`) and `src/domain/validation/product.schema.ts` (`POST`/`PUT /api/products`) enforce type/length/format constraints (string length caps, phone character-set check, enum values, positive numeric bounds) via `.safeParse()`, returning `400` on failure. This runs *in addition to*, not instead of, the pre-existing hand-written `if` presence checks and business-rule logic (coffret box counts, delivery-zone resolution, store-pickup fee override) — those are unchanged.
 - Telegram notification text is explicitly **HTML-escaped** before being sent (`telegram-notification.service.ts`), preventing HTML-injection into the bot message (Telegram's `parse_mode: "HTML"` would otherwise render unescaped customer input as markup).
-- File uploads (`POST /api/upload`) are validated by MIME type allow-list and size cap (5 MB) before being handed to Supabase Storage.
+- File uploads (`POST /api/upload`) are validated by a MIME type allow-list, size cap (5 MB), **and a magic-byte sniff of the actual file bytes** (`sniffImageType()`) — the allow-list check alone only validated the browser-supplied `Content-Type` label, which a mislabeled non-image file could have satisfied; the sniffed type (not the client-reported one) is now what's actually stored.
 
 **SQL injection**: mitigated structurally — all database access goes through Drizzle ORM's parameterized query builder; no raw string-interpolated SQL was found in application code (the hand-written `.sql` migration files are schema DDL, not runtime query paths, and are only ever run manually/offline).
 
@@ -821,7 +821,7 @@ Beyond this base palette, **the site is deliberately color-led at the product le
 
 **Known security assumptions/limitations** (explicit list):
 1. Synthetic Supabase Auth password scheme (see above) — the single highest-priority item to fix before wider production exposure.
-2. No rate limiting on any endpoint (login, checkout, product/order mutation).
+2. ~~No rate limiting on any endpoint~~ — **PARTIALLY RESOLVED.** `src/infrastructure/rate-limit/limiter.ts` (a simple in-memory, fixed-window, per-IP limiter — no Redis/Upstash) now gates `loginAdmin` (5 attempts/15 min) and `POST /api/orders` (10 orders/10 min). Admin product/order-mutation routes remain unlimited — lower priority given they're already admin-authenticated. The limiter's state is per server process/instance, not durable or shared across instances; acceptable at this app's current scale but worth swapping for Upstash/Vercel KV if it ever runs multi-instance.
 3. `.env.local` (present locally, correctly gitignored) contains live production-looking secrets for Supabase, Sentry, Telegram, and Yalidine — standard practice, but flagged here as a reminder that these must never be committed, logged, or pasted into chat/AI tooling, and that this documentation deliberately never quotes their values.
 4. No admin audit log — there's no record of which admin performed which action (status change, product edit) beyond `orders.updated_at`/`products.updated_at` timestamps, which don't identify the actor.
 5. No explicit data-retention/deletion policy for customer PII (names, phone numbers) held in `orders` — orders soft-delete (`deletedAt`) but the underlying row (with customer PII) is retained indefinitely.
@@ -960,7 +960,7 @@ No payment provider integration exists (Yalidine handles cash-on-delivery collec
 - No `.env.example`.
 - No Docker/containerization story.
 - Two parallel, not-fully-automated database migration mechanisms (Drizzle Kit `drizzle/` + hand-written SQL in `src/infrastructure/db/migrations/`).
-- Client-side (Zod) and server-side (manual `if`) request validation are not shared/derived from one schema, risking drift.
+- ~~Client-side (Zod) and server-side (manual `if`) request validation are not shared/derived from one schema, risking drift~~ — **PARTIALLY RESOLVED.** Server-side `zod` schemas now exist for `POST /api/orders` and `POST`/`PUT /api/products` (`src/domain/validation/`), independently written rather than literally shared with the client-side ones — so drift between the two schema *definitions* is still possible, but the server no longer relies on presence-only checks.
 
 **Outdated/regret-worthy dependencies**: nothing found to be meaningfully outdated as of this writing — the stack (Next 16.3.0, React 19.2.4, Drizzle 0.45.2) is current/bleeding-edge rather than stale. The main "dependency" concern is architectural rather than version-related (see above).
 

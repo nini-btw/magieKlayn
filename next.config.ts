@@ -13,6 +13,44 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Baseline security headers — this app has no proxy.ts/middleware.ts,
+  // so this is the only centralized place request-level policy applies.
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          {
+            key: "Referrer-Policy",
+            value: "strict-origin-when-cross-origin",
+          },
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=63072000; includeSubDomains; preload",
+          },
+          {
+            // Scoped to origins this app actually talks to: Supabase
+            // (auth/storage/DB-over-HTTP), Sentry (error reporting),
+            // Yalidine (server-side only, not fetched from the browser).
+            key: "Content-Security-Policy",
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+              "style-src 'self' 'unsafe-inline'",
+              "img-src 'self' data: blob: https://gaquniefolcmosxhctmg.supabase.co",
+              "font-src 'self' data:",
+              "connect-src 'self' https://*.supabase.co https://*.sentry.io https://*.ingest.sentry.io",
+              "frame-ancestors 'none'",
+              "base-uri 'self'",
+              "form-action 'self'",
+            ].join("; "),
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default withSentryConfig(nextConfig, {

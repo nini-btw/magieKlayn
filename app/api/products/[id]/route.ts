@@ -8,6 +8,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { productRepository } from "@/infrastructure/db/product.adapter";
 import { getAdminSession } from "@/infrastructure/auth/supabase-auth";
+import { updateProductSchema } from "@/domain/validation/product.schema";
 
 interface Params {
   params: Promise<{ id: string }>;
@@ -101,9 +102,20 @@ export async function PUT(request: NextRequest, { params }: Params) {
     }
     
     const { id } = await params;
-    const body = await request.json();
-    
-    const product = await productRepository.update(id, body);
+    const rawBody = await request.json();
+
+    const parsed = updateProductSchema.safeParse(rawBody);
+    if (!parsed.success) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: parsed.error.issues[0]?.message || "Invalid request body",
+        },
+        { status: 400 },
+      );
+    }
+
+    const product = await productRepository.update(id, parsed.data);
     
     return NextResponse.json(
       { success: true, data: product, message: "Product updated successfully" }

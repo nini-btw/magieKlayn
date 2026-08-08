@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Basic in-memory rate limiting (`src/infrastructure/rate-limit/limiter.ts`, fixed-window per-IP) on `loginAdmin` (5 attempts/15min — the bcrypt comparison had no other brute-force protection) and `POST /api/orders` (10 orders/10min — checkout had no abuse protection against spam that could flood the Telegram alert channel or create bogus Yalidine parcels). Deliberately simple (no Redis/Upstash) given this app's actual scale; state is per-process, not durable/cross-instance — documented as a known limitation in the module itself.
+- Baseline security headers via `next.config.ts`'s `headers()` (`X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Strict-Transport-Security`, and a `Content-Security-Policy` scoped to Supabase/Sentry origins) — previously there were none, and no `proxy.ts`/middleware exists in this app to have set them elsewhere.
+- Zod request-body validation for `POST /api/orders` (`src/domain/validation/checkout.schema.ts`) and `POST`/`PUT /api/products` (`src/domain/validation/product.schema.ts`) — `zod` was already a dependency (used client-side only) but server routes previously did presence-only `if (!body.field)` checks with no type/length/format constraints. Existing business-rule checks (coffret box counts, delivery-zone resolution, etc.) are unchanged and still run after schema validation.
+- Magic-byte sniffing on `POST /api/upload` (`sniffImageType()` in `app/api/upload/route.ts`) — the allowed-MIME-type check previously trusted the browser-supplied `file.type` label; uploads are now also verified against the actual file bytes for JPEG/PNG/GIF/WebP before being accepted.
+
+## [0.2.2] - 2026-08-08
+
+Everything below was committed as `3859670` and pushed to `origin/security-audit`.
+
 ### Fixed
 - **Client-trusted product price in checkout** (security): `POST /api/orders` now re-fetches each item's price from the `products` table server-side (`productRepository.getById`) instead of trusting `item.product.price` from the request body — closes a gap where the coffret/delivery-fee anti-tamper checks existed but per-item price didn't, allowing a crafted checkout payload to set an arbitrary total (and, for COD orders, an arbitrary amount collected on delivery). Also now rejects orders referencing an inactive/sold-out/nonexistent product with a 400 instead of silently accepting them.
 - **Admin dashboard layout auth gap** (security): `app/admin/(dashboard)/layout.tsx` gated access on `supabase.auth.getUser()` alone (any valid Supabase session), not `admin_users` membership like every API route already enforces via `getAdminSession()`. Now calls `requireAdmin()` instead, matching the rest of the app's auth model.

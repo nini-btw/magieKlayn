@@ -8,6 +8,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { orderRepository } from "@/infrastructure/db/order.adapter";
 import { deliveryRepository } from "@/infrastructure/db/delivery.adapter";
 import { productRepository } from "@/infrastructure/db/product.adapter";
+import { checkRateLimit, getClientIp } from "@/infrastructure/rate-limit/limiter";
+import { checkoutSchema } from "@/domain/validation/checkout.schema";
 import { getAdminSession } from "@/infrastructure/auth/supabase-auth";
 import type { CreateOrderPayload, OrderFilters } from "@/domain/entities/order";
 import { telegramNotificationService } from "@/infrastructure/telegram/telegram-notification.service";
@@ -164,9 +166,44 @@ export async function GET(request: NextRequest) {
  *                 message: { type: string }
  *       400: { description: Validation failure (missing customer/delivery/coffret/stop-desk fields, or invalid delivery zone) }
  */
+const CHECKOUT_LIMIT = 10;
+const CHECKOUT_WINDOW_MS = 10 * 60 * 1000;
+
 export async function POST(request: NextRequest) {
   try {
-    const body: CreateOrderPayload = await request.json();
+    const ip = getClientIp(request.headers);
+    const { allowed, retryAfterSeconds } = checkRateLimit(
+      `checkout:${ip}`,
+      CHECKOUT_LIMIT,
+      CHECKOUT_WINDOW_MS,
+    );
+    if (!allowed) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Too many orders placed. Please try again in ${Math.ceil(retryAfterSeconds / 60)} minute(s).`,
+        },
+        { status: 429 },
+      );
+    }
+
+    const rawBody = await request.json();
+
+    // Type/length/format validation layer (presence-only checks below are
+    // kept as the authoritative business-rule gate; this catches malformed
+    // shapes — oversized strings, wrong types, junk phone characters —
+    // before they reach the DB).
+    const parsed = checkoutSchema.safeParse(rawBody);
+    if (!parsed.success) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: parsed.error.issues[0]?.message || "Invalid request body",
+        },
+        { status: 400 },
+      );
+    }
+    const body = parsed.data as unknown as CreateOrderPayload;
 
     // Validate required fields
     if (
