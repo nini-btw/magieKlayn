@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { orderRepository } from "@/infrastructure/db/order.adapter";
 import { deliveryRepository } from "@/infrastructure/db/delivery.adapter";
+import { productRepository } from "@/infrastructure/db/product.adapter";
 import { getAdminSession } from "@/infrastructure/auth/supabase-auth";
 import type { CreateOrderPayload, OrderFilters } from "@/domain/entities/order";
 import { telegramNotificationService } from "@/infrastructure/telegram/telegram-notification.service";
@@ -190,6 +191,35 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       );
     }
+    if (!Array.isArray(body.items) || body.items.length === 0) {
+      return NextResponse.json(
+        { success: false, error: "Cart is empty" },
+        { status: 400 },
+      );
+    }
+
+    // Re-fetch each product's authoritative price from the DB — never
+    // trust item.product.price from the request body. Without this, a
+    // tampered checkout payload could set an arbitrary price/total (and,
+    // for COD orders, an arbitrary amount collected on delivery).
+    const resolvedItems = [];
+    for (const item of body.items) {
+      const dbProduct = item.product?.id
+        ? await productRepository.getById(item.product.id)
+        : null;
+      if (!dbProduct || !dbProduct.isActive || dbProduct.isSoldOut) {
+        return NextResponse.json(
+          { success: false, error: "One or more items are no longer available" },
+          { status: 400 },
+        );
+      }
+      resolvedItems.push({
+        ...item,
+        product: { ...item.product, price: dbProduct.price },
+      });
+    }
+    body.items = resolvedItems;
+
     if (body.packagingType === "luxury_coffret") {
       const maxBoxes = getMaxBoxCount(body.items);
       const boxColors = body.boxColors ?? [];

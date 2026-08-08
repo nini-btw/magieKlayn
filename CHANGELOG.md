@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Client-trusted product price in checkout** (security): `POST /api/orders` now re-fetches each item's price from the `products` table server-side (`productRepository.getById`) instead of trusting `item.product.price` from the request body — closes a gap where the coffret/delivery-fee anti-tamper checks existed but per-item price didn't, allowing a crafted checkout payload to set an arbitrary total (and, for COD orders, an arbitrary amount collected on delivery). Also now rejects orders referencing an inactive/sold-out/nonexistent product with a 400 instead of silently accepting them.
+- **Admin dashboard layout auth gap** (security): `app/admin/(dashboard)/layout.tsx` gated access on `supabase.auth.getUser()` alone (any valid Supabase session), not `admin_users` membership like every API route already enforces via `getAdminSession()`. Now calls `requireAdmin()` instead, matching the rest of the app's auth model.
+- **Public, unauthenticated API docs** (security): `/api/openapi` and `/api-docs` (a live Swagger UI console capable of executing real requests against admin-only routes using an ambient session cookie) had no auth check, exposing the full internal route/schema map to any visitor. Both now require `getAdminSession()`/`requireAdmin()`.
+
+### Security
+- Dependency vulnerabilities patched via `next` 16.2.11 → 16.3.0 (pulls in fixed `postcss` and `sharp`, resolving GHSA-r28c-9q8g-f849, GHSA-qx2v-qp2m-jg93, GHSA-f88m-g3jw-g9cj) and a transitive `nanoid` bump (GHSA-2v37-7h3g-55p8). Remaining `npm audit` findings (`swagger-ui-react`'s vendored `js-yaml`, dev-only `drizzle-kit`/`esbuild`) require semver-major downgrades and were left as-is — the `swagger-ui-react` exposure is mitigated by the `/api-docs` auth gate above instead.
+
+## [0.2.1] - 2026-08-08
+
 ### Changed
 - Repo-wide Tailwind v4 class-syntax cleanup (no visual/behavioral change): arbitrary CSS-variable values written as `text-[var(--foo)]` converted to the shorter `text-(--foo)` syntax across 10 files (`ProductForm.tsx`, `WilayaCommuneSelect.tsx`, `ProductDetail.tsx`, admin `products/page.tsx`, `CartDrawer.tsx`, `LanguageSwitcher.tsx`, `ProductCard.tsx`, `ToastContainer.tsx`, `Select.tsx`, `app/cart/page.tsx`); `--color-text`/`--color-bg` (which have a real mapping to Tailwind's `foreground`/`background` theme tokens via `app/globals.css`'s `@theme inline` bridge) converted to those semantic utility names instead. `flex-shrink-0` renamed to its v4 alias `shrink-0` in the 3 files that used it.
 - `CLAUDE.md`'s Documentation Sync Policy sharpened to explicitly cover the *after*-commit side: `CHANGELOG.md`'s `[Unreleased]` section should be converted into a real dated version entry once its contents are actually committed/pushed, not left open-ended indefinitely.
