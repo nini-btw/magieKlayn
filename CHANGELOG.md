@@ -7,8 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.7] - 2026-08-08
+
+Everything below was committed as `44526f9`/`380db2d`, merged into `main` on the `db-keep-alive-cron` branch.
+
 ### Added
-- **DB keep-alive cron** — `app/api/cron/keep-db-active/route.ts` (`GET`, `CRON_SECRET`-gated via a Bearer-token check against `Authorization`; requires the secret to actually be set, so a missing `CRON_SECRET` env var fails closed rather than accepting an unauthenticated `Bearer undefined` request) pings the `products` table so Supabase's free tier doesn't auto-pause the project after 7 days of inactivity. Scheduled weekly (Sundays at midnight UTC) via new `vercel.json` `crons` config. No-ops safely (200, not 500) when `db` is in mock mode. Requires `CRON_SECRET` to be set in Vercel's project env vars for the cron trigger to authenticate; not yet added to any `.env.local`/docs env-var list beyond this changelog entry.
+- **DB keep-alive cron** — `app/api/cron/keep-db-active/route.ts` (`GET`, `CRON_SECRET`-gated via a Bearer-token check against `Authorization`; requires the secret to actually be set, so a missing `CRON_SECRET` env var fails closed rather than accepting an unauthenticated `Bearer undefined` request — caught during manual testing before commit) pings the `products` table so Supabase's free tier doesn't auto-pause the project after 7 days of inactivity. Scheduled weekly (Sundays at midnight UTC) via new `vercel.json` `crons` config. No-ops safely (200, not 500) when `db` is in mock mode. `CRON_SECRET` is set in Vercel's Production + Preview env vars.
+
+### Fixed
+- **Missing `cronSecret` OpenAPI security scheme.** The cron route's `@swagger` block declared `security: [{ cronSecret: [] }]`, but `components.securitySchemes` in `src/infrastructure/swagger/config.ts` only defined `adminSession` — so `/api-docs` rendered the route with no way to attach the Bearer token via "Try it out". Found while verifying the cron route through the Swagger UI on a preview deployment.
 
 ## [0.2.6] - 2026-08-08
 
