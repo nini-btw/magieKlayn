@@ -17,13 +17,17 @@ npm run dev          # start dev server (localhost:3000)
 npm run build         # production build
 npm run start          # run production build
 
+npm run test            # run the Jest test suite once
+npm run test:watch       # Jest in watch mode
+npm run test:coverage     # Jest with a coverage report
+
 npm run db:generate     # generate a Drizzle migration from schema.ts changes
 npm run db:migrate       # apply tracked drizzle/ migrations (unreliable against Supabase's pooler — see below)
 npm run db:push           # push schema directly, skipping migration files (fastest for local dev)
 npm run db:studio          # open Drizzle Studio against DATABASE_URL
 ```
 
-There is **no test suite, no lint script, and no CI** — nothing to run beyond the above. Standalone maintenance scripts (Yalidine zone sync, auth repair, etc.) live in `scripts/` and are run manually via `npx tsx scripts/<file>.ts`.
+**Tests**: Jest (`jest.config.ts`, using `next/jest`), split into a `node` project (domain/application/infrastructure logic and `app/api/**` route handlers, tested by calling the exported `GET`/`POST`/etc. functions directly with mocked repositories/adapters) and a `jsdom` project (Redux slices, `src/presentation/lib` utils, and a representative slice of components via React Testing Library — `src/presentation/test-utils.tsx`'s `renderWithProviders()` wraps Redux + `next-intl`). Coverage is prioritized, not exhaustive: pure business logic (`cart.rules.ts`, validation schemas, delivery/order entity helpers) and the checkout/product/upload API routes are covered in depth; true Server Components, layouts, `"use server"` action modules, and E2E flows are **not** covered — see `PROJECT_DOCUMENTATION.md` §16 for the full breakdown of what's in vs. out of scope. There's still **no lint script and no CI** — nothing else to run beyond the above. Standalone maintenance scripts (Yalidine zone sync, auth repair, etc.) live in `scripts/` and are run manually via `npx tsx scripts/<file>.ts`.
 
 **Migrations, in practice**: neither `db:migrate` nor `db:push` reliably completes against this project's Supabase database — `db:migrate` hangs/fails against the transaction-mode pooler, and `db:push` can crash mid-introspection on a drizzle-kit bug unrelated to whatever column is actually being added. The working fallback for real changes: push the raw SQL directly via a one-off `postgres` client script, then manually insert a matching row into `drizzle.__drizzle_migrations` so `db:generate` stays consistent afterward. Separately, two hand-written SQL files in `src/infrastructure/db/migrations/` (`add_delivery_zones.sql`, `make_delivery_zone_id_not_null.sql`) are **not** tracked by Drizzle Kit at all and must be applied manually on any fresh database.
 

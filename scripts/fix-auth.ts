@@ -61,7 +61,7 @@ async function main() {
     process.exit(0);
   }
 
-  const admin = admins.find((a) => a.email === targetEmail);
+  const admin = admins.find((a: (typeof admins)[number]) => a.email === targetEmail);
   if (!admin) {
     console.error(`❌ No admin_users row for "${targetEmail}".`);
     process.exit(1);
