@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- `scripts/fix-auth.ts` rewritten to work correctly with the new per-admin shadow-secret auth model (see `0.2.4` below): it no longer computes and pushes its own password formula directly onto the Supabase Auth user (a formula that already didn't match `adminLogin()`'s, and which would now permanently desync login since the password is no longer overwritten every login). It now just clears the target admin's `admin_users.supabase_auth_secret`, letting the real `adminLogin()` flow regenerate and re-sync it on next login. No-arg invocation lists known admin emails instead of defaulting to a hardcoded (and, as discovered, already-wrong) email.
+
+## [0.2.4] - 2026-08-08
+
+Everything below was committed as `3ac928a`, merged into `main` at `ab4caa3`.
+
 ### Security
 - **Deterministic Supabase Auth shadow password replaced with a random per-admin secret.** `admin_users` gains a nullable `supabase_auth_secret` column (migration `0013_polite_punisher`); `adminLogin()` now generates a `crypto.randomBytes(32)` secret once per admin (on first login after the column exists) and reuses it on every subsequent login, instead of deriving a password from the formula `` `auth_${email}_fixed_password_v1` `` and overwriting the Supabase Auth user's password to that value on *every* login. The old scheme was fully computable from an admin's email plus the (readable) source code, and its every-login overwrite meant any manual workaround on the Supabase side got silently reverted. `getSupabaseAuthPassword()` has been removed entirely. See `AUTH_DOCUMENTATION.md` §4 for full before/after detail.
 

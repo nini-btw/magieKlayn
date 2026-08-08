@@ -293,7 +293,7 @@ magie_klayn/
 │   ├── add-order-wilaya-details.ts
 │   ├── apply-migration.ts
 │   ├── create-parcel.ts                  Order → Yalidine parcel bridge (imported by app/api/orders/route.ts)
-│   ├── fix-auth.ts                        Repairs/syncs admin Supabase Auth users
+│   ├── fix-auth.ts                        Clears an admin's Supabase Auth shadow-user secret so next login resyncs it
 │   ├── resolve-duplicate-communes.ts
 │   ├── seed-inspired-by.ts                Dry-run vs. --write one-time backfill of products.inspired_by
 │   ├── sync-zones.ts / sync-zones-write.ts   Dry-run vs. write delivery_zones sync from Yalidine
@@ -406,7 +406,7 @@ There is **no `.env.example`** file in the repository — a new developer must r
 2. **Clone and install**: `git clone <repo>` then `npm install` (uses `package-lock.json`, so plain `npm install` — no `pnpm`/`yarn` lockfile present).
 3. **Create `.env.local`** at the project root with at minimum: `DATABASE_URL` (Supabase Postgres pooler connection string, `?pgbouncer=true` typically), `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SERVICE_ROLE_KEY`. Without `DATABASE_URL`, `src/infrastructure/db/client.ts` falls back to a **mock mode** (`db = null`, logs a warning) rather than crashing — useful for pure-frontend work but means DB-backed pages/routes will error or return empty data.
 4. **Provision the database**: run `npm run db:push` (pushes the Drizzle schema directly, fastest for local dev) or `npm run db:migrate` (applies the tracked `drizzle/0000`–`0008` SQL migrations in order) — then **also manually apply** the two stray SQL files in `src/infrastructure/db/migrations/` (`add_delivery_zones.sql`, `make_delivery_zone_id_not_null.sql`), since these are not part of either automated migration path.
-5. **Create at least one admin user**: insert a row into `admin_users` directly (email + `bcrypt`-hashed password) — there is no self-serve admin signup UI. `scripts/fix-auth.ts` may help repair/sync the corresponding Supabase Auth shadow user if needed.
+5. **Create at least one admin user**: insert a row into `admin_users` directly (email + `bcrypt`-hashed password) — there is no self-serve admin signup UI. If the corresponding Supabase Auth shadow user ever gets into a broken state, `npx tsx scripts/fix-auth.ts <email>` clears that admin's `supabase_auth_secret` so the next real login regenerates and re-syncs it (see [§9](#9-authentication--authorization)).
 6. **(Optional) Yalidine**: set `YALIDINE_ENABLED=true`, `YALIDINE_API_BASE_URL`, `YALIDINE_API_ID`, `YALIDINE_API_TOKEN`, and run `npx tsx scripts/sync-zones-write.ts` to populate `delivery_zones` from live Yalidine fee data (or `scripts/sync-zones.ts` first for a dry-run diff).
 7. **(Optional) Telegram**: set `TELEGRAM_BOT_TOKEN` and `TELEGRAM_OWNER_CHAT_ID` to receive order alerts; omit to have notifications silently no-op.
 8. **Run the dev server**: `npm run dev` (Next.js dev server, default `http://localhost:3000`).
