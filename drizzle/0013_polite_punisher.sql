@@ -1,0 +1,1 @@
+ALTER TABLE "admin_users" ADD COLUMN "supabase_auth_secret" varchar(255);

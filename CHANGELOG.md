@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Security
+- **Deterministic Supabase Auth shadow password replaced with a random per-admin secret.** `admin_users` gains a nullable `supabase_auth_secret` column (migration `0013_polite_punisher`); `adminLogin()` now generates a `crypto.randomBytes(32)` secret once per admin (on first login after the column exists) and reuses it on every subsequent login, instead of deriving a password from the formula `` `auth_${email}_fixed_password_v1` `` and overwriting the Supabase Auth user's password to that value on *every* login. The old scheme was fully computable from an admin's email plus the (readable) source code, and its every-login overwrite meant any manual workaround on the Supabase side got silently reverted. `getSupabaseAuthPassword()` has been removed entirely. See `AUTH_DOCUMENTATION.md` §4 for full before/after detail.
+
+## [0.2.3] - 2026-08-08
+
+Everything below was committed as `ba85799` and pushed to `origin/security-audit`.
+
 ### Added
 - Basic in-memory rate limiting (`src/infrastructure/rate-limit/limiter.ts`, fixed-window per-IP) on `loginAdmin` (5 attempts/15min — the bcrypt comparison had no other brute-force protection) and `POST /api/orders` (10 orders/10min — checkout had no abuse protection against spam that could flood the Telegram alert channel or create bogus Yalidine parcels). Deliberately simple (no Redis/Upstash) given this app's actual scale; state is per-process, not durable/cross-instance — documented as a known limitation in the module itself.
 - Baseline security headers via `next.config.ts`'s `headers()` (`X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Strict-Transport-Security`, and a `Content-Security-Policy` scoped to Supabase/Sentry origins) — previously there were none, and no `proxy.ts`/middleware exists in this app to have set them elsewhere.

@@ -155,13 +155,20 @@ export const orderItems = pgTable("order_items", {
 });
 
 /**
- * Admin users table — unchanged from Phase 0
+ * Admin users table
  */
 export const adminUsers = pgTable("admin_users", {
   id: uuid("id").primaryKey().defaultRandom(),
   email: varchar("email", { length: 255 }).notNull().unique(),
   passwordHash: varchar("password_hash", { length: 255 }).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  // Random per-admin secret used as this admin's throwaway Supabase Auth
+  // password (Supabase Auth is only used to obtain a session cookie —
+  // admin_users.passwordHash above is the real credential). Generated
+  // lazily on first login and reused thereafter; null for an admin who
+  // hasn't logged in since this column was added. See
+  // src/infrastructure/auth/supabase-auth.ts's adminLogin().
+  supabaseAuthSecret: varchar("supabase_auth_secret", { length: 255 }),
 });
 
 /**
