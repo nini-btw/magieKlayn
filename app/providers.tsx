@@ -11,7 +11,8 @@ import { Footer } from "@/presentation/components/features/Footer";
 import { CartDrawer } from "@/presentation/components/features/CartDrawer";
 import { ToastContainer } from "@/presentation/components/features/ToastContainer";
 
-const CART_STORAGE_KEY = "crumbleivable-cart";
+const CART_STORAGE_KEY = "magie-klayn-cart";
+const LEGACY_CART_STORAGE_KEY = "crumbleivable-cart";
 
 interface ProvidersProps {
   children: React.ReactNode;
@@ -49,7 +50,18 @@ function CartPersistenceProvider() {
     hydratedRef.current = true;
 
     try {
-      const raw = localStorage.getItem(CART_STORAGE_KEY);
+      // One-time migration: carts persisted under the old key (from a
+      // prior rebrand) still get picked up so nobody loses an in-progress
+      // cart on this rename.
+      let raw = localStorage.getItem(CART_STORAGE_KEY);
+      if (!raw) {
+        const legacy = localStorage.getItem(LEGACY_CART_STORAGE_KEY);
+        if (legacy) {
+          raw = legacy;
+          localStorage.setItem(CART_STORAGE_KEY, legacy);
+          localStorage.removeItem(LEGACY_CART_STORAGE_KEY);
+        }
+      }
       if (raw) {
         const parsed = JSON.parse(raw);
         // Restore Date objects for product timestamps

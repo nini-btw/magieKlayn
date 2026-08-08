@@ -137,6 +137,7 @@
       "unisex": "للجنسين"
     },
     "notes": "النفحات",
+    "inspiredBy": "مستوحى من",
     "size": "الحجم",
     "backToShop": "العودة إلى المتجر",
     "scent": "العطر",
@@ -370,6 +371,10 @@
         "sizeLabel": "الحجم (مل)",
         "notesLabel": "النفحات العطرية",
         "notesPlaceholder": "أضيفي نفحة واضغطي Enter (مثال: فانيليا، مسك أبيض)",
+        "genderLabel": "الفئة",
+        "genderUnset": "غير محدد",
+        "inspiredByLabel": "مستوحى من (اختياري)",
+        "inspiredByPlaceholder": "مثال: Tom Ford Vanille Sex",
         "markAsSoldOut": "وسمها كنافدة الكمية",
         "addTitle": "إضافة منتج",
         "editTitle": "تعديل المنتج",
@@ -443,8 +448,8 @@
     "infoTitle": "معلومات الاتصال",
     "emailLabel": "البريد الإلكتروني",
     "phoneLabel": "الهاتف",
-    "hoursLabel": "ساعات العمل",
-    "hoursValue": "الأحد – الخميس، 9 صباحًا – 6 مساءً",
+    "hoursAlgiersLabel": "مواعيد عمل الجزائر العاصمة",
+    "hoursOranLabel": "مواعيد عمل وهران",
     "formTitle": "أرسلي رسالة",
     "nameLabel": "الاسم",
     "namePlaceholder": "اسمك الكامل",
@@ -493,6 +498,7 @@
     "inspiredEyebrow": "اعثري على توأمكِ",
     "inspiredTitle": "مستوحى من",
     "inspiredSubtitle": "كل رذاذ من ماچي كلاين مستوحى من عطر عالمي — إليكِ التوافقات.",
+    "inspiredByPrefix": "مستوحى من",
     "ctaTitle": "مستعدة لإيجاد لونكِ؟",
     "ctaDesc": "استكشفي جميع العطور الأربعة عشر واعثري على ما يناسب مزاجكِ.",
     "ctaButton": "تسوقي المجموعة"
@@ -603,12 +609,12 @@
     "storeAlgiers": {
       "badge": "متجر",
       "city": "الجزائر العاصمة",
-      "hours": "الإثنين–السبت، 10:00 – 19:00"
+      "hours": "السبت–الخميس، 9:00 صباحًا – 8:00 مساءً · مغلق يوم الجمعة"
     },
     "storeOran": {
       "badge": "متجر",
       "city": "وهران",
-      "hours": "الإثنين–السبت، 10:00 – 19:00"
+      "hours": "السبت–الخميس، 11:30 صباحًا – 12:00 منتصف الليل · الجمعة، 5:00 مساءً – 12:00 منتصف الليل"
     },
     "ctaEyebrow": "لديكِ أسئلة؟",
     "ctaTitle": "لم تجدي ما تبحثين عنه؟",

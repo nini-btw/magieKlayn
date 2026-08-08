@@ -179,6 +179,8 @@ function ProductModal({
       images: product.images,
       isNew: product.isNew,
       isSoldOut: product.isSoldOut,
+      gender: product.gender ?? "",
+      inspiredBy: product.inspiredBy ?? "",
     };
   };
 
@@ -404,6 +406,8 @@ export default function AdminProductsPage() {
             .toLowerCase()
             .replace(/\s+/g, "-")
             .replace(/[^a-z0-9-]/g, ""),
+        gender: formData.gender || null,
+        inspiredBy: formData.inspiredBy?.trim() || null,
       };
 
       const response = await fetch(url, {

@@ -543,6 +543,12 @@ export function WilayaCommuneSelect({
             STORE_LOCATIONS[selectedZone.wilayaCode] &&
             (() => {
               const location = STORE_LOCATIONS[selectedZone.wilayaCode];
+              const hours =
+                selectedZone.wilayaCode === "16"
+                  ? t("shipping.storeAlgiers.hours")
+                  : selectedZone.wilayaCode === "31"
+                    ? t("shipping.storeOran.hours")
+                    : null;
               return (
                 <div className="text-xs text-[var(--color-text-secondary)] mt-1 space-y-0.5">
                   <p>
@@ -551,6 +557,14 @@ export function WilayaCommuneSelect({
                     </span>{" "}
                     {location.name}, {location.addressLine}
                   </p>
+                  {hours && (
+                    <p>
+                      <span className="font-medium text-[var(--color-text)]">
+                        {t("shipping.hoursLabel")}:
+                      </span>{" "}
+                      {hours}
+                    </p>
+                  )}
                   <p>
                     <a
                       href={`tel:${location.phoneHref}`}

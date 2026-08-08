@@ -133,6 +133,7 @@
   "product": {
     "notes": "Notes",
     "gender": { "male": "Male", "female": "Female", "unisex": "Unisex" },
+    "inspiredBy": "Inspired By",
     "size": "Size",
     "backToShop": "Back to Shop",
     "scent": "Scent",
@@ -365,6 +366,10 @@
         "sizeLabel": "Size (ml)",
         "notesLabel": "Fragrance notes",
         "notesPlaceholder": "Add a note and press Enter (e.g. Vanille, Musc blanc)",
+        "genderLabel": "Gender",
+        "genderUnset": "Not set",
+        "inspiredByLabel": "Inspired By (optional)",
+        "inspiredByPlaceholder": "e.g. Tom Ford Vanille Sex",
         "markAsSoldOut": "Mark as sold out",
         "addTitle": "Add Product",
         "editTitle": "Edit Product",
@@ -438,8 +443,8 @@
     "infoTitle": "Contact Information",
     "emailLabel": "Email",
     "phoneLabel": "Phone",
-    "hoursLabel": "Hours",
-    "hoursValue": "Sun – Thu, 9am – 6pm",
+    "hoursAlgiersLabel": "Algiers Hours",
+    "hoursOranLabel": "Oran Hours",
     "formTitle": "Send a Message",
     "nameLabel": "Name",
     "namePlaceholder": "Your full name",
@@ -488,6 +493,7 @@
     "inspiredEyebrow": "Find Your Match",
     "inspiredTitle": "Inspired By",
     "inspiredSubtitle": "Each Magie Klayn mist draws its mood from a fragrance icon — here's the pairing.",
+    "inspiredByPrefix": "inspired by",
     "ctaTitle": "Ready to find your color?",
     "ctaDesc": "Explore all fourteen mists and find the one that matches your mood.",
     "ctaButton": "Shop the Collection"
@@ -598,12 +604,12 @@
     "storeAlgiers": {
       "badge": "Boutique",
       "city": "Algiers",
-      "hours": "Mon–Sat, 10:00 – 19:00"
+      "hours": "Sat–Thu, 9:00 AM – 8:00 PM · Closed Fridays"
     },
     "storeOran": {
       "badge": "Boutique",
       "city": "Oran",
-      "hours": "Mon–Sat, 10:00 – 19:00"
+      "hours": "Sat–Thu, 11:30 AM – 12:00 AM · Fri, 5:00 PM – 12:00 AM"
     },
     "ctaEyebrow": "Questions?",
     "ctaTitle": "Can't find what you're looking for?",

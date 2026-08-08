@@ -96,6 +96,7 @@ export class ProductRepository implements IProductRepository {
         isActive: product.isActive,
         isNew: product.isNew,
         isSoldOut: product.isSoldOut,
+        inspiredBy: product.inspiredBy ?? null,
       })
       .returning();
 
@@ -157,6 +158,7 @@ export class ProductRepository implements IProductRepository {
       isActive: row.isActive,
       isNew: row.isNew,
       isSoldOut: row.isSoldOut,
+      inspiredBy: row.inspiredBy ?? null,
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,
     };

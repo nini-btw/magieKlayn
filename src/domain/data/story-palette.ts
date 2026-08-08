@@ -36,27 +36,9 @@ export const STORY_PALETTE: StoryPaletteItem[] = [
   { name: "Lovely Day", colorHex: "#C43A63" },
 ];
 
-export interface InspiredByEntry {
-  mist: string;
-  inspiration: string;
-}
-
-/** Each Magie Klayn mist paired with the original fragrance it's
- * inspired by — supplied directly by the brand, proper nouns are not
- * translated across locales. */
-export const INSPIRED_BY: InspiredByEntry[] = [
-  { mist: "Vague d'Amour", inspiration: "Wild Flower" },
-  { mist: "Cool Lady", inspiration: "Backstage Angel" },
-  { mist: "My Belle", inspiration: "Coconut Passion" },
-  { mist: "Miss Dame", inspiration: "Strawberry" },
-  { mist: "Femme Desirée", inspiration: "Paradise" },
-  { mist: "Carat", inspiration: "Bare Vanilla Noir" },
-  { mist: "Libre Choix", inspiration: "Xerjoff Erba Pura" },
-  { mist: "Miss Black", inspiration: "Parfum de Marly Delina" },
-  { mist: "Lovely Day", inspiration: "Dior Lucky" },
-  { mist: "Belle de Nuit", inspiration: "Pune Seduction" },
-  { mist: "Femme Interdite", inspiration: "Gucci Flora" },
-  { mist: "Rose Land", inspiration: "After Party Angel" },
-  { mist: "Very Women", inspiration: "Tom Ford Vanille Sex" },
-  { mist: "Lady Show", inspiration: "Jean Paul Gaultier Scandal" },
-];
+// The mist → inspiration pairing used to live here as a static
+// `INSPIRED_BY` array. It's now the `inspiredBy` column on `products`
+// (curated per product in the admin, seeded once via
+// scripts/seed-inspired-by.ts) so the About page's "Inspired By" section
+// and the product detail page both read the same live source instead of
+// this file duplicating it.

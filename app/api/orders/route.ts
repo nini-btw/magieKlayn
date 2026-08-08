@@ -10,7 +10,7 @@ import { deliveryRepository } from "@/infrastructure/db/delivery.adapter";
 import { getAdminSession } from "@/infrastructure/auth/supabase-auth";
 import type { CreateOrderPayload, OrderFilters } from "@/domain/entities/order";
 import { telegramNotificationService } from "@/infrastructure/telegram/telegram-notification.service";
-import { createParcelForOrder } from "@/../scripts/create-parcel"; // adjust path to your actual import alias
+import { createParcelForOrder } from "../../../scripts/create-parcel";
 import { getMaxBoxCount, calculateCoffretFee } from "@/domain/rules/cart.rules";
 
 /**

@@ -92,10 +92,18 @@ export default function ContactPage() {
               </div>
               <div>
                 <p className="contact-info-item-label">
-                  {t("contact.hoursLabel")}
+                  {t("contact.hoursAlgiersLabel")}
                 </p>
                 <p className="contact-info-item-value">
-                  {t("contact.hoursValue")}
+                  {t("shipping.storeAlgiers.hours")}
+                </p>
+              </div>
+              <div>
+                <p className="contact-info-item-label">
+                  {t("contact.hoursOranLabel")}
+                </p>
+                <p className="contact-info-item-value">
+                  {t("shipping.storeOran.hours")}
                 </p>
               </div>
             </div>

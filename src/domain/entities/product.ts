@@ -57,6 +57,13 @@ export interface Product {
   /** Cannot currently be purchased */
   isSoldOut: boolean;
 
+  /**
+   * Optional fragrance icon this mist draws its mood from, e.g.
+   * "Tom Ford Vanille Sex". Shown on the product detail page and in the
+   * About page's "Inspired By" section when set. Null when not curated.
+   */
+  inspiredBy: string | null;
+
   createdAt: Date;
   updatedAt: Date;
 }

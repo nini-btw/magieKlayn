@@ -1,14 +1,15 @@
 "use client";
 
 /**
- * A thin (~1rem), responsive, top-to-bottom winding color strip built from
- * real product colors — one band per product, in product order. Used on
- * the /about page's story section in place of a hardcoded swatch palette.
+ * A thin (~1rem), responsive color ribbon built from real product colors —
+ * one band per product, in product order. Used on the /about page's story
+ * section, one instance per alternating row, each bowing toward the side
+ * closest to its paired text block.
  *
  * Path-building approach mirrors app/CollectionVisual.tsx's wedgePath
- * helper (arc/path construction from simple geometry), adapted from a
- * wedge/arc to a chain of cubic-bezier bands that alternate left/right of
- * center for a gentle S-curve.
+ * helper (arc/path construction from simple geometry), adapted into a
+ * chain of cubic-bezier bands sampled along a single sine-based bow rather
+ * than a wedge/arc.
  */
 
 import * as React from "react";
@@ -21,28 +22,42 @@ export interface StoryColorStripItem {
 
 export interface StoryColorStripProps {
   items: StoryColorStripItem[];
+  /** Which side the ribbon bows out toward across its full run — pair this
+   * with whichever side of the row the text block sits on. */
+  bend?: "left" | "right";
 }
 
 const SEGMENT_HEIGHT = 160; // viewBox units per color band
 const VIEWBOX_WIDTH = 200;
 const CENTER_X = VIEWBOX_WIDTH / 2;
-const AMPLITUDE = 60;
+// A pronounced bow (~38% of the viewBox width) so the ribbon reads as a
+// real curve, not a subtle wiggle.
+const AMPLITUDE = 76;
 // Stroke width is kept in real px (~1rem) regardless of the SVG's rendered
 // size via vector-effect="non-scaling-stroke" below — the curve itself
 // scales with the container, the line thickness does not.
 const STROKE_WIDTH = 16;
 
-/** Alternates the curve left/right of center at each band boundary. */
-function xAt(index: number): number {
-  return index % 2 === 0 ? CENTER_X - AMPLITUDE : CENTER_X + AMPLITUDE;
+/** One continuous sine-based bow across the whole run: starts and ends at
+ * center, bulges out toward `bend`'s side at the midpoint. */
+function xAt(index: number, count: number, bend: "left" | "right"): number {
+  const t = count === 0 ? 0 : index / count;
+  const direction = bend === "left" ? -1 : 1;
+  return CENTER_X + direction * AMPLITUDE * Math.sin(Math.PI * t);
 }
 
-export function StoryColorStrip({ items }: StoryColorStripProps) {
+export function StoryColorStrip({
+  items,
+  bend = "right",
+}: StoryColorStripProps) {
   const reduceMotion = useReducedMotion();
 
   const waypoints = React.useMemo(
-    () => Array.from({ length: items.length + 1 }, (_, i) => xAt(i)),
-    [items.length],
+    () =>
+      Array.from({ length: items.length + 1 }, (_, i) =>
+        xAt(i, items.length, bend),
+      ),
+    [items.length, bend],
   );
 
   if (items.length === 0) return null;
@@ -55,7 +70,7 @@ export function StoryColorStrip({ items }: StoryColorStripProps) {
         viewBox={`0 0 ${VIEWBOX_WIDTH} ${height}`}
         className="story-color-strip-svg"
         role="img"
-        aria-label="A curved strip of every fragrance's signature color"
+        aria-label="A curved ribbon of fragrance signature colors"
         preserveAspectRatio="none"
       >
         {items.map((item, i) => {

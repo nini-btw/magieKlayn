@@ -5,6 +5,8 @@ import { useState, useRef, useEffect } from "react";
 import { XIcon, UploadIcon } from "lucide-react";
 import { Button } from "@/presentation/components/ui/Button";
 
+export type ProductGenderOption = "" | "male" | "female" | "unisex";
+
 export type ProductFormData = {
   name: string;
   slug: string;
@@ -19,6 +21,10 @@ export type ProductFormData = {
   images: string[];
   isNew?: boolean;
   isSoldOut?: boolean;
+  /** "" means unset — converted to null before being sent to the API. */
+  gender?: ProductGenderOption;
+  /** Optional fragrance icon this mist draws from, e.g. "Dior Lucky". */
+  inspiredBy?: string;
 };
 
 type ProductFormProps = {
@@ -52,6 +58,8 @@ export function ProductForm({
     images: [],
     isNew: true,
     isSoldOut: false,
+    gender: "",
+    inspiredBy: "",
     ...initialData,
   });
 
@@ -283,6 +291,45 @@ export function ProductForm({
               })
             }
             placeholder={t("admin.products.form.notesPlaceholder")}
+            className="w-full rounded-2xl border-2 border-[var(--color-border)] bg-white px-4 py-3 text-[var(--color-text)] focus:border-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-text)]/10 focus:outline-none"
+          />
+        </div>
+      </div>
+
+      {/* Gender & Inspired By */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <label className="mb-2 block text-xs font-bold tracking-widest text-[var(--color-text-secondary)] uppercase">
+            {t("admin.products.form.genderLabel")}
+          </label>
+          <select
+            value={formData.gender || ""}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                gender: e.target.value as ProductGenderOption,
+              })
+            }
+            className="w-full rounded-2xl border-2 border-[var(--color-border)] bg-white px-4 py-3 text-[var(--color-text)] focus:border-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-text)]/10 focus:outline-none"
+          >
+            <option value="">{t("admin.products.form.genderUnset")}</option>
+            <option value="male">{t("product.gender.male")}</option>
+            <option value="female">{t("product.gender.female")}</option>
+            <option value="unisex">{t("product.gender.unisex")}</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="mb-2 block text-xs font-bold tracking-widest text-[var(--color-text-secondary)] uppercase">
+            {t("admin.products.form.inspiredByLabel")}
+          </label>
+          <input
+            type="text"
+            value={formData.inspiredBy || ""}
+            onChange={(e) =>
+              setFormData({ ...formData, inspiredBy: e.target.value })
+            }
+            placeholder={t("admin.products.form.inspiredByPlaceholder")}
             className="w-full rounded-2xl border-2 border-[var(--color-border)] bg-white px-4 py-3 text-[var(--color-text)] focus:border-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-text)]/10 focus:outline-none"
           />
         </div>

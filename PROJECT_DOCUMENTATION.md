@@ -279,7 +279,7 @@ magie_klayn/
 │       ├── auth/                            EMPTY — no route.ts (placeholder)
 │       └── messages/                        EMPTY — no route.ts (placeholder)
 │
-├── drizzle/                            Drizzle Kit output: 12 SQL migrations (0000–0011) + meta/*.json snapshots
+├── drizzle/                            Drizzle Kit output: 13 SQL migrations (0000–0012) + meta/*.json snapshots
 │
 ├── messages/                            next-intl translation catalogs
 │   ├── en.json (612 lines)
@@ -295,6 +295,7 @@ magie_klayn/
 │   ├── create-parcel.ts                  Order → Yalidine parcel bridge (imported by app/api/orders/route.ts)
 │   ├── fix-auth.ts                        Repairs/syncs admin Supabase Auth users
 │   ├── resolve-duplicate-communes.ts
+│   ├── seed-inspired-by.ts                Dry-run vs. --write one-time backfill of products.inspired_by
 │   ├── sync-zones.ts / sync-zones-write.ts   Dry-run vs. write delivery_zones sync from Yalidine
 │   ├── test-connection.ts, test-yalidine.ts, test-create-parcel.ts
 │   └── data/algeria_cities.json
@@ -304,7 +305,7 @@ magie_klayn/
     │   ├── entities/ (product.ts, order.ts, delivery.ts)
     │   ├── ports/ (repositories.ts, notifications.ts)     Interfaces the infrastructure layer implements
     │   ├── rules/cart.rules.ts               getMaxBoxCount, calculateCoffretFee, cart totals
-    │   ├── data/story-palette.ts             Static About-page brand content (STORY_PALETTE, INSPIRED_BY)
+    │   ├── data/story-palette.ts             Static About-page ribbon colors (STORY_PALETTE) — the former INSPIRED_BY array now lives as products.inspired_by
     │   └── config/features.ts               Feature flags from NEXT_PUBLIC_FEATURE_* env vars
     ├── application/
     │   └── services/cart.service.ts            Used by the Redux cart slice
@@ -435,6 +436,7 @@ There is **no `.env.example`** file in the repository — a new developer must r
 | `is_active` | `boolean` NOT NULL, default `true` | Visible in public catalogue |
 | `is_new` | `boolean` NOT NULL, default `false` | "New" badge |
 | `is_sold_out` | `boolean` NOT NULL, default `false` | "Sold out" badge |
+| `inspired_by` | `varchar(255)`, nullable | Optional fragrance icon this mist draws from, e.g. `"Dior Lucky"` — curated per product in the admin, shown on the product detail page and the About page's "Inspired By" section (migration `0012`) |
 | `created_at` / `updated_at` | `timestamp` NOT NULL, default `now()` | |
 
 **`orders`**
@@ -515,11 +517,11 @@ admin_users  — standalone table, joined to Supabase Auth users by email at the
 
 ### Migrations
 Two parallel mechanisms coexist (see [§3](#3-architecture-decisions--trade-offs) and [§20](#20-known-issues--technical-debt) for the risk this creates):
-1. **Drizzle Kit-generated**: `drizzle/0000_bored_shadow_king.sql` through `drizzle/0011_dashing_sunfire.sql`, with matching `meta/*_snapshot.json` files and a `_journal.json` tracking them. Run via `npm run db:generate` (create from schema diff) and `npm run db:migrate` (apply) or `npm run db:push` (direct schema push, skipping migration files — convenient for local dev, riskier for tracked history). **In practice, `db:migrate` hangs/fails against Supabase's transaction-mode pooler** (advisory-lock based) — the working fallback used for the last several migrations was applying the raw SQL directly via a one-off `postgres` client script, then manually inserting a matching row (sha256 hash of the migration file + the journal's `when` timestamp) into `drizzle.__drizzle_migrations` so Drizzle's own bookkeeping stays consistent for the next `db:generate`.
+1. **Drizzle Kit-generated**: `drizzle/0000_bored_shadow_king.sql` through `drizzle/0012_chemical_maginty.sql`, with matching `meta/*_snapshot.json` files and a `_journal.json` tracking them. Run via `npm run db:generate` (create from schema diff) and `npm run db:migrate` (apply) or `npm run db:push` (direct schema push, skipping migration files — convenient for local dev, riskier for tracked history). **In practice, neither `db:migrate` nor `db:push` reliably completes against this project's Supabase database** — `db:migrate` hangs/fails against the transaction-mode pooler (advisory-lock based), and `db:push` (as of migration `0012`) crashes during its own schema-introspection step with a drizzle-kit bug parsing an existing CHECK constraint, unrelated to whatever column is actually being added. The working fallback (used for `0012` and several before it): apply the raw SQL directly via a one-off `postgres` client script, then manually insert a matching row (sha256 hash of the migration file + the journal's `when` timestamp) into `drizzle.__drizzle_migrations` so Drizzle's own bookkeeping stays consistent for the next `db:generate`.
 2. **Hand-written, untracked by Drizzle Kit**: `src/infrastructure/db/migrations/add_delivery_zones.sql` and `make_delivery_zone_id_not_null.sql` — must be applied manually (e.g. via `scripts/apply-migration.ts` or a direct `psql`/Supabase SQL editor run); there is no automated step that guarantees these ran.
 
 ### Seed data / fixtures
-None found — no seed script exists in `package.json` scripts, and an earlier commit message literally says *"remove the seed"* (`6d332a4`), confirming a seed mechanism once existed and was deliberately removed. `scripts/data/algeria_cities.json` is static reference data (wilaya/commune names) used by the Yalidine zone-sync scripts, not application seed data.
+No general seed mechanism — no seed script exists in `package.json` scripts, and an earlier commit message literally says *"remove the seed"* (`6d332a4`), confirming one once existed and was deliberately removed. `scripts/data/algeria_cities.json` is static reference data (wilaya/commune names) used by the Yalidine zone-sync scripts, not application seed data. One narrow, one-time exception: `scripts/seed-inspired-by.ts` backfills `products.inspired_by` for the 14 launch mists from a hardcoded mist→inspiration list (dry-run by default, `--write` to apply) — not a repeatable seed for fresh databases, just the migration path for data that used to live in a static file.
 
 ### Caching strategy
 No caching layer (no Redis, no in-memory cache, no `unstable_cache`/`revalidateTag` usage found beyond React's request-scoped `cache()` wrapper around `getAllProducts`/`getProductBySlug` in `app/actions.ts`, which only dedupes calls within a single render pass, not across requests). `app/layout.tsx` sets `export const dynamic = "force-dynamic"`, meaning the whole app opts out of Next.js's static/ISR caching by default — every request re-renders server-side.
@@ -549,7 +551,7 @@ All routes are Next.js Route Handlers under `app/api/`. Response envelope conven
 
 **`POST /api/products`**
 - Purpose: create a product.
-- Body: `{ name, slug, description, price, colorHex, sizeMl, images, notes?, gender?, isActive?, isNew?, isSoldOut? }` — `name/slug/description/price/colorHex/sizeMl/images` are required (manual `if` check, not Zod).
+- Body: `{ name, slug, description, price, colorHex, sizeMl, images, notes?, gender?, isActive?, isNew?, isSoldOut?, inspiredBy? }` — `name/slug/description/price/colorHex/sizeMl/images` are required (manual `if` check, not Zod). `inspiredBy` is an optional curated fragrance-icon name (e.g. `"Dior Lucky"`), shown on the product detail page and the About page's "Inspired By" section when set.
 - Response `201`: `{ success: true, data: Product, message }`. `409` on duplicate `slug` (Postgres unique-constraint code `23505`). `401` if not admin. `400` on missing required field.
 - Auth: admin (`getAdminSession()`).
 
@@ -763,7 +765,7 @@ Beyond this base palette, **the site is deliberately color-led at the product le
 - `animations.ts` — the Framer Motion variant library (see [§11](#11-ui--ux-design)).
 - ~~`colors.ts`~~ — deleted; was orphaned (`LIQUID_COLOR`/`darkenHex`/`getLiquidStyle`, not imported anywhere) — see [§20](#20-known-issues--technical-debt).
 
-**Constants and enums**: mostly colocated with the domain entity they describe rather than centralized — `MAX_BOX_CAPACITY`/`BOX_FEE`/`getMaxBoxCount`/`calculateCoffretFee` in `src/domain/rules/cart.rules.ts`; `STORE_PICKUP_WILAYAS`/`STORE_LOCATIONS` in `src/domain/entities/delivery.ts`; `STORY_PALETTE`/`INSPIRED_BY` (static About-page brand content) in `src/domain/data/story-palette.ts`; Postgres enums (`order_status`, `product_gender`, `delivery_type`, `box_color`, `packaging_type`) defined once in `src/infrastructure/db/schema.ts` via `pgEnum` and reused as the TypeScript source of truth for those unions elsewhere; feature flags centralized in `src/domain/config/features.ts`.
+**Constants and enums**: mostly colocated with the domain entity they describe rather than centralized — `MAX_BOX_CAPACITY`/`BOX_FEE`/`getMaxBoxCount`/`calculateCoffretFee` in `src/domain/rules/cart.rules.ts`; `STORE_PICKUP_WILAYAS`/`STORE_LOCATIONS` in `src/domain/entities/delivery.ts`; `STORY_PALETTE` (static About-page ribbon colors) in `src/domain/data/story-palette.ts`; Postgres enums (`order_status`, `product_gender`, `delivery_type`, `box_color`, `packaging_type`) defined once in `src/infrastructure/db/schema.ts` via `pgEnum` and reused as the TypeScript source of truth for those unions elsewhere; feature flags centralized in `src/domain/config/features.ts`.
 
 ---
 
@@ -789,7 +791,7 @@ Beyond this base palette, **the site is deliberately color-led at the product le
 
 **Multi-timezone / multi-region assumptions**: the app assumes a **single timezone, `Africa/Algiers`** (hardcoded in `i18n.config.ts`) and a **single country, Algeria** (wilaya/commune delivery model, Yalidine courier, DZD currency formatting hardcoded as `fr-DZ` in `formatPrice()`). Going global/multi-region would require: abstracting the delivery-zone model beyond wilaya/commune, supporting multiple couriers, multi-currency pricing/formatting, and timezone-aware date handling (`order_date`/`created_at` are stored as plain `timestamp` without timezone in Postgres — worth confirming this is intentional given the single-timezone assumption).
 
-**Known technical debt** (full detail in [§20](#20-known-issues--technical-debt)): duplicate order-creation paths (server action vs. API route); three divergent `getLuminance()` implementations; two parallel DB-migration mechanisms; no shared client/server validation schema; hardcoded synthetic-password auth scheme; "Crumbleivable" brand-name leftovers; TODO placeholder store addresses. (The unused `application/use-cases` layer, disconnected i18n middleware, orphaned `BoxBuilder`/`Card.tsx`/`colors.ts`, and the `[WilayaCode]`/`[wilayaCode]` route-param bug have all since been resolved — see [§20](#20-known-issues--technical-debt).)
+**Known technical debt** (full detail in [§20](#20-known-issues--technical-debt)): three divergent `getLuminance()` implementations; two parallel DB-migration mechanisms; no shared client/server validation schema; hardcoded synthetic-password auth scheme; TODO placeholder store addresses. (The duplicate order-creation paths, "Crumbleivable" brand-name leftovers, the unused `application/use-cases` layer, disconnected i18n middleware, orphaned `BoxBuilder`/`Card.tsx`/`colors.ts`, and the `[WilayaCode]`/`[wilayaCode]` route-param bug have all since been resolved — see [§20](#20-known-issues--technical-debt).)
 
 **Maintenance burden**: low-to-moderate for a single developer who already holds the whole system in their head, but **high for a new developer** without this document, because: (a) the dead-vs-live code paths (use-cases, i18n middleware, `BoxBuilder`) aren't marked as such anywhere in the code itself; (b) there's no test suite to lean on to understand expected behavior or to safely refactor; (c) the two-migration-mechanism DB story requires tribal knowledge to reproduce correctly on a fresh environment. There is no on-call rotation or incident process — Sentry is the only safety net for catching production errors, and Telegram order alerts are the only "is the business working" signal.
 
@@ -929,13 +931,13 @@ No payment provider integration exists (Yalidine handles cash-on-delivery collec
 
 **Bugs / functional gaps**:
 1. ~~Stop-desk delivery via Yalidine is currently broken/incomplete~~ — **RESOLVED.** The customer's real, checkout-time-picked Yalidine center (`stopdeskCenterId`/`stopdeskCommuneName`, stored on the order) is now used directly for parcel creation, instead of guessing a center from the customer's commune after the fact. `resolveStopdeskId`'s fuzzy matching is kept only as a fallback for orders placed before these columns existed. `WilayaCommuneSelect` also now auto-selects Stop Desk and a default center for the customer, further reducing the chance of a bad/missing selection reaching checkout.
-2. **Duplicate order-creation code paths**: `app/actions.ts`'s `createOrder` server action and `app/api/orders/route.ts`'s `POST` handler both create orders, but **only the API route also creates a Yalidine parcel and applies the store-pickup fee override**. If any UI path calls the server action instead of the route, that order gets no shipment and no anti-tamper fee check.
+2. ~~Duplicate order-creation code paths~~ — **RESOLVED: deleted.** `app/actions.ts`'s `createOrder` server action had no callers anywhere in the app (the only real checkout UI, `app/cart/page.tsx`, already posted to `POST /api/orders`) and was an incomplete duplicate — it skipped validation, delivery-zone resolution, the coffret/store-pickup anti-tamper checks, and Yalidine parcel creation. It's been removed; `POST /api/orders` is now the single order-creation path.
 3. ~~`src/middleware/i18n.ts` is dead code~~ — **RESOLVED: deleted.** It was set up correctly for `next-intl`, but never wired up as an actual Next.js `proxy.ts`/`middleware.ts`, given this Next.js version's `middleware.ts` → `proxy.ts` rename (per `AGENTS.md`'s own warning). Locale is handled via a manual cookie read in `app/layout.tsx` — that part is unchanged.
 4. **A second, separate RTL/locale mechanism exists in `app/template.tsx`** (localStorage/custom-event based `<html dir>` management), independent of the cookie-based one in `app/layout.tsx` — these two are not obviously guaranteed to stay in sync.
 5. ~~`BoxBuilder.tsx` fetches a non-existent endpoint~~ — **RESOLVED: deleted** (along with its exports from `features/index.ts`). It fetched a non-existent `/api/products/cookies` endpoint and wasn't referenced by any live page — an orphaned "cookie box" feature from what looked like an earlier product-line pivot (baked-goods → perfume). `NEXT_PUBLIC_FEATURE_CUSTOM_BUILDER` now gates nothing until a real replacement is built.
-6. **`app/shop/layout.tsx`'s metadata copy references "American-style" baked goods**, mismatched with the actual perfume/fragrance product line — another pivot leftover.
-7. **`app/admin/(dashboard)/layout.tsx`'s page `<title>` still says "Crumbleivable Brum Shop"** — leftover branding from a prior/sibling project this codebase was likely adapted from.
-8. **Cart persistence uses the `localStorage` key `"crumbleivable-cart"`** (`app/providers.tsx`) — same "Crumbleivable" naming leak, functionally harmless but confusing to a new developer grepping for "magie"/"klayn".
+6. ~~`app/shop/layout.tsx`'s metadata copy references "American-style" baked goods~~ — **RESOLVED.** Replaced with fragrance-appropriate copy matching the actual product line.
+7. ~~`app/admin/(dashboard)/layout.tsx`'s metadata description said "Crumbleivable Brum Shop"~~ — **RESOLVED.** Updated to "Admin Dashboard for Magie Klayn".
+8. ~~Cart persistence used the `localStorage` key `"crumbleivable-cart"`~~ — **RESOLVED.** Renamed to `"magie-klayn-cart"` in `app/providers.tsx`, with a one-time fallback read of the old key on hydration so existing in-progress carts aren't lost.
 9. ~~Store-pickup addresses are literal TODO placeholders~~ — **RESOLVED.** `STORE_PICKUP_ADDRESSES` was replaced with `STORE_LOCATIONS: Record<string, StoreLocation>` (real name, address, phone, Maps link for both the Alger and Oran stores) — a single source of truth consumed by both the checkout pickup-point note and the `/shipping` page's store cards, instead of the address/phone text being duplicated (and drifting, with placeholder phone numbers) inside `messages/*.json`.
 10. **Font-variable mismatch**: `globals.css`'s `--font-display`/`--font-body` reference `--font-archivo-black`/`--font-inter`, but `app/layout.tsx` only loads Comfortaa and Noto Kufi Arabic — the referenced font variables are never defined, so text likely renders in fallback fonts rather than the intended brand typeface in CSS-driven sections.
 11. **Three divergent `getLuminance()` implementations** exist (`src/presentation/lib/utils.ts`, `src/presentation/lib/color.ts`, and one inlined in `ProductCard.tsx`), using different luminance-weighting constants — could produce inconsistent white/dark-text contrast decisions depending on which one a given component happens to call.
@@ -995,11 +997,11 @@ No payment provider integration exists (Yalidine handles cash-on-delivery collec
 - `src/application/` — `cart.service.ts` only (used by the Redux cart slice); the unused `use-cases/` layer and stray `create-next-app` scaffold files that used to live here have been deleted.
 - `src/infrastructure/` — concrete integrations: `db/` (Drizzle schema + repositories), `auth/supabase-auth.ts`, `storage/supabase-storage.ts`, `telegram/`, `yalidine/`.
 - `src/presentation/` — all React UI: `components/{features,ui}/`, `store/` (Redux slices `cart`, `ui`), `lib/` (utils, animations, color helpers).
-- `drizzle/` — generated SQL migrations (0000–0011); **also check** `src/infrastructure/db/migrations/` for two hand-written SQL files not tracked by Drizzle Kit. `db:migrate` doesn't reliably work against Supabase's pooler — see [§7](#7-database--data-layer)'s Migrations note for the raw-SQL-plus-manual-registration workaround actually used.
+- `drizzle/` — generated SQL migrations (0000–0012); **also check** `src/infrastructure/db/migrations/` for two hand-written SQL files not tracked by Drizzle Kit. Neither `db:migrate` nor `db:push` reliably works against this project's Supabase database — see [§7](#7-database--data-layer)'s Migrations note for the raw-SQL-plus-manual-registration workaround actually used.
 - `messages/{en,fr,ar}.json` — i18n translation catalogs.
 - `scripts/` — standalone `tsx`-run maintenance scripts (Yalidine zone sync, auth repair); `scripts/create-parcel.ts` is unusually imported directly by `app/api/orders/route.ts`.
 
-**Most important files to know**: `src/infrastructure/db/schema.ts` (DB source of truth), `app/api/orders/route.ts` (the core checkout/order-creation logic, including the delivery-fee anti-tamper guard and server-side coffret-fee recomputation), `src/infrastructure/auth/supabase-auth.ts` (the security-sensitive hybrid auth), `src/infrastructure/yalidine/{client,config,stopdesk-resolver}.ts` + `scripts/create-parcel.ts` (the courier integration — stop-desk now resolves via the checkout-time-picked center, weight/dimensions currently omitted as a live oversize-fee experiment), `src/presentation/store/cart/cart.slice.ts` (cart state, multi-box `boxColors[]` + `localStorage` persistence key `"crumbleivable-cart"`), `src/domain/entities/delivery.ts`'s `STORE_LOCATIONS` (single source of truth for real store address/phone/maps data), `app/layout.tsx` (locale resolution + provider composition root), `i18n.config.ts` + `src/domain/config/features.ts` (config/flags).
+**Most important files to know**: `src/infrastructure/db/schema.ts` (DB source of truth), `app/api/orders/route.ts` (the core checkout/order-creation logic, including the delivery-fee anti-tamper guard and server-side coffret-fee recomputation), `src/infrastructure/auth/supabase-auth.ts` (the security-sensitive hybrid auth), `src/infrastructure/yalidine/{client,config,stopdesk-resolver}.ts` + `scripts/create-parcel.ts` (the courier integration — stop-desk now resolves via the checkout-time-picked center, weight/dimensions currently omitted as a live oversize-fee experiment), `src/presentation/store/cart/cart.slice.ts` (cart state, multi-box `boxColors[]`; persisted in `app/providers.tsx` under the `localStorage` key `"magie-klayn-cart"`), `src/domain/entities/delivery.ts`'s `STORE_LOCATIONS` (single source of truth for real store address/phone/maps data), `app/layout.tsx` (locale resolution + provider composition root), `i18n.config.ts` + `src/domain/config/features.ts` (config/flags).
 
 **How to add a new feature** (rough steps):
 1. New **page**: add a folder + `page.tsx` under `app/` (add `layout.tsx` too if it needs distinct metadata/chrome).

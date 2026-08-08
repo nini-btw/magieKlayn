@@ -65,6 +65,7 @@ export function getApiDocs() {
               isActive: { type: "boolean" },
               isNew: { type: "boolean" },
               isSoldOut: { type: "boolean" },
+              inspiredBy: { type: "string", nullable: true, description: "Optional fragrance icon this mist draws from, e.g. Dior Lucky" },
               createdAt: { type: "string", format: "date-time" },
               updatedAt: { type: "string", format: "date-time" },
             },

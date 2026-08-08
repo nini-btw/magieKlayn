@@ -5,7 +5,7 @@ import { createAuthClient } from "@/infrastructure/auth/supabase-auth";
 
 export const metadata: Metadata = {
   title: "Admin",
-  description: "Admin Dashboard for Crumbleivable Brum Shop",
+  description: "Admin Dashboard for Magie Klayn",
 };
 
 export default async function AdminLayout({

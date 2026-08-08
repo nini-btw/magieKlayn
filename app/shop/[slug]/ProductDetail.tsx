@@ -134,9 +134,22 @@ export const ProductDetail: React.FC<{ product: Product }> = ({ product }) => {
           {formatPrice(product.price)}
         </p>
 
-        {/* Description */}
+        {/* Description — "inspired by X" is folded into the same paragraph,
+            colored with the product's own signature color so it reads as a
+            highlighted detail rather than a separate spec/callout. */}
         <p className="section-description max-w-none text-lg">
           {product.description}
+          {product.inspiredBy && (
+            <>
+              {" "}
+              <span
+                className="product-detail-inspired-inline"
+                style={{ color: product.colorHex }}
+              >
+                {t("about.inspiredByPrefix")} {product.inspiredBy}
+              </span>
+            </>
+          )}
         </p>
 
         {/* Fragrance notes */}

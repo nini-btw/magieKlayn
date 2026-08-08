@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Shop",
   description:
-    "Browse our selection of freshly baked American-style  and custom boxes.",
+    "Discover our full collection of luxury fragrances and coffret gift-box packaging.",
 };
 
 export default function ShopLayout({

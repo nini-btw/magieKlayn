@@ -108,6 +108,7 @@ export async function GET(request: NextRequest) {
  *               isActive: { type: boolean }
  *               isNew: { type: boolean }
  *               isSoldOut: { type: boolean }
+ *               inspiredBy: { type: string, description: "Optional fragrance icon this mist draws from, e.g. Dior Lucky" }
  *     responses:
  *       201:
  *         description: Product created

@@ -20,7 +20,13 @@ export const Footer: React.FC = () => {
             <Logo />
           </Link>
           <div className="footer-social mt-4">
-            <a href="#" className="icon-circle" aria-label="Instagram">
+            <a
+              href="https://www.instagram.com/magie.klayn.algerie/"
+              className="icon-circle"
+              aria-label="Instagram"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <svg
                 viewBox="0 0 20 20"
                 width="15"
@@ -40,7 +46,13 @@ export const Footer: React.FC = () => {
                 />
               </svg>
             </a>
-            <a href="#" className="icon-circle" aria-label="TikTok">
+            <a
+              href="https://www.tiktok.com/@magieklaynalgerie"
+              className="icon-circle"
+              aria-label="TikTok"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <svg
                 viewBox="0 0 20 20"
                 width="15"

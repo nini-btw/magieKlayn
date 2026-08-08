@@ -3,11 +3,63 @@
 import * as React from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { motion, useReducedMotion } from "framer-motion";
 import { StoryColorStrip } from "@/presentation/components/features/StoryColorStrip";
-import { STORY_PALETTE, INSPIRED_BY } from "@/domain/data/story-palette";
+import {
+  STORY_PALETTE,
+  type StoryPaletteItem,
+} from "@/domain/data/story-palette";
+
+/** Splits `items` into `groups` roughly-even, order-preserving chunks. */
+function chunk<T>(items: T[], groups: number): T[][] {
+  const size = Math.ceil(items.length / groups);
+  return Array.from({ length: groups }, (_, i) =>
+    items.slice(i * size, i * size + size),
+  ).filter((group) => group.length > 0);
+}
+
+/** The subset of a live product this section needs — fetched fresh so the
+ * "Inspired By" list always reflects whatever's curated in the admin,
+ * rather than duplicating that data as a static file. */
+interface InspiredProduct {
+  id: string;
+  name: string;
+  colorHex: string;
+  inspiredBy: string | null;
+}
 
 export default function AboutPage() {
   const t = useTranslations();
+  const reduceMotion = useReducedMotion();
+
+  const paletteChunks = React.useMemo(
+    () => chunk<StoryPaletteItem>(STORY_PALETTE, 4),
+    [],
+  );
+
+  const [inspiredProducts, setInspiredProducts] = React.useState<
+    InspiredProduct[]
+  >([]);
+
+  React.useEffect(() => {
+    let cancelled = false;
+    fetch("/api/products?limit=100")
+      .then((res) => res.json())
+      .then((result) => {
+        if (cancelled || !result.success) return;
+        const withInspiration = (result.data as InspiredProduct[]).filter(
+          (p) => p.inspiredBy,
+        );
+        setInspiredProducts(withInspiration);
+      })
+      .catch(() => {
+        // Silent — the section just renders empty if this fails, same
+        // failure mode as any other client-fetched list on this site.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <>
@@ -22,8 +74,8 @@ export default function AboutPage() {
       </section>
 
       <section className="about-story">
-        <div className="about-story-inner">
-          <StoryColorStrip items={STORY_PALETTE} />
+        <div className="about-story-row">
+          <StoryColorStrip items={paletteChunks[0] ?? []} bend="right" />
           <div className="about-story-text">
             <p className="eyebrow">{t("about.eyebrow")}</p>
             <h2 className="section-title">
@@ -33,10 +85,28 @@ export default function AboutPage() {
               <br />
               {t("about.titleLine3")}
             </h2>
-            <p className="section-description">
-              {t("about.description")} <em>{t("about.tagline")}</em>
-            </p>
+          </div>
+        </div>
 
+        <div className="about-story-row">
+          <StoryColorStrip items={paletteChunks[1] ?? []} bend="left" />
+          <div className="about-story-text">
+            <p className="section-description">{t("about.description")}</p>
+          </div>
+        </div>
+
+        <div className="about-story-row">
+          <StoryColorStrip items={paletteChunks[2] ?? []} bend="right" />
+          <div className="about-story-text">
+            <p className="about-story-pullquote">
+              <em>{t("about.tagline")}</em>
+            </p>
+          </div>
+        </div>
+
+        <div className="about-story-row">
+          <StoryColorStrip items={paletteChunks[3] ?? []} bend="left" />
+          <div className="about-story-text">
             <div className="about-stats-row">
               <div className="about-stat">
                 <span className="about-stat-value">{STORY_PALETTE.length}</span>
@@ -74,52 +144,38 @@ export default function AboutPage() {
           </p>
         </div>
 
-        <div className="about-inspired-grid">
-          {INSPIRED_BY.map((entry) => (
-            <div className="about-inspired-card" key={entry.mist}>
-              <span className="about-inspired-mist">{entry.mist}</span>
-              <span className="about-inspired-arrow" aria-hidden="true">
-                →
-              </span>
-              <span className="about-inspired-original">
-                {entry.inspiration}
-              </span>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section>
-        <div
-          className="section-head"
-          style={{
-            maxWidth: 620,
-            margin: "0 auto",
-            padding: "0 var(--space-2xl)",
-            textAlign: "center",
-          }}
-        >
-          <p className="eyebrow">{t("about.valuesEyebrow")}</p>
-          <h2 className="section-title">{t("about.valuesTitle")}</h2>
-        </div>
-
-        <div className="value-grid">
-          <div className="value-card">
-            <span className="value-card-index">01</span>
-            <h3 className="value-card-title">{t("about.value1Title")}</h3>
-            <p className="value-card-desc">{t("about.value1Desc")}</p>
+        {inspiredProducts.length > 0 && (
+          <div className="about-inspired-list">
+            {inspiredProducts.map((product, i) => (
+              <motion.div
+                className="about-inspired-entry"
+                key={product.id}
+                initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+                whileInView={
+                  reduceMotion ? undefined : { opacity: 1, y: 0 }
+                }
+                viewport={{ once: true, margin: "-10% 0px" }}
+                transition={{
+                  duration: 0.5,
+                  delay: i * 0.08,
+                  ease: "easeOut",
+                }}
+              >
+                <span
+                  className="about-inspired-swatch"
+                  style={{ backgroundColor: product.colorHex }}
+                  aria-hidden="true"
+                />
+                <div className="about-inspired-copy">
+                  <span className="about-inspired-name">{product.name}</span>
+                  <span className="about-inspired-note">
+                    {t("about.inspiredByPrefix")} <em>{product.inspiredBy}</em>
+                  </span>
+                </div>
+              </motion.div>
+            ))}
           </div>
-          <div className="value-card">
-            <span className="value-card-index">02</span>
-            <h3 className="value-card-title">{t("about.value2Title")}</h3>
-            <p className="value-card-desc">{t("about.value2Desc")}</p>
-          </div>
-          <div className="value-card">
-            <span className="value-card-index">03</span>
-            <h3 className="value-card-title">{t("about.value3Title")}</h3>
-            <p className="value-card-desc">{t("about.value3Desc")}</p>
-          </div>
-        </div>
+        )}
       </section>
 
       <section className="about-find-us">

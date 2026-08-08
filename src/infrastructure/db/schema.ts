@@ -7,9 +7,9 @@
  * Key design decision — Coffret is NOT a separate product entity:
  * it's an order-level packaging choice. A customer with exactly 4 products
  * in their cart can opt to have them packaged as a "luxury coffret" for an
- * extra fee. This is enforced at the domain/cart-rules layer (like
- * Crumbleivable's  check), not as a DB constraint — the DB just
- * stores the choice once the domain layer has validated it's allowed.
+ * extra fee. This is enforced at the domain/cart-rules layer, not as a
+ * DB constraint — the DB just stores the choice once the domain layer
+ * has validated it's allowed.
  */
 
 import {
@@ -27,7 +27,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 /**
- * Order status enum — same pipeline shape as Crumbleivable
+ * Order status enum
  */
 export const orderStatusEnum = pgEnum("order_status", [
   "pending",
@@ -82,6 +82,9 @@ export const products = pgTable("products", {
   isActive: boolean("is_active").default(true).notNull(),
   isNew: boolean("is_new").default(false).notNull(),
   isSoldOut: boolean("is_sold_out").default(false).notNull(),
+  // Optional fragrance icon this mist is inspired by, e.g. "Dior Lucky" —
+  // curated per product, shown on the product page and About's Inspired By.
+  inspiredBy: varchar("inspired_by", { length: 255 }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

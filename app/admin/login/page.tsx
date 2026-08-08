@@ -108,10 +108,6 @@ function LoginForm() {
               </button>
             </div>
           </form>
-
-          <p className="admin-login-hint">
-            Default: admin@magieklayn.com / admin123
-          </p>
         </div>
 
         <p className="admin-login-footer">

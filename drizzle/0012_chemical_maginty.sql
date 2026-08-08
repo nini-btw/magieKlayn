@@ -1,0 +1,1 @@
+ALTER TABLE "products" ADD COLUMN "inspired_by" varchar(255);

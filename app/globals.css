@@ -1065,19 +1065,29 @@
 .about-story {
   padding: clamp(4rem, 9vw, 7rem) var(--space-2xl);
   margin: 0 auto;
-  width: "100vw";
+  max-width: 1200px;
 }
 
-.about-story-inner {
+/* Each row pairs one ribbon slice with a text block; rows alternate which
+   side the ribbon sits on (odd rows reversed below), so the strip zigzags
+   down the section instead of sitting statically beside one big text
+   block. */
+.about-story-row {
   display: flex;
   align-items: center;
   gap: clamp(2.5rem, 6vw, 5rem);
   flex-wrap: wrap;
 }
+.about-story-row + .about-story-row {
+  margin-top: clamp(2rem, 5vw, 3.5rem);
+}
+.about-story-row:nth-child(even) {
+  flex-direction: row-reverse;
+}
 
 .about-story-text {
-  flex: 1 1 380px;
-  max-width: 480px;
+  flex: 1 1 320px;
+  max-width: 560px;
 }
 .about-story-text .section-description {
   max-width: 100%;
@@ -1086,12 +1096,19 @@
   font-style: italic;
   color: var(--color-text);
 }
+.about-story-pullquote {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  line-height: 1.25;
+  color: var(--color-text);
+}
 
-/* Curved, thin (~1rem) color strip built from real product colors —
-   replaces the old hardcoded 3x3 swatch grid. */
+/* Curved, thin (~1rem) color ribbon built from real product colors —
+   one instance per row, bowing toward whichever side its text sits on. */
 .story-color-strip {
   flex: 0 0 auto;
-  width: min(28vw, 220px);
+  width: min(22vw, 200px);
   margin: 0 auto;
 }
 .story-color-strip-svg {
@@ -1142,42 +1159,61 @@
 .about-inspired {
   padding: clamp(3rem, 7vw, 5rem) var(--space-2xl);
 }
-.about-inspired-grid {
-  max-width: 920px;
+/* A staggered vertical list rather than a card grid — echoes the story
+   section's zigzag rhythm above (alternating inline offset) instead of
+   introducing an unrelated table-like pattern. Each entry's swatch dot
+   uses the product's real colorHex, tying it back to the ribbon's colors. */
+.about-inspired-list {
+  max-width: 640px;
   margin: clamp(2rem, 5vw, 3rem) auto 0;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.75rem 1.5rem;
-}
-.about-inspired-card {
+  padding: 0 var(--space-2xl);
   display: flex;
-  align-items: baseline;
-  gap: 0.6rem;
-  padding: 0.85rem 1.1rem;
-  border-radius: var(--radius-main);
-  background: var(--color-bg-soft);
-  border: 1px solid var(--color-border);
+  flex-direction: column;
+  gap: clamp(1.1rem, 3vw, 1.6rem);
 }
-.about-inspired-mist {
+.about-inspired-entry {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-bottom: clamp(1.1rem, 3vw, 1.6rem);
+  border-bottom: 1px dashed var(--color-border);
+}
+.about-inspired-entry:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.about-inspired-entry:nth-child(even) {
+  margin-inline-start: clamp(1.25rem, 6vw, 3.5rem);
+}
+.about-inspired-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+.about-inspired-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+.about-inspired-name {
   font-weight: 600;
   color: var(--color-text);
-  white-space: nowrap;
 }
-.about-inspired-arrow {
+.about-inspired-note {
+  font-size: 0.88rem;
   color: var(--color-text-secondary);
-  flex-shrink: 0;
 }
-.about-inspired-original {
-  color: var(--color-text-secondary);
-  font-size: 0.92rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.about-inspired-note em {
+  font-style: italic;
+  color: var(--color-text);
 }
 
 @media (max-width: 700px) {
-  .about-inspired-grid {
-    grid-template-columns: 1fr;
+  .about-inspired-entry:nth-child(even) {
+    margin-inline-start: 0;
   }
   .about-stats-row {
     gap: 1.5rem;
@@ -1321,7 +1357,7 @@
     margin: var(--space-lg) auto 0;
   }
 
-  .about-story-inner {
+  .about-story-row {
     justify-content: center;
     text-align: center;
   }
@@ -1391,6 +1427,12 @@
     align-items: center;
   }
 
+  /* Every row stacks color-segment-then-text, regardless of its desktop
+     alternation (overrides the nth-child(even) row-reverse above). */
+  .about-story-row {
+    flex-direction: column !important;
+    text-align: center;
+  }
   .story-color-strip {
     width: min(50vw, 180px);
   }
@@ -1827,6 +1869,14 @@
   padding: 0.4rem 0.9rem;
   font-size: 0.78rem;
   font-weight: 500;
+}
+
+/* "Inspired by" — folded inline into the product description rather than
+   a separate block; color is set inline per-product (the fragrance's own
+   signature colorHex), this rule only handles weight/style. */
+.product-detail-inspired-inline {
+  font-weight: 600;
+  font-style: italic;
 }
 
 .product-detail-specs {

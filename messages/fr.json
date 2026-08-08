@@ -133,6 +133,7 @@
   "product": {
     "notes": "Notes",
     "gender": { "male": "Homme", "female": "Femme", "unisex": "Unisexe" },
+    "inspiredBy": "Inspiré par",
     "size": "Taille",
     "backToShop": "Retour à la Boutique",
     "scent": "Parfum",
@@ -365,6 +366,10 @@
         "sizeLabel": "Taille (ml)",
         "notesLabel": "Notes olfactives",
         "notesPlaceholder": "Ajoutez une note et appuyez sur Entrée (ex. Vanille, Musc blanc)",
+        "genderLabel": "Genre",
+        "genderUnset": "Non défini",
+        "inspiredByLabel": "Inspiré par (optionnel)",
+        "inspiredByPlaceholder": "ex. Tom Ford Vanille Sex",
         "markAsSoldOut": "Marquer comme épuisé",
         "addTitle": "Ajouter un Produit",
         "editTitle": "Modifier le Produit",
@@ -438,8 +443,8 @@
     "infoTitle": "Informations de Contact",
     "emailLabel": "E-mail",
     "phoneLabel": "Téléphone",
-    "hoursLabel": "Horaires",
-    "hoursValue": "Dim – Jeu, 9h – 18h",
+    "hoursAlgiersLabel": "Horaires d'Alger",
+    "hoursOranLabel": "Horaires d'Oran",
     "formTitle": "Envoyer un Message",
     "nameLabel": "Nom",
     "namePlaceholder": "Votre nom complet",
@@ -488,6 +493,7 @@
     "inspiredEyebrow": "Trouvez Votre Match",
     "inspiredTitle": "Inspiré Par",
     "inspiredSubtitle": "Chaque brume Magie Klayn puise son ambiance dans un parfum culte — voici les correspondances.",
+    "inspiredByPrefix": "inspiré par",
     "ctaTitle": "Prêt(e) à trouver votre couleur ?",
     "ctaDesc": "Explorez les quatorze brumes et trouvez celle qui correspond à votre humeur.",
     "ctaButton": "Découvrir la Collection"
@@ -598,12 +604,12 @@
     "storeAlgiers": {
       "badge": "Boutique",
       "city": "Alger",
-      "hours": "Lun–Sam, 10h00 – 19h00"
+      "hours": "Sam–Jeu, 9h00 – 20h00 · Fermé le vendredi"
     },
     "storeOran": {
       "badge": "Boutique",
       "city": "Oran",
-      "hours": "Lun–Sam, 10h00 – 19h00"
+      "hours": "Sam–Jeu, 11h30 – 00h00 · Ven, 17h00 – 00h00"
     },
     "ctaEyebrow": "Des Questions ?",
     "ctaTitle": "Vous ne trouvez pas ce que vous cherchez ?",
