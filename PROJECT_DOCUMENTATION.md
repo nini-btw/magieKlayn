@@ -24,7 +24,7 @@ Source of truth for this description is the site's own metadata (`app/layout.tsx
 **Domain knowledge a developer needs:**
 - **Wilaya / Commune**: Algeria's administrative divisions — a wilaya is a province (58 total, numbered 01–58), a commune is a municipality within it. Delivery fees and availability are keyed by wilaya+commune pairs, stored in the `delivery_zones` table.
 - **Yalidine**: a real third-party Algerian courier/shipping API used for wilaya/commune reference data, fee lookups, stop-desk (pickup-point) center lookups, and parcel (shipment) creation. Yalidine also does the cash-on-delivery ("COD") collection — the app never has its own payment processor.
-- **Coffret**: French for "gift box." In this app it is **not a product** — it's an order-level packaging upsell a customer can choose only when their cart holds exactly ≤4 bottles, adding a `coffretFee` and requiring a `boxColor` (white/black) choice. This rule is enforced in application code (`src/domain/rules/cart.rules.ts`), not as a database constraint.
+- **Coffret**: French for "gift box." In this app it is **not a product** — it's an order-level packaging upsell. A box always holds exactly 4 bottles; once the cart holds 4 or more, the customer can choose one or more boxes (each independently white/black), adding `800 × boxCount` DA to `coffretFee`, with any leftover bottles shipping unboxed. This rule is enforced in application code (`src/domain/rules/cart.rules.ts`), not as a database constraint.
 - **Stop-desk**: a Yalidine pickup point (point relais) — the customer picks a physical Yalidine-network location to retrieve their parcel from, as an alternative to home delivery.
 - **"Crumbleivable"**: an unrelated prior project/brand name that this codebase appears to have been bootstrapped or adapted from. It leaks into a few places that were never renamed (a `localStorage` cart key, a code comment, an admin page `<title>`) — see [§20 Known Issues](#20-known-issues--technical-debt).
 
@@ -118,7 +118,7 @@ All versions below are transcribed directly from `package.json` (exact `dependen
 - **Context**: order creation must succeed and return quickly to the customer even if the courier API is slow, down, or rejects the request (e.g., an unresolvable stop-desk commune name).
 - **Alternatives considered**: block the checkout response until the Yalidine parcel is confirmed created (guarantees consistency but couples checkout latency/availability to a third-party API); queue parcel creation for a background job/cron.
 - **Reason for choice**: `scripts/create-parcel.ts`'s `createParcelForOrder(order)` never throws to its caller — it's called with `await` immediately after order insertion in `POST /api/orders`, but any failure inside is caught and logged, not surfaced. This guarantees the customer always gets an order confirmation regardless of Yalidine's health.
-- **Trade-offs accepted**: **silent partial failure** — an order can exist in the DB with `yalidineTracking = null` and no parcel ever created, with no retry mechanism and no admin-visible alert distinguishing "no parcel yet" from "parcel not needed" (e.g. store pickup). The admin would have to notice a missing tracking number manually. Stop-desk orders specifically fail more often right now (per the current git HEAD commit message) because `resolveStopdeskId` can't always match a commune name to a Yalidine center ID.
+- **Trade-offs accepted**: **silent partial failure** — an order can exist in the DB with `yalidineTracking = null` and no parcel ever created, with no retry mechanism and no admin-visible alert distinguishing "no parcel yet" from "parcel not needed" (e.g. store pickup). The admin would have to notice a missing tracking number manually. Stop-desk orders now carry a checkout-time-resolved real center id/commune, so `resolveStopdeskId`'s fuzzy matching is only a fallback for pre-migration orders — the current live risk is Yalidine's own request validation/oversize-fee display, being actively debugged (see [§20](#20-known-issues--technical-debt) item 19).
 - **Trigger for revisiting**: once order volume is non-trivial, this needs either a retry queue, an admin-visible "shipping pending/failed" order status, or a scheduled job that finds `yalidineTracking IS NULL` orders and retries.
 
 ### Decision: Deployment target — Vercel, zero-config
@@ -132,7 +132,7 @@ All versions below are transcribed directly from `package.json` (exact `dependen
 - **No automated tests**: acceptable for a solo developer moving fast pre-launch, but the presence of `data-testid` attributes throughout components (`checkout-button`, `place-order-button`, `login-form`, etc.) suggests an E2E suite was planned. See [§16](#16-testing).
 - **No shared validation schema between client (Zod) and server (manual `if`s)**: acceptable short-term since the two currently agree by inspection, but is a latent source of drift bugs.
 - **Manual/ad-hoc Postgres migrations alongside Drizzle-generated ones**: acceptable for a single-developer, single-environment (or few-environment) setup, but risky if a second environment (staging) needs the exact same schema history reproduced.
-- **Hardcoded store-pickup addresses as `"TODO: Alger store address"` / `"TODO: Oran store address"`** (`src/domain/entities/delivery.ts:24`) — literal placeholder text still live in the code, meaning the store-pickup delivery option currently shows a TODO string to customers if reached.
+- ~~Hardcoded store-pickup addresses as `"TODO: Alger store address"` / `"TODO: Oran store address"`~~ — **RESOLVED**: `STORE_LOCATIONS` in `src/domain/entities/delivery.ts` now holds the real name/address/phone/Maps link for both stores, shared by checkout and `/shipping`.
 
 ---
 
@@ -198,12 +198,12 @@ All versions below are transcribed directly from `package.json` (exact `dependen
 
 ### Data flow for the most important user action: **checkout / order creation**
 
-1. **Cart page** (`app/cart/page.tsx`, client component) — customer reviews cart items (from Redux `cart` slice, persisted to `localStorage`), optionally selects "coffret" packaging + box color, and fills out the checkout form (first/last name, phone, `WilayaCommuneSelect` for delivery zone/type/stop-desk center). The form is validated client-side with `checkoutSchema` (Zod) via `react-hook-form`.
+1. **Cart page** (`app/cart/page.tsx`, client component) — customer reviews cart items (from Redux `cart` slice, persisted to `localStorage`), optionally adds one or more "coffret" boxes (each independently colored) via `BoxPackagingSelector`, and fills out the checkout form (first/last name, phone, `WilayaCommuneSelect` for delivery zone/type/stop-desk center). The form is validated client-side with `checkoutSchema` (Zod) via `react-hook-form`.
 2. On submit, the page issues `fetch("/api/orders", { method: "POST", body: CreateOrderPayload })`.
-3. **`POST /api/orders`** (`app/api/orders/route.ts`) re-validates required fields manually (customer name/phone present, delivery fields present, coffret quantity ≤4 + boxColor present if `packagingType === "luxury_coffret"`).
+3. **`POST /api/orders`** (`app/api/orders/route.ts`) re-validates required fields manually (customer name/phone present, delivery fields present; stop-desk center id/commune present for `deliveryType === "stop_desk"`; `boxColors` non-empty and within `getMaxBoxCount(items)` if `packagingType === "luxury_coffret"`, with `coffretFee` recomputed server-side rather than trusted from the client).
 4. It resolves the submitted `deliveryZoneId` against the `delivery_zones` table via `deliveryRepository.getZone()`, and **recomputes `deliveryFee` server-side as `0` for `store_pickup`** regardless of what the client sent — an explicit anti-tampering guard.
 5. `orderRepository.create()` (Drizzle) inserts one row into `orders` and one row per cart line into `order_items`, computing `totalAmount = cartTotal + deliveryFee + coffretFee`.
-6. **Fire-and-forget, non-blocking for the response**: `telegramNotificationService.notifyNewOrder(order)` posts an HTML-formatted alert to the configured Telegram chat(s); `createParcelForOrder(order)` (from `scripts/create-parcel.ts`) builds a Yalidine parcel payload (customer address, COD price = `totalAmount - deliveryFee`, stop-desk center ID if applicable) and calls `yalidineClient.createParcels()`, storing the returned tracking number back onto the order via `orderRepository.setYalidineTracking()`. Both of these **never throw** — a failure here is logged but does not fail the checkout response.
+6. **Fire-and-forget, non-blocking for the response**: `telegramNotificationService.notifyNewOrder(order)` posts an HTML-formatted alert to the configured Telegram chat(s), including the stop-desk pickup point's commune when applicable; `createParcelForOrder(order)` (from `scripts/create-parcel.ts`) builds a Yalidine parcel payload (customer address, COD price = `totalAmount - deliveryFee`, the real stop-desk center id/commune already resolved at checkout) and calls `yalidineClient.createParcels()`, storing the returned tracking number back onto the order via `orderRepository.setYalidineTracking()`. Both of these **never throw** — a failure here is logged but does not fail the checkout response.
 7. The API responds `201 { success: true, data: order }`.
 8. The **Cart page** clears the Redux cart (`clearCart`) and shows an order-success confirmation state (`data-testid="order-success"`).
 9. Later, the **admin** (`/admin/orders`) fetches `GET /api/orders` to see the new order, can update its `status` (`PUT /api/orders/[id]`) as it moves through `pending → confirmed → preparing → ready → delivered` (or `cancelled`), and sees the Yalidine tracking number if a parcel was successfully created.
@@ -260,6 +260,7 @@ magie_klayn/
 │   │       ├── page.tsx                  Dashboard (stats, recent orders/products)
 │   │       ├── orders/page.tsx           Order management table
 │   │       └── products/page.tsx          Product management table
+│   ├── api-docs/page.tsx              Swagger UI (swagger-ui-react, dynamic/no-SSR) against /api/openapi
 │   └── api/                            Route Handlers (JSON API)
 │       ├── admin/products/route.ts       GET admin: all products incl. inactive
 │       ├── delivery/
@@ -274,15 +275,16 @@ magie_klayn/
 │       │   ├── route.ts                   GET (public, paginated) / POST (admin)
 │       │   └── [id]/route.ts               GET (public) / PUT/DELETE (admin)
 │       ├── upload/route.ts                 POST (admin) — Supabase Storage upload
+│       ├── openapi/route.ts                GET — serves the compiled Swagger/OpenAPI spec
 │       ├── auth/                            EMPTY — no route.ts (placeholder)
 │       └── messages/                        EMPTY — no route.ts (placeholder)
 │
-├── drizzle/                            Drizzle Kit output: 9 SQL migrations (0000–0008) + meta/*.json snapshots
+├── drizzle/                            Drizzle Kit output: 12 SQL migrations (0000–0011) + meta/*.json snapshots
 │
 ├── messages/                            next-intl translation catalogs
-│   ├── en.json (601 lines)
-│   ├── fr.json (601 lines)
-│   └── ar.json (606 lines)
+│   ├── en.json (612 lines)
+│   ├── fr.json (612 lines)
+│   └── ar.json (617 lines)
 │
 ├── public/                              Default create-next-app SVGs only — no custom brand assets
 │                                          (product/brand images are served from Supabase Storage instead)
@@ -301,7 +303,8 @@ magie_klayn/
     ├── domain/                            Framework-free business rules
     │   ├── entities/ (product.ts, order.ts, delivery.ts)
     │   ├── ports/ (repositories.ts, notifications.ts)     Interfaces the infrastructure layer implements
-    │   ├── rules/cart.rules.ts
+    │   ├── rules/cart.rules.ts               getMaxBoxCount, calculateCoffretFee, cart totals
+    │   ├── data/story-palette.ts             Static About-page brand content (STORY_PALETTE, INSPIRED_BY)
     │   └── config/features.ts               Feature flags from NEXT_PUBLIC_FEATURE_* env vars
     ├── application/
     │   └── services/cart.service.ts            Used by the Redux cart slice
@@ -316,12 +319,13 @@ magie_klayn/
     │   ├── auth/supabase-auth.ts                Admin auth (see §9)
     │   ├── storage/supabase-storage.ts           Supabase Storage upload/delete
     │   ├── telegram/telegram-notification.service.ts
+    │   ├── swagger/config.ts                     getApiDocs() — compiles @swagger JSDoc into an OpenAPI spec
     │   └── yalidine/ (client.ts, config.ts, stopdesk-resolver.ts, types.ts, zone-sync-helpers.ts)
     └── presentation/
         ├── components/
         │   ├── features/ (Header, Footer, CartDrawer, ProductCard, ProductForm,
         │   │              DiscoverySection, LanguageSwitcher, StepIndicator, ToastContainer,
-        │   │              WilayaCommuneSelect, index.ts barrel)
+        │   │              WilayaCommuneSelect, StoryColorStrip, index.ts barrel)
         │   └── ui/ (Badge, Button, EmptyState, Input, Logo, QuantityStepper, Select)
         ├── lib/ (animations.ts, color.ts, utils.ts)
         └── store/ (index.ts, cart/cart.slice.ts, ui/ui.slice.ts)   Redux Toolkit
@@ -444,13 +448,15 @@ There is **no `.env.example`** file in the repository — a new developer must r
 | `status` | `order_status` enum NOT NULL, default `pending` | `pending \| confirmed \| preparing \| ready \| delivered \| cancelled` |
 | `total_amount` | `integer` NOT NULL | = cart total + delivery fee + coffret fee |
 | `packaging_type` | `packaging_type` enum NOT NULL, default `standard` | `standard \| luxury_coffret` |
-| `coffret_fee` | `integer`, nullable | Only set when `packaging_type = luxury_coffret` |
-| `box_color` | `box_color` enum, nullable | `white \| black`; only set with coffret |
+| `coffret_fee` | `integer`, nullable | Only set when `packaging_type = luxury_coffret`; recomputed server-side in `POST /api/orders` as `800 × boxColors.length`, never trusted from the client |
+| `box_colors` | `box_color` enum **array**, nullable | One entry per box (`white \| black`), each box holding exactly 4 bottles — replaced the old single `box_color` scalar column (migrations `0010`/`0011`) to support multiple boxes per order |
 | `delivery_zone_id` | `uuid` FK → `delivery_zones.id`, **NOT NULL** | Made NOT NULL by a later hand-written migration that deleted orphan rows |
 | `delivery_type` | `delivery_type` enum, nullable | `stop_desk \| home \| store_pickup` |
 | `delivery_fee` | `integer`, nullable | |
 | `wilaya_code` | `varchar(2)`, nullable | |
-| `wilaya_name` / `commune_name` | `varchar(255)`, nullable | ASCII-normalized snapshot from the resolved zone |
+| `wilaya_name` / `commune_name` | `varchar(255)`, nullable | ASCII-normalized snapshot from the resolved zone; for `stop_desk` orders this is the **customer's own** commune, not the pickup center's (see `stopdesk_commune_name` below) |
+| `stopdesk_center_id` | `integer`, nullable | The real Yalidine center id the customer picked in `WilayaCommuneSelect` at checkout; only set when `delivery_type = stop_desk` |
+| `stopdesk_commune_name` | `varchar(255)`, nullable | The picked **center's own** commune (not the customer's) — required by Yalidine's `createParcels` as `to_commune_name` for stop-desk shipments |
 | `yalidine_tracking` | `varchar(50)`, nullable | Set post-hoc by `createParcelForOrder` |
 | `order_date` | `timestamp`, default `now()` | |
 | `deleted_at` | `timestamp`, nullable | Soft delete |
@@ -509,7 +515,7 @@ admin_users  — standalone table, joined to Supabase Auth users by email at the
 
 ### Migrations
 Two parallel mechanisms coexist (see [§3](#3-architecture-decisions--trade-offs) and [§20](#20-known-issues--technical-debt) for the risk this creates):
-1. **Drizzle Kit-generated**: `drizzle/0000_bored_shadow_king.sql` through `drizzle/0008_groovy_bastion.sql`, with matching `meta/*_snapshot.json` files and a `_journal.json` tracking them. Run via `npm run db:generate` (create from schema diff) and `npm run db:migrate` (apply) or `npm run db:push` (direct schema push, skipping migration files — convenient for local dev, riskier for tracked history).
+1. **Drizzle Kit-generated**: `drizzle/0000_bored_shadow_king.sql` through `drizzle/0011_dashing_sunfire.sql`, with matching `meta/*_snapshot.json` files and a `_journal.json` tracking them. Run via `npm run db:generate` (create from schema diff) and `npm run db:migrate` (apply) or `npm run db:push` (direct schema push, skipping migration files — convenient for local dev, riskier for tracked history). **In practice, `db:migrate` hangs/fails against Supabase's transaction-mode pooler** (advisory-lock based) — the working fallback used for the last several migrations was applying the raw SQL directly via a one-off `postgres` client script, then manually inserting a matching row (sha256 hash of the migration file + the journal's `when` timestamp) into `drizzle.__drizzle_migrations` so Drizzle's own bookkeeping stays consistent for the next `db:generate`.
 2. **Hand-written, untracked by Drizzle Kit**: `src/infrastructure/db/migrations/add_delivery_zones.sql` and `make_delivery_zone_id_not_null.sql` — must be applied manually (e.g. via `scripts/apply-migration.ts` or a direct `psql`/Supabase SQL editor run); there is no automated step that guarantees these ran.
 
 ### Seed data / fixtures
@@ -530,6 +536,8 @@ No caching layer (no Redis, no in-memory cache, no `unstable_cache`/`revalidateT
 ## 8. API Reference
 
 All routes are Next.js Route Handlers under `app/api/`. Response envelope convention (mostly consistent, hand-written per route, not shared via a schema): `{ success: boolean, data?: T, error?: string, message?: string, pagination?: {...} }`. **No route uses a shared auth middleware** — each admin-only route calls `getAdminSession()` (Supabase-session + `admin_users` membership check) inline at the top of its handler.
+
+**Interactive API docs**: every route below (plus `delivery/*` and `upload`) carries a `@swagger` JSDoc block, compiled by `next-swagger-doc` (`src/infrastructure/swagger/config.ts`'s `getApiDocs()`) and served as a spec at `GET /api/openapi`, rendered as a browsable/testable UI at `/api-docs` (`swagger-ui-react`, dynamically imported client-side to avoid SSR issues). Keep new/changed routes' `@swagger` blocks in sync with this table by hand — nothing enforces the two stay consistent.
 
 ### Products
 
@@ -576,9 +584,9 @@ All routes are Next.js Route Handlers under `app/api/`. Response envelope conven
 
 **`POST /api/orders`**
 - Purpose: create an order (checkout) — the primary customer-facing write endpoint.
-- Body (`CreateOrderPayload`): `{ customer: { firstName, lastName, phone }, items: CartItem[], deliveryZoneId (uuid), deliveryType ("stop_desk"|"home"|"store_pickup"), deliveryFee (number), packagingType? ("standard"|"luxury_coffret"), boxColor? ("white"|"black"), giftNote?, stopdeskCenterId?, stopdeskCommuneName? }`.
-- Validation: customer name/phone required; delivery zone/type/fee required; if `packagingType === "luxury_coffret"`, total item quantity must be ≤4 and `boxColor` required; `deliveryZoneId` must resolve to a real `delivery_zones` row; `deliveryFee` is **forced to `0` server-side** when `deliveryType === "store_pickup"` regardless of the submitted value.
-- Side effects: inserts `orders` + `order_items` rows; fires `telegramNotificationService.notifyNewOrder()` (best-effort, never throws); fires `createParcelForOrder()` (Yalidine parcel creation — best-effort, never throws, skipped for `store_pickup` and for `YALIDINE_ENABLED !== "true"`).
+- Body (`CreateOrderPayload`): `{ customer: { firstName, lastName, phone }, items: CartItem[], deliveryZoneId (uuid), deliveryType ("stop_desk"|"home"|"store_pickup"), deliveryFee (number), packagingType? ("standard"|"luxury_coffret"), boxColors? ("white"|"black")[], giftNote?, stopdeskCenterId?, stopdeskCommuneName? }`.
+- Validation: customer name/phone required; delivery zone/type/fee required; if `deliveryType === "stop_desk"`, `stopdeskCenterId`/`stopdeskCommuneName` are required (the real Yalidine center the customer picked in `WilayaCommuneSelect`, needed for parcel creation to find the right center and `to_commune_name`); if `packagingType === "luxury_coffret"`, `boxColors` must be a non-empty array of `"white"`/`"black"` values whose length doesn't exceed `Math.floor(totalQuantity / 4)` (each box holds exactly 4 bottles — see `src/domain/rules/cart.rules.ts`'s `getMaxBoxCount`), and `coffretFee` is **recomputed server-side** as `800 × boxColors.length`, never trusted from the client; `deliveryZoneId` must resolve to a real `delivery_zones` row; `deliveryFee` is **forced to `0` server-side** when `deliveryType === "store_pickup"` regardless of the submitted value.
+- Side effects: inserts `orders` + `order_items` rows; fires `telegramNotificationService.notifyNewOrder()` (best-effort, never throws — includes the stop-desk pickup point's commune name when applicable); fires `createParcelForOrder()` (Yalidine parcel creation — best-effort, never throws, skipped for `store_pickup` and for `YALIDINE_ENABLED !== "true"`; currently omits `length`/`width`/`height`/`weight` from the Yalidine payload entirely as a live test of whether sending them at all is what makes Yalidine's own platform always flag parcels as exceeding 5kg — see `scripts/create-parcel.ts`'s inline revert note).
 - Response `201`: `{ success: true, data: Order, message }`. `400` on validation failure. `500` on unexpected error.
 - Auth: none (public checkout).
 
@@ -676,7 +684,7 @@ All routes are Next.js Route Handlers under `app/api/`. Response envelope conven
 **Routing**: Next.js App Router file-based routing (see full route table in [§5](#5-folder--file-structure)). No client-side router library beyond Next's own `next/navigation` (`useRouter`, `usePathname`, `redirect`). Locale is **not** part of the URL (no `/en/`, `/fr/` prefixes) — it's resolved from a cookie server-side, so all locales share the same route paths.
 
 **State management** — three distinct tiers, no overlap:
-- **Global (Redux Toolkit)**: cart contents (`cart` slice — items, gift note, box color) and ephemeral UI state (`ui` slice — cart-drawer open/closed, mobile-menu open/closed, toast queue). Selectors are memoized with `createSelector` (`selectCartSummary`, `selectCartTotal`, `selectIsBoxEligible`, etc.), delegating actual math to `src/application/services/cart.service.ts` and `src/domain/rules/cart.rules.ts` rather than computing inline in the slice.
+- **Global (Redux Toolkit)**: cart contents (`cart` slice — items, gift note, `boxColors: BoxColor[]`, one entry per chosen box) and ephemeral UI state (`ui` slice — cart-drawer open/closed, mobile-menu open/closed, toast queue). Selectors are memoized with `createSelector` (`selectCartSummary`, `selectCartTotal`, `selectMaxBoxCount`, `selectIsBoxEligible`, etc.), delegating actual math to `src/application/services/cart.service.ts` and `src/domain/rules/cart.rules.ts` rather than computing inline in the slice.
 - **Server state**: fetched per-request via Server Components/Actions (products, order lists) or via client `fetch()` in `useEffect` (admin tables, delivery lookups) — there is **no client-side server-state cache** (no SWR/React Query), so every navigation/mount re-fetches from scratch.
 - **Local component state**: plain `React.useState`/`useRef` throughout — e.g. `ProductForm`'s entire form state, `Select`'s open/closed state, `LanguageSwitcher`'s dropdown state. **No custom hooks exist in the codebase** — all such logic is inlined per-component rather than extracted (a `useState`-heavy pattern repeated across `ProductForm`, `app/admin/login/page.tsx`, and others without shared abstraction).
 
@@ -690,7 +698,9 @@ All routes are Next.js Route Handlers under `app/api/`. Response envelope conven
 - `Header` / `Footer` — global site chrome, rendered by `ClientProviders`, hidden on `/admin`.
 - `CartDrawer` — slide-in cart preview, opened from the header cart icon, driven entirely by Redux `ui.cartOpen`.
 - `ProductCard` (`features/`) — the product-grid tile (hover color-tint, add-to-cart, new/sold-out badges); a second, unused duplicate used to also exist as `ui/Card.tsx` but was deleted as dead code (see [§20](#20-known-issues--technical-debt)).
-- `WilayaCommuneSelect` — the cascading wilaya → commune → delivery-type → stop-desk-center selector used at checkout; the most complex single form component in the app, coordinating three chained API calls (`/api/delivery/wilayas`, `/api/delivery/communes/[code]`, `/api/delivery/stopdesk-centers/[code]`).
+- `WilayaCommuneSelect` — the cascading wilaya → commune → delivery-type → stop-desk-center selector used at checkout; the most complex single form component in the app, coordinating three chained API calls (`/api/delivery/wilayas`, `/api/delivery/communes/[code]`, `/api/delivery/stopdesk-centers/[code]`). Auto-selects Stop Desk as the delivery type once it's offerable for the chosen commune, and auto-picks a default pickup center — preferring one whose own commune name matches the **wilaya's** name (its likely "main" center), falling back to the first center returned — sparing the customer clicks while still letting them override both choices manually.
+- `BoxPackagingSelector` (`app/cart/page.tsx`) — the coffret picker: once the cart holds ≥4 bottles, shows one white/black color-card pair per box already chosen plus exactly one empty "next" slot; picking a color on that empty slot is what adds a box (no separate stepper), and re-picking the last box's already-selected color removes it — a deliberately one-click, progressively-revealing interaction.
+- `StoryColorStrip` (`features/`) — a thin (~1rem), responsive SVG ribbon on the `/about` page winding top-to-bottom, one hard-edged color band per product in `src/domain/data/story-palette.ts` (a **static, hand-maintained** snapshot of the 14 products' real colors — not fetched at runtime, deliberately, so the page renders instantly with zero network round-trip). Animates in per-band on scroll and glows on hover via Framer Motion.
 - `ProductForm` — admin product create/edit form, including image upload wiring to `/api/upload` and an auto-slugify-from-name behavior.
 - `ToastContainer` — global toast/snackbar rendering off the `ui.toasts` Redux array.
 - `Select`, `Button`, `Badge`, `Input`/`Textarea`, `QuantityStepper` — hand-rolled design-system primitives (see [§11](#11-ui--ux-design)).
@@ -753,7 +763,7 @@ Beyond this base palette, **the site is deliberately color-led at the product le
 - `animations.ts` — the Framer Motion variant library (see [§11](#11-ui--ux-design)).
 - ~~`colors.ts`~~ — deleted; was orphaned (`LIQUID_COLOR`/`darkenHex`/`getLiquidStyle`, not imported anywhere) — see [§20](#20-known-issues--technical-debt).
 
-**Constants and enums**: mostly colocated with the domain entity they describe rather than centralized — `MAX_BOX_CAPACITY` and coffret-eligibility logic in `src/domain/rules/cart.rules.ts`; `STORE_PICKUP_WILAYAS`/`STORE_PICKUP_ADDRESSES` in `src/domain/entities/delivery.ts`; Postgres enums (`order_status`, `product_gender`, `delivery_type`, `box_color`, `packaging_type`) defined once in `src/infrastructure/db/schema.ts` via `pgEnum` and reused as the TypeScript source of truth for those unions elsewhere; feature flags centralized in `src/domain/config/features.ts`.
+**Constants and enums**: mostly colocated with the domain entity they describe rather than centralized — `MAX_BOX_CAPACITY`/`BOX_FEE`/`getMaxBoxCount`/`calculateCoffretFee` in `src/domain/rules/cart.rules.ts`; `STORE_PICKUP_WILAYAS`/`STORE_LOCATIONS` in `src/domain/entities/delivery.ts`; `STORY_PALETTE`/`INSPIRED_BY` (static About-page brand content) in `src/domain/data/story-palette.ts`; Postgres enums (`order_status`, `product_gender`, `delivery_type`, `box_color`, `packaging_type`) defined once in `src/infrastructure/db/schema.ts` via `pgEnum` and reused as the TypeScript source of truth for those unions elsewhere; feature flags centralized in `src/domain/config/features.ts`.
 
 ---
 
@@ -846,9 +856,9 @@ No payment provider integration exists (Yalidine handles cash-on-delivery collec
 **How to run tests locally**: not applicable — there's nothing to run yet.
 
 **Top 5 things that should be tested first, and why**:
-1. **`POST /api/orders` (checkout end-to-end)** — the single highest-stakes code path: it writes financial/order data, computes `totalAmount`, enforces the coffret-quantity/box-color rule, overrides the delivery fee for `store_pickup`, and fires two best-effort side effects (Telegram, Yalidine). A regression here directly costs the business money or orders. Should cover: valid order creation, the store-pickup fee-override anti-tamper path, the coffret quantity/color validation branch, and behavior when `deliveryZoneId` doesn't resolve.
-2. **`src/domain/rules/cart.rules.ts` and `src/domain/entities/delivery.ts`'s `getDeliveryFee`** — pure functions, trivially unit-testable, and they encode business rules (coffret eligibility at ≤4 items, store-pickup-is-always-free) that are easy to silently break during refactors.
-3. **`src/infrastructure/yalidine/stopdesk-resolver.ts`'s `resolveStopdeskId`** — the fuzzy commune-name matching logic is exactly the kind of "looks right, breaks on an accented character" code that benefits enormously from a table of real Algerian commune-name edge cases as test fixtures, especially since stop-desk delivery is the currently-known-broken feature.
+1. **`POST /api/orders` (checkout end-to-end)** — the single highest-stakes code path: it writes financial/order data, computes `totalAmount`, enforces the multi-box coffret rules and recomputes `coffretFee` server-side, overrides the delivery fee for `store_pickup`, and fires two best-effort side effects (Telegram, Yalidine). A regression here directly costs the business money or orders. Should cover: valid order creation, the store-pickup fee-override anti-tamper path, the coffret box-count/color validation branch (including the "boxes exceed what the cart supports" rejection), and behavior when `deliveryZoneId` doesn't resolve.
+2. **`src/domain/rules/cart.rules.ts` and `src/domain/entities/delivery.ts`'s `getDeliveryFee`** — pure functions, trivially unit-testable, and they encode business rules (`getMaxBoxCount`'s exactly-4-bottles-per-box math, `calculateCoffretFee`, store-pickup-is-always-free) that are easy to silently break during refactors.
+3. **`src/infrastructure/yalidine/stopdesk-resolver.ts`'s `resolveStopdeskId`** — the fuzzy commune-name matching logic is exactly the kind of "looks right, breaks on an accented character" code that benefits enormously from a table of real Algerian commune-name edge cases as test fixtures. Stop-desk delivery itself is now functional end-to-end (the checkout-time-resolved `stopdeskCenterId`/`stopdeskCommuneName` is the primary path; this resolver is only a fallback for pre-migration orders), but the fuzzy-matching fallback path remains untested.
 4. **`src/infrastructure/auth/supabase-auth.ts`'s `adminLogin`/`getAdminSession`** — security-critical, and subtle to get right (the synthetic-password + `admin_users` cross-check dance is exactly the kind of logic that regresses silently).
 5. **API route auth guards** (every admin-only route correctly returning `401` when unauthenticated, and correctly proceeding when authenticated) — a simple, high-value smoke test across all `app/api/**` admin routes would catch an accidentally-removed `getAdminSession()` check immediately, which is otherwise a silent, severe authorization bug.
 
@@ -899,7 +909,7 @@ No payment provider integration exists (Yalidine handles cash-on-delivery collec
 
 *(Derived from what the codebase itself demonstrates about its own evolution — commit history, code comments, and structural leftovers — presented as honest engineering retrospective for future maintainers.)*
 
-**Biggest technical learning**: integrating a real regional courier API (Yalidine) surfaced a lot of domain complexity that isn't visible from the outside — fuzzy commune-name matching (`stopdesk-resolver.ts`'s diacritic-normalization logic), rate-limit-aware retry/backoff, and the non-obvious fact (called out explicitly in a code comment in `scripts/create-parcel.ts`, confirmed "via a real test parcel") that Yalidine's COD `price` field should **exclude** the delivery fee, not include it. This kind of "you only learn this by hitting the real API" knowledge is exactly why `stop_desk` delivery — the most recently-built, least-tested path — is still the broken one per the current git HEAD commit message.
+**Biggest technical learning**: integrating a real regional courier API (Yalidine) surfaced a lot of domain complexity that isn't visible from the outside — fuzzy commune-name matching (`stopdesk-resolver.ts`'s diacritic-normalization logic), rate-limit-aware retry/backoff, the non-obvious fact (called out explicitly in a code comment in `scripts/create-parcel.ts`, confirmed "via a real test parcel") that Yalidine's COD `price` field should **exclude** the delivery fee, not include it, and — most recently — a persistent platform-side ">5kg" oversize display that didn't match the documented `max(actual, L×W×H×0.0002)` billable-weight formula given the small dimensions actually sent, currently being debugged by testing whether omitting `length`/`width`/`height`/`weight` from the parcel payload entirely changes anything. This kind of "you only learn this by hitting the real API" knowledge is exactly why `stop_desk` delivery was, for a while, the least-reliable path in the app — it's since been fixed end-to-end (real center id/commune resolved and stored at checkout time, not guessed after the fact).
 
 **Architectural decision to reconsider**: the Clean/Hexagonal layering (`domain`/`application`/`infrastructure`/`presentation`) was a reasonable instinct for keeping business rules testable and framework-independent, but it was only followed through halfway — the `application/use-cases` layer was built and then bypassed entirely by the actual API routes. Starting over, either commit fully to routing every mutation through use-cases (so the layer is real, not aspirational) or skip that layer entirely for a project this size and let API routes call repositories directly (which is what's actually happening today) — the current halfway state is worse than either extreme because it misleads a reader of the folder structure about what's actually enforced.
 
@@ -918,7 +928,7 @@ No payment provider integration exists (Yalidine handles cash-on-delivery collec
 ## 20. Known Issues & Technical Debt
 
 **Bugs / functional gaps**:
-1. **Stop-desk delivery via Yalidine is currently broken/incomplete** — the current git HEAD commit message states this directly (*"the domicile with yalidine is working but not for stopdesk"*). Home delivery works; stop-desk parcel creation can fail when `resolveStopdeskId` can't match a commune name to a live Yalidine center.
+1. ~~Stop-desk delivery via Yalidine is currently broken/incomplete~~ — **RESOLVED.** The customer's real, checkout-time-picked Yalidine center (`stopdeskCenterId`/`stopdeskCommuneName`, stored on the order) is now used directly for parcel creation, instead of guessing a center from the customer's commune after the fact. `resolveStopdeskId`'s fuzzy matching is kept only as a fallback for orders placed before these columns existed. `WilayaCommuneSelect` also now auto-selects Stop Desk and a default center for the customer, further reducing the chance of a bad/missing selection reaching checkout.
 2. **Duplicate order-creation code paths**: `app/actions.ts`'s `createOrder` server action and `app/api/orders/route.ts`'s `POST` handler both create orders, but **only the API route also creates a Yalidine parcel and applies the store-pickup fee override**. If any UI path calls the server action instead of the route, that order gets no shipment and no anti-tamper fee check.
 3. ~~`src/middleware/i18n.ts` is dead code~~ — **RESOLVED: deleted.** It was set up correctly for `next-intl`, but never wired up as an actual Next.js `proxy.ts`/`middleware.ts`, given this Next.js version's `middleware.ts` → `proxy.ts` rename (per `AGENTS.md`'s own warning). Locale is handled via a manual cookie read in `app/layout.tsx` — that part is unchanged.
 4. **A second, separate RTL/locale mechanism exists in `app/template.tsx`** (localStorage/custom-event based `<html dir>` management), independent of the cookie-based one in `app/layout.tsx` — these two are not obviously guaranteed to stay in sync.
@@ -926,7 +936,7 @@ No payment provider integration exists (Yalidine handles cash-on-delivery collec
 6. **`app/shop/layout.tsx`'s metadata copy references "American-style" baked goods**, mismatched with the actual perfume/fragrance product line — another pivot leftover.
 7. **`app/admin/(dashboard)/layout.tsx`'s page `<title>` still says "Crumbleivable Brum Shop"** — leftover branding from a prior/sibling project this codebase was likely adapted from.
 8. **Cart persistence uses the `localStorage` key `"crumbleivable-cart"`** (`app/providers.tsx`) — same "Crumbleivable" naming leak, functionally harmless but confusing to a new developer grepping for "magie"/"klayn".
-9. **Store-pickup addresses are literal TODO placeholders**: `STORE_PICKUP_ADDRESSES` in `src/domain/entities/delivery.ts` contains `"TODO: Alger store address"` / `"TODO: Oran store address"` — if store pickup is reachable in the UI today, customers may see these placeholder strings.
+9. ~~Store-pickup addresses are literal TODO placeholders~~ — **RESOLVED.** `STORE_PICKUP_ADDRESSES` was replaced with `STORE_LOCATIONS: Record<string, StoreLocation>` (real name, address, phone, Maps link for both the Alger and Oran stores) — a single source of truth consumed by both the checkout pickup-point note and the `/shipping` page's store cards, instead of the address/phone text being duplicated (and drifting, with placeholder phone numbers) inside `messages/*.json`.
 10. **Font-variable mismatch**: `globals.css`'s `--font-display`/`--font-body` reference `--font-archivo-black`/`--font-inter`, but `app/layout.tsx` only loads Comfortaa and Noto Kufi Arabic — the referenced font variables are never defined, so text likely renders in fallback fonts rather than the intended brand typeface in CSS-driven sections.
 11. **Three divergent `getLuminance()` implementations** exist (`src/presentation/lib/utils.ts`, `src/presentation/lib/color.ts`, and one inlined in `ProductCard.tsx`), using different luminance-weighting constants — could produce inconsistent white/dark-text contrast decisions depending on which one a given component happens to call.
 12. ~~Duplicate `ProductCard` implementations~~ — **RESOLVED: deleted.** `ui/Card.tsx` was an orphaned near-duplicate (mislabeled as a generic `Card` primitive) of the actively-used `features/ProductCard.tsx`, which remains the only one.
@@ -936,6 +946,7 @@ No payment provider integration exists (Yalidine handles cash-on-delivery collec
 16. **`app/api/auth/` and `app/api/messages/` are empty placeholder directories** with no `route.ts` — dead scaffolding, not live endpoints.
 17. ~~`src/application/{layout.tsx,page.tsx,favicon.ico}` are leftover `create-next-app` scaffold~~ — **RESOLVED: deleted.** They were entirely outside the live route tree (Next.js only reads `app/` at the project root).
 18. ~~`src/application/use-cases/{order,product}.use-case.ts` are unused~~ — **RESOLVED: deleted** (folder removed too). No live route or server action ever called them; `cart.service.ts` remains the only file in `src/application/` and is actively used.
+19. **IN PROGRESS — Yalidine platform always displays parcels as exceeding 5kg**, despite the app's small declared dimensions/weight not matching that per Yalidine's own documented `max(actual weight, L×W×H×0.0002)` billable-weight formula. Currently being debugged by omitting `length`/`width`/`height`/`weight` from the parcel-creation payload entirely (`scripts/create-parcel.ts`) to test whether sending them at all is the actual trigger — Yalidine's own docs list these fields as "Required" for parcel creation, so this is a live experiment, not a confirmed fix; watch `create-parcel` logs for rejected parcels, and see the inline revert note in that file (the old `DEFAULT_PARCEL_DIMENSIONS`/`calculateParcelWeight()` gradual-weight logic in `src/infrastructure/yalidine/config.ts` is kept, just unused, for a one-line rollback).
 
 **Process/tooling gaps** (see also [§16](#16-testing), [§18](#18-deployment--devops)):
 - No test suite of any kind, despite `data-testid` scaffolding suggesting one was planned.
@@ -961,7 +972,7 @@ No payment provider integration exists (Yalidine handles cash-on-delivery collec
 | **Yalidine** | A real third-party Algerian courier/shipping API integrated into this app for delivery-zone data, fee lookup, stop-desk centers, and parcel (shipment) creation with cash-on-delivery collection. |
 | **Stop-desk** | A Yalidine pickup point (French: "point relais") — a physical location where a customer collects their own parcel, as an alternative to home delivery. |
 | **Store pickup** | An in-house (non-Yalidine) fulfillment option, available only in wilayas 16 (Alger) and 31 (Oran), always free. |
-| **Coffret** | French for "gift box." An order-level luxury packaging upsell (not a product), available only when the cart has ≤4 items, requiring a `boxColor` choice and adding a `coffretFee`. |
+| **Coffret** | French for "gift box." An order-level luxury packaging upsell (not a product) — a box always holds **exactly 4 bottles**, never more or less. Once the cart has ≥4 bottles, the customer can add one or more boxes, each independently colored (`white`/`black`), at a flat 800 DA fee per box (`boxColors: BoxColor[]`, `coffretFee = 800 × boxColors.length`); any bottles beyond `boxColors.length × 4` simply ship without a box. |
 | **Zone / Delivery Zone** | A `delivery_zones` table row representing one wilaya+commune pair with its stop-desk fee, home-delivery fee, and availability flags. |
 | **COD** | Cash on delivery — the payment model this app assumes; Yalidine collects payment from the customer on the courier's behalf, and this application never processes payments directly. |
 | **Admin** | The single user role in this app; there is no customer-account concept. |
@@ -976,7 +987,7 @@ No payment provider integration exists (Yalidine handles cash-on-delivery collec
 
 **What this project does**: Magie Klayn is a Next.js 16 / React 19 e-commerce storefront for a luxury fragrance brand in Oran, Algeria. Customers browse perfumes, add to cart, optionally add "coffret" gift-box packaging, and check out anonymously (no account) with delivery via Yalidine (Algerian courier: home delivery, stop-desk pickup point, or free in-store pickup in Alger/Oran). An authenticated single-admin back-office at `/admin` manages products and orders. New orders trigger a Telegram alert to the store owner and (best-effort) a Yalidine parcel-creation call.
 
-**Full tech stack**: Next.js 16.2.11 (App Router, `reactCompiler: true`) · React 19.2.4 · TypeScript `^5` (strict) · Tailwind CSS v4 (CSS-first, no config file) · Drizzle ORM 0.45.2 + `postgres`(-js) driver → Supabase Postgres · Supabase Auth (`@supabase/ssr`) + custom `admin_users` table hybrid · Supabase Storage (product images) · Redux Toolkit + `react-redux` (cart/UI global state, no Zustand/Context/Jotai) · `next-intl` (en/fr/ar, RTL) · `react-hook-form` + `zod` (checkout/contact forms only) · Framer Motion (animations) · `@sentry/nextjs` (client/server/edge monitoring) · `bcryptjs` (admin password hashing) · Telegram Bot API (order alerts) · Yalidine API (delivery). **No** test framework, **no** ESLint config, **no** CI/CD, **no** Docker, **no** `.env.example`.
+**Full tech stack**: Next.js 16.2.11 (App Router, `reactCompiler: true`) · React 19.2.4 · TypeScript `^5` (strict) · Tailwind CSS v4 (CSS-first, no config file) · Drizzle ORM 0.45.2 + `postgres`(-js) driver → Supabase Postgres · Supabase Auth (`@supabase/ssr`) + custom `admin_users` table hybrid · Supabase Storage (product images) · Redux Toolkit + `react-redux` (cart/UI global state, no Zustand/Context/Jotai) · `next-intl` (en/fr/ar, RTL) · `react-hook-form` + `zod` (checkout/contact forms only) · Framer Motion (animations) · `next-swagger-doc` + `swagger-ui-react` (interactive API docs at `/api-docs`) · `@sentry/nextjs` (client/server/edge monitoring) · `bcryptjs` (admin password hashing) · Telegram Bot API (order alerts) · Yalidine API (delivery). **No** test framework, **no** ESLint config, **no** CI/CD, **no** Docker, **no** `.env.example`.
 
 **Main folders**:
 - `app/` — Next.js App Router: every page, layout, server action file (`actions.ts`), and API route (`api/**/route.ts`). **This is where routing lives — not `src/app/`.**
@@ -984,11 +995,11 @@ No payment provider integration exists (Yalidine handles cash-on-delivery collec
 - `src/application/` — `cart.service.ts` only (used by the Redux cart slice); the unused `use-cases/` layer and stray `create-next-app` scaffold files that used to live here have been deleted.
 - `src/infrastructure/` — concrete integrations: `db/` (Drizzle schema + repositories), `auth/supabase-auth.ts`, `storage/supabase-storage.ts`, `telegram/`, `yalidine/`.
 - `src/presentation/` — all React UI: `components/{features,ui}/`, `store/` (Redux slices `cart`, `ui`), `lib/` (utils, animations, color helpers).
-- `drizzle/` — generated SQL migrations (0000–0008); **also check** `src/infrastructure/db/migrations/` for two hand-written SQL files not tracked by Drizzle Kit.
+- `drizzle/` — generated SQL migrations (0000–0011); **also check** `src/infrastructure/db/migrations/` for two hand-written SQL files not tracked by Drizzle Kit. `db:migrate` doesn't reliably work against Supabase's pooler — see [§7](#7-database--data-layer)'s Migrations note for the raw-SQL-plus-manual-registration workaround actually used.
 - `messages/{en,fr,ar}.json` — i18n translation catalogs.
 - `scripts/` — standalone `tsx`-run maintenance scripts (Yalidine zone sync, auth repair); `scripts/create-parcel.ts` is unusually imported directly by `app/api/orders/route.ts`.
 
-**Most important files to know**: `src/infrastructure/db/schema.ts` (DB source of truth), `app/api/orders/route.ts` (the core checkout/order-creation logic, including the delivery-fee anti-tamper guard), `src/infrastructure/auth/supabase-auth.ts` (the security-sensitive hybrid auth), `src/infrastructure/yalidine/{client,config,stopdesk-resolver}.ts` (the courier integration, including the currently-broken stop-desk path), `src/presentation/store/cart/cart.slice.ts` (cart state + `localStorage` persistence key `"crumbleivable-cart"`), `app/layout.tsx` (locale resolution + provider composition root), `i18n.config.ts` + `src/domain/config/features.ts` (config/flags).
+**Most important files to know**: `src/infrastructure/db/schema.ts` (DB source of truth), `app/api/orders/route.ts` (the core checkout/order-creation logic, including the delivery-fee anti-tamper guard and server-side coffret-fee recomputation), `src/infrastructure/auth/supabase-auth.ts` (the security-sensitive hybrid auth), `src/infrastructure/yalidine/{client,config,stopdesk-resolver}.ts` + `scripts/create-parcel.ts` (the courier integration — stop-desk now resolves via the checkout-time-picked center, weight/dimensions currently omitted as a live oversize-fee experiment), `src/presentation/store/cart/cart.slice.ts` (cart state, multi-box `boxColors[]` + `localStorage` persistence key `"crumbleivable-cart"`), `src/domain/entities/delivery.ts`'s `STORE_LOCATIONS` (single source of truth for real store address/phone/maps data), `app/layout.tsx` (locale resolution + provider composition root), `i18n.config.ts` + `src/domain/config/features.ts` (config/flags).
 
 **How to add a new feature** (rough steps):
 1. New **page**: add a folder + `page.tsx` under `app/` (add `layout.tsx` too if it needs distinct metadata/chrome).

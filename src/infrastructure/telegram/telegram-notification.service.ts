@@ -88,13 +88,21 @@ export class TelegramNotificationService implements INotificationService {
         ? `🎁 ${order.boxColors.length}× Coffret de luxe (${order.boxColors.join(", ")})`
         : "";
 
-    const deliveryLine = [
-      order.communeName,
-      order.wilayaName,
-      order.deliveryType === "home" ? "Livraison à domicile" : "Stop Desk",
-    ]
+    const deliveryTypeLabel =
+      order.deliveryType === "home"
+        ? "Livraison à domicile"
+        : order.deliveryType === "store_pickup"
+          ? "Retrait en magasin"
+          : "Stop Desk";
+
+    const deliveryLine = [order.communeName, order.wilayaName, deliveryTypeLabel]
       .filter(Boolean)
       .join(" — ");
+
+    const stopdeskLine =
+      order.deliveryType === "stop_desk" && order.stopdeskCommuneName
+        ? `🏤 Point Stop Desk: ${this.escapeHtml(order.stopdeskCommuneName)}`
+        : "";
 
     const giftNoteLine = order.giftNote
       ? `📝 Note: ${this.escapeHtml(order.giftNote)}`
@@ -110,6 +118,7 @@ export class TelegramNotificationService implements INotificationService {
       packagingLine,
       "",
       `📍 ${this.escapeHtml(deliveryLine)}`,
+      stopdeskLine,
       `💰 Total: <b>${order.totalAmount} DA</b>`,
       giftNoteLine,
     ]

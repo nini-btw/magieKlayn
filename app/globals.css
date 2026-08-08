@@ -1109,6 +1109,81 @@
   filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.25));
 }
 
+/* Quick brand-stats row under the story text — fills out the column
+   beside the color strip so it doesn't read as one lonely text block. */
+.about-stats-row {
+  display: flex;
+  gap: clamp(1.5rem, 4vw, 2.5rem);
+  margin-top: var(--space-lg);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--color-border);
+}
+.about-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.about-stat-value {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+  color: var(--color-text);
+  line-height: 1;
+}
+.about-stat-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+/* "Inspired By" reference grid — each mist paired with the fragrance it
+   draws from, styled as compact cards rather than a raw table so it holds
+   up on mobile. */
+.about-inspired {
+  padding: clamp(3rem, 7vw, 5rem) var(--space-2xl);
+}
+.about-inspired-grid {
+  max-width: 920px;
+  margin: clamp(2rem, 5vw, 3rem) auto 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem 1.5rem;
+}
+.about-inspired-card {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  padding: 0.85rem 1.1rem;
+  border-radius: var(--radius-main);
+  background: var(--color-bg-soft);
+  border: 1px solid var(--color-border);
+}
+.about-inspired-mist {
+  font-weight: 600;
+  color: var(--color-text);
+  white-space: nowrap;
+}
+.about-inspired-arrow {
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+.about-inspired-original {
+  color: var(--color-text-secondary);
+  font-size: 0.92rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 700px) {
+  .about-inspired-grid {
+    grid-template-columns: 1fr;
+  }
+  .about-stats-row {
+    gap: 1.5rem;
+  }
+}
+
 /* ==========================================================================
    Footer
    ========================================================================== */

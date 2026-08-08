@@ -15,7 +15,6 @@
  */
 import { yalidineClient } from "../src/infrastructure/yalidine/client";
 import { getOriginWilayaId } from "../src/infrastructure/yalidine/config";
-import { DEFAULT_PARCEL_DIMENSIONS } from "../src/infrastructure/yalidine/config";
 import { resolveStopdeskId } from "../src/infrastructure/yalidine/stopdesk-resolver";
 import { orderRepository } from "../src/infrastructure/db/order.adapter";
 import type { YalidineCreateParcelPayload } from "../src/infrastructure/yalidine/types";
@@ -101,10 +100,14 @@ export async function createParcelForOrder(order: Order): Promise<void> {
       price: codPrice,
       do_insurance: false,
       declared_value: codPrice,
-      length: DEFAULT_PARCEL_DIMENSIONS.length,
-      width: DEFAULT_PARCEL_DIMENSIONS.width,
-      height: DEFAULT_PARCEL_DIMENSIONS.height,
-      weight: DEFAULT_PARCEL_DIMENSIONS.weight,
+      // length/width/height/weight deliberately omitted — testing whether
+      // sending any dimensions at all is what makes the Yalidine platform
+      // always display this parcel as exceeding 5kg (their docs list these
+      // as "Required", so watch create-parcel logs for a rejection). To
+      // revert: re-add length/width/height from
+      // src/infrastructure/yalidine/config.ts's DEFAULT_PARCEL_DIMENSIONS
+      // and weight from calculateParcelWeight(itemCount, boxCount) (both
+      // still defined there, just unused for now).
       freeshipping: false,
       is_stopdesk: isStopdesk,
       ...(stopdeskId ? { stopdesk_id: stopdeskId } : {}),

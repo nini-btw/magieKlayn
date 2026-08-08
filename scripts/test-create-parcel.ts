@@ -7,7 +7,6 @@
 
 import { yalidineClient } from "../src/infrastructure/yalidine/client";
 import { getOriginWilayaId } from "../src/infrastructure/yalidine/config";
-import { DEFAULT_PARCEL_DIMENSIONS } from "../src/infrastructure/yalidine/config";
 import type { YalidineCreateParcelPayload } from "../src/infrastructure/yalidine/types";
 
 async function main() {
@@ -31,10 +30,8 @@ async function main() {
     price: 1100, // <-- goods-only guess (subtotal, no delivery). Swap to full total on a second run if needed.
     do_insurance: false,
     declared_value: 1100,
-    length: DEFAULT_PARCEL_DIMENSIONS.length,
-    width: DEFAULT_PARCEL_DIMENSIONS.width,
-    height: DEFAULT_PARCEL_DIMENSIONS.height,
-    weight: DEFAULT_PARCEL_DIMENSIONS.weight,
+    // length/width/height/weight deliberately omitted — see the same note
+    // in scripts/create-parcel.ts.
     freeshipping: false,
     is_stopdesk: false, // home delivery — simplest first test
     has_exchange: false,

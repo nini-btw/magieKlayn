@@ -82,10 +82,14 @@ export interface YalidineCreateParcelPayload {
   price: number;
   do_insurance: boolean;
   declared_value: number;
-  length: number;
-  width: number;
-  height: number;
-  weight: number;
+  // Optional — currently omitted entirely from create-parcel.ts as a test
+  // of whether sending them at all is what's triggering Yalidine's
+  // platform-side ">5kg" oversize display, despite their own docs listing
+  // these as "Required". See create-parcel.ts for the revert note.
+  length?: number;
+  width?: number;
+  height?: number;
+  weight?: number;
   freeshipping: boolean;
   is_stopdesk: boolean;
   stopdesk_id?: number;

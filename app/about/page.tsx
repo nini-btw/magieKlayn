@@ -1,30 +1,13 @@
 "use client";
 
 import * as React from "react";
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import type { Product } from "@/domain/entities/product";
 import { StoryColorStrip } from "@/presentation/components/features/StoryColorStrip";
+import { STORY_PALETTE, INSPIRED_BY } from "@/domain/data/story-palette";
 
 export default function AboutPage() {
   const t = useTranslations();
-  const [products, setProducts] = useState<Product[]>([]);
-
-  useEffect(() => {
-    async function fetchProducts() {
-      try {
-        const response = await fetch("/api/products");
-        const result = await response.json();
-        if (result.success) {
-          setProducts(result.data.filter((p: Product) => p.isActive));
-        }
-      } catch (error) {
-        console.error("Failed to fetch products:", error);
-      }
-    }
-    fetchProducts();
-  }, []);
 
   return (
     <>
@@ -40,9 +23,7 @@ export default function AboutPage() {
 
       <section className="about-story">
         <div className="about-story-inner">
-          <StoryColorStrip
-            items={products.map((p) => ({ colorHex: p.colorHex, name: p.name }))}
-          />
+          <StoryColorStrip items={STORY_PALETTE} />
           <div className="about-story-text">
             <p className="eyebrow">{t("about.eyebrow")}</p>
             <h2 className="section-title">
@@ -55,7 +36,56 @@ export default function AboutPage() {
             <p className="section-description">
               {t("about.description")} <em>{t("about.tagline")}</em>
             </p>
+
+            <div className="about-stats-row">
+              <div className="about-stat">
+                <span className="about-stat-value">{STORY_PALETTE.length}</span>
+                <span className="about-stat-label">{t("about.statsMists")}</span>
+              </div>
+              <div className="about-stat">
+                <span className="about-stat-value">2</span>
+                <span className="about-stat-label">{t("about.statsCities")}</span>
+              </div>
+              <div className="about-stat">
+                <span className="about-stat-value">100%</span>
+                <span className="about-stat-label">
+                  {t("about.statsSmallBatch")}
+                </span>
+              </div>
+            </div>
           </div>
+        </div>
+      </section>
+
+      <section className="about-inspired">
+        <div
+          className="section-head"
+          style={{
+            maxWidth: 620,
+            margin: "0 auto",
+            padding: "0 var(--space-2xl)",
+            textAlign: "center",
+          }}
+        >
+          <p className="eyebrow">{t("about.inspiredEyebrow")}</p>
+          <h2 className="section-title">{t("about.inspiredTitle")}</h2>
+          <p className="section-description" style={{ margin: "0 auto" }}>
+            {t("about.inspiredSubtitle")}
+          </p>
+        </div>
+
+        <div className="about-inspired-grid">
+          {INSPIRED_BY.map((entry) => (
+            <div className="about-inspired-card" key={entry.mist}>
+              <span className="about-inspired-mist">{entry.mist}</span>
+              <span className="about-inspired-arrow" aria-hidden="true">
+                →
+              </span>
+              <span className="about-inspired-original">
+                {entry.inspiration}
+              </span>
+            </div>
+          ))}
         </div>
       </section>
 
