@@ -65,42 +65,28 @@ describe("PUT /api/products/[id]", () => {
     expect(updatePayload).toMatchObject({ price: 1200 });
   });
 
-  // BUG (found while writing this test, not fixed here — flagged to the
-  // user separately): src/domain/validation/product.schema.ts builds
-  // updateProductSchema as createProductSchema.partial(). zod's .partial()
-  // makes each field optional to *provide*, but fields with .default(...)
-  // in the base schema (gender, isActive, isNew, isSoldOut, inspiredBy,
-  // notes) still apply that default when omitted — so a genuinely partial
-  // PUT (e.g. `{ isSoldOut: true }` from a hypothetical quick-toggle
-  // button, or anyone using the documented `/api-docs` "Partial Product
-  // fields to update" contract literally) silently resets every other
-  // defaulted field back to its default instead of leaving it untouched.
-  // No live caller triggers this today — ProductForm's handleSave always
-  // submits the full form state — but it's a real trap for the next
-  // caller that sends a true partial body.
-  it("BUG: a true partial update resets other defaulted fields instead of leaving them untouched", async () => {
+  // Regression test for a bug found while first writing this suite:
+  // updateProductSchema used to be createProductSchema.partial(), and
+  // zod's .partial() only makes a field optional to *provide* — fields
+  // with .default(...) in the base schema still applied that default
+  // when omitted, so a genuinely partial PUT (e.g. only toggling
+  // isSoldOut) silently reset gender/isActive/isNew/inspiredBy/notes
+  // back to their defaults instead of leaving them untouched. Fixed in
+  // src/domain/validation/product.schema.ts by building
+  // updateProductSchema from the same field validators MINUS their
+  // defaults, rather than deriving it from the defaulted create schema.
+  it("a true partial update leaves other fields untouched (does not reset them to defaults)", async () => {
     mockedGetAdminSession.mockResolvedValue({ id: "admin-1", email: "a@b.com", role: "admin" });
     mockedProductRepository.update.mockResolvedValue({} as any);
     const req = new NextRequest("http://localhost/api/products/prod-1", {
       method: "PUT",
-      // Intent: only toggle isSoldOut. isActive/isNew/gender/etc. are not
-      // meant to be touched.
+      // Intent: only toggle isSoldOut. isActive/isNew/gender/etc. must
+      // not be touched.
       body: JSON.stringify({ isSoldOut: true }),
     });
     await PUT(req, paramsFor("prod-1"));
     const [, updatePayload] = mockedProductRepository.update.mock.calls[0];
-    // This assertion documents the CURRENT (buggy) behavior — it should
-    // fail once product.schema.ts is fixed to not apply defaults under
-    // .partial(), at which point this test should be updated to assert
-    // updatePayload deep-equals just { isSoldOut: true }.
-    expect(updatePayload).toEqual({
-      isSoldOut: true,
-      isActive: true,
-      isNew: false,
-      gender: null,
-      inspiredBy: null,
-      notes: [],
-    });
+    expect(updatePayload).toEqual({ isSoldOut: true });
   });
 
   it("rejects an invalid partial body via zod", async () => {
