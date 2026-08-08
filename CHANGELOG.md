@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Security
+- **Deterministic Supabase Auth shadow password replaced with a random per-admin secret.** `admin_users` gains a nullable `supabase_auth_secret` column (migration `0013_polite_punisher`); `adminLogin()` now generates a `crypto.randomBytes(32)` secret once per admin (on first login after the column exists) and reuses it on every subsequent login, instead of deriving a password from the formula `` `auth_${email}_fixed_password_v1` `` and overwriting the Supabase Auth user's password to that value on *every* login. The old scheme was fully computable from an admin's email plus the (readable) source code, and its every-login overwrite meant any manual workaround on the Supabase side got silently reverted. `getSupabaseAuthPassword()` has been removed entirely. See `AUTH_DOCUMENTATION.md` §4 for full before/after detail.
+
+## [0.2.3] - 2026-08-08
+
+Everything below was committed as `ba85799` and pushed to `origin/security-audit`.
+
+### Added
+- Basic in-memory rate limiting (`src/infrastructure/rate-limit/limiter.ts`, fixed-window per-IP) on `loginAdmin` (5 attempts/15min — the bcrypt comparison had no other brute-force protection) and `POST /api/orders` (10 orders/10min — checkout had no abuse protection against spam that could flood the Telegram alert channel or create bogus Yalidine parcels). Deliberately simple (no Redis/Upstash) given this app's actual scale; state is per-process, not durable/cross-instance — documented as a known limitation in the module itself.
+- Baseline security headers via `next.config.ts`'s `headers()` (`X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Strict-Transport-Security`, and a `Content-Security-Policy` scoped to Supabase/Sentry origins) — previously there were none, and no `proxy.ts`/middleware exists in this app to have set them elsewhere.
+- Zod request-body validation for `POST /api/orders` (`src/domain/validation/checkout.schema.ts`) and `POST`/`PUT /api/products` (`src/domain/validation/product.schema.ts`) — `zod` was already a dependency (used client-side only) but server routes previously did presence-only `if (!body.field)` checks with no type/length/format constraints. Existing business-rule checks (coffret box counts, delivery-zone resolution, etc.) are unchanged and still run after schema validation.
+- Magic-byte sniffing on `POST /api/upload` (`sniffImageType()` in `app/api/upload/route.ts`) — the allowed-MIME-type check previously trusted the browser-supplied `file.type` label; uploads are now also verified against the actual file bytes for JPEG/PNG/GIF/WebP before being accepted.
+
+## [0.2.2] - 2026-08-08
+
+Everything below was committed as `3859670` and pushed to `origin/security-audit`.
+
+### Fixed
+- **Client-trusted product price in checkout** (security): `POST /api/orders` now re-fetches each item's price from the `products` table server-side (`productRepository.getById`) instead of trusting `item.product.price` from the request body — closes a gap where the coffret/delivery-fee anti-tamper checks existed but per-item price didn't, allowing a crafted checkout payload to set an arbitrary total (and, for COD orders, an arbitrary amount collected on delivery). Also now rejects orders referencing an inactive/sold-out/nonexistent product with a 400 instead of silently accepting them.
+- **Admin dashboard layout auth gap** (security): `app/admin/(dashboard)/layout.tsx` gated access on `supabase.auth.getUser()` alone (any valid Supabase session), not `admin_users` membership like every API route already enforces via `getAdminSession()`. Now calls `requireAdmin()` instead, matching the rest of the app's auth model.
+- **Public, unauthenticated API docs** (security): `/api/openapi` and `/api-docs` (a live Swagger UI console capable of executing real requests against admin-only routes using an ambient session cookie) had no auth check, exposing the full internal route/schema map to any visitor. Both now require `getAdminSession()`/`requireAdmin()`.
+
+### Security
+- Dependency vulnerabilities patched via `next` 16.2.11 → 16.3.0 (pulls in fixed `postcss` and `sharp`, resolving GHSA-r28c-9q8g-f849, GHSA-qx2v-qp2m-jg93, GHSA-f88m-g3jw-g9cj) and a transitive `nanoid` bump (GHSA-2v37-7h3g-55p8). Remaining `npm audit` findings (`swagger-ui-react`'s vendored `js-yaml`, dev-only `drizzle-kit`/`esbuild`) require semver-major downgrades and were left as-is — the `swagger-ui-react` exposure is mitigated by the `/api-docs` auth gate above instead.
+
+## [0.2.1] - 2026-08-08
+
 ### Changed
 - Repo-wide Tailwind v4 class-syntax cleanup (no visual/behavioral change): arbitrary CSS-variable values written as `text-[var(--foo)]` converted to the shorter `text-(--foo)` syntax across 10 files (`ProductForm.tsx`, `WilayaCommuneSelect.tsx`, `ProductDetail.tsx`, admin `products/page.tsx`, `CartDrawer.tsx`, `LanguageSwitcher.tsx`, `ProductCard.tsx`, `ToastContainer.tsx`, `Select.tsx`, `app/cart/page.tsx`); `--color-text`/`--color-bg` (which have a real mapping to Tailwind's `foreground`/`background` theme tokens via `app/globals.css`'s `@theme inline` bridge) converted to those semantic utility names instead. `flex-shrink-0` renamed to its v4 alias `shrink-0` in the 3 files that used it.
 - `CLAUDE.md`'s Documentation Sync Policy sharpened to explicitly cover the *after*-commit side: `CHANGELOG.md`'s `[Unreleased]` section should be converted into a real dated version entry once its contents are actually committed/pushed, not left open-ended indefinitely.

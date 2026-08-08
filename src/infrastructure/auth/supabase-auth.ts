@@ -7,6 +7,7 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import bcrypt from "bcryptjs";
+import { randomBytes } from "crypto";
 import { createClient } from "@supabase/supabase-js";
 import { db } from "@/infrastructure/db/client";
 import { adminUsers } from "@/infrastructure/db/schema";
@@ -15,12 +16,6 @@ import { eq } from "drizzle-orm";
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-
-// Simple consistent password for Supabase Auth
-// In production, use a more secure approach
-function getSupabaseAuthPassword(email: string) {
-  return `auth_${email}_fixed_password_v1`;
-}
 
 /**
  * Create a Supabase server client with cookie handling
@@ -132,22 +127,36 @@ export async function adminLogin(email: string, password: string) {
 
     // Use admin client to manage auth user
     const adminClient = createAdminClient();
-    const supabasePassword = getSupabaseAuthPassword(email);
+
+    // The Supabase Auth "shadow" password: a random secret unique to this
+    // admin, used only to obtain a session cookie (admin_users.passwordHash
+    // above is the real credential). Generated once and reused on every
+    // subsequent login — never re-derived or overwritten — so it can't be
+    // computed from the admin's email the way a fixed formula could.
+    let supabasePassword = admin[0].supabaseAuthSecret;
+    const isFirstTimeSecret = !supabasePassword;
+    if (!supabasePassword) {
+      supabasePassword = randomBytes(32).toString("hex");
+    }
 
     // Check if user exists in auth
     const { data: users } = await adminClient.auth.admin.listUsers();
     const existingUser = users.users.find(u => u.email === email);
 
     if (existingUser) {
-      // Update password to ensure it matches
-      const { error: updateError } = await adminClient.auth.admin.updateUserById(
-        existingUser.id,
-        { password: supabasePassword }
-      );
-      
-      if (updateError) {
-        console.error("Update password error:", updateError);
-        // Continue anyway - might still work
+      // Only (re)set the Supabase Auth password the first time we mint a
+      // secret for this admin — once it's stored, reuse it as-is rather
+      // than overwriting it on every login.
+      if (isFirstTimeSecret) {
+        const { error: updateError } = await adminClient.auth.admin.updateUserById(
+          existingUser.id,
+          { password: supabasePassword }
+        );
+
+        if (updateError) {
+          console.error("Update password error:", updateError);
+          // Continue anyway - might still work
+        }
       }
     } else {
       // Create new auth user
@@ -162,6 +171,13 @@ export async function adminLogin(email: string, password: string) {
         console.error("Create user error:", createError);
         return { success: false, error: "Authentication setup failed" };
       }
+    }
+
+    if (isFirstTimeSecret) {
+      await db
+        .update(adminUsers)
+        .set({ supabaseAuthSecret: supabasePassword })
+        .where(eq(adminUsers.id, admin[0].id));
     }
 
     // Sign in with server client to set cookies

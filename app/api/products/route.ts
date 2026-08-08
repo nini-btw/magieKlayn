@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { productRepository } from "@/infrastructure/db/product.adapter";
 import { getAdminSession } from "@/infrastructure/auth/supabase-auth";
+import { createProductSchema } from "@/domain/validation/product.schema";
 
 /**
  * @swagger
@@ -135,28 +136,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const body = await request.json();
+    const rawBody = await request.json();
 
-    // Validate required fields
-    const required = [
-      "name",
-      "slug",
-      "description",
-      "price",
-      "colorHex",
-      "sizeMl",
-      "images",
-    ];
-    for (const field of required) {
-      if (!body[field]) {
-        return NextResponse.json(
-          { success: false, error: `Missing required field: ${field}` },
-          { status: 400 },
-        );
-      }
+    const parsed = createProductSchema.safeParse(rawBody);
+    if (!parsed.success) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: parsed.error.issues[0]?.message || "Invalid request body",
+        },
+        { status: 400 },
+      );
     }
 
-    const product = await productRepository.create(body);
+    const product = await productRepository.create(parsed.data);
     return NextResponse.json(
       { success: true, data: product, message: "Product created successfully" },
       { status: 201 },
