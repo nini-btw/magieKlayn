@@ -47,6 +47,15 @@ export function getApiDocs() {
               "documents the requirement, browser-based 'Try it out' calls send " +
               "the real cookies automatically.",
           },
+          cronSecret: {
+            type: "http",
+            scheme: "bearer",
+            description:
+              "The CRON_SECRET env var value, sent as `Authorization: Bearer <secret>`. " +
+              "Vercel Cron attaches this automatically on its own scheduled invocations. " +
+              "To test manually, click 'Authorize' above and paste the raw secret value " +
+              "(Swagger UI adds the 'Bearer ' prefix for you).",
+          },
         },
         schemas: {
           Product: {
