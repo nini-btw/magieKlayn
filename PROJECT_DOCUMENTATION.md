@@ -226,6 +226,7 @@ magie_klayn/
 ├── instrumentation.ts               Sentry: registers server/edge config by NEXT_RUNTIME
 ├── instrumentation-client.ts        Sentry client init
 ├── sentry.server.config.ts / sentry.edge.config.ts
+├── vercel.json                      Vercel Cron config: weekly /api/cron/keep-db-active trigger
 ├── next-env.d.ts                    auto-generated (gitignored)
 ├── delivery_zones_backup_20260804.sql   (0 bytes — empty stray file)
 │
@@ -263,6 +264,7 @@ magie_klayn/
 │   ├── api-docs/page.tsx              Swagger UI (swagger-ui-react, dynamic/no-SSR) against /api/openapi
 │   └── api/                            Route Handlers (JSON API)
 │       ├── admin/products/route.ts       GET admin: all products incl. inactive
+│       ├── cron/keep-db-active/route.ts   GET, CRON_SECRET-gated — weekly Supabase keep-alive ping (see vercel.json)
 │       ├── delivery/
 │       │   ├── wilayas/route.ts
 │       │   ├── communes/[wilayaCode]/route.ts
@@ -384,6 +386,7 @@ magie_klayn/
 | `NEXT_PUBLIC_FEATURE_VOTE` | Feature flag: community voting | same |
 | `NEXT_PUBLIC_FEATURE_CUSTOM_BUILDER` | Feature flag: custom box builder — its former component (`BoxBuilder.tsx`) was deleted as dead code (see §20), so this flag currently gates nothing | same |
 | `NEXT_PUBLIC_FEATURE_ANALYTICS` | Feature flag: admin analytics dashboard | same |
+| `CRON_SECRET` | Bearer-token secret Vercel Cron sends on its own invocations; required to authenticate `GET /api/cron/keep-db-active` (missing/unset fails closed — the route rejects rather than allowing an unauthenticated match) | `app/api/cron/keep-db-active/route.ts` |
 
 All four `NEXT_PUBLIC_FEATURE_*` flags default to **enabled** unless explicitly set to the string `"false"`.
 
@@ -398,7 +401,8 @@ There is **no `.env.example`** file in the repository — a new developer must r
 - **`i18n.config.ts`** — `locales = ['en', 'fr', 'ar']`, `defaultLocale = 'en'`, `timeZone: 'Africa/Algiers'`.
 - **`instrumentation.ts` / `instrumentation-client.ts` / `sentry.server.config.ts` / `sentry.edge.config.ts`** — Sentry SDK initialization split by runtime (`NEXT_RUNTIME === "nodejs"` vs `"edge"`), plus `onRequestError = Sentry.captureRequestError` for automatic server-error capture.
 - **`.gitignore`** — ignores `.env*` (so `.env.local` and `.env.sentry-build-plugin` are never committed) and standard Next.js build artifacts.
-- **No ESLint/Prettier config**, **no `vercel.json`**, **no Dockerfile/`docker-compose.yml`**, **no `.env.example`**, **no CI workflow files**.
+- **`vercel.json`** — Vercel Cron config: schedules a weekly (`0 0 * * 0`, Sundays at midnight UTC) `GET /api/cron/keep-db-active` request; Vercel automatically attaches `CRON_SECRET` as the request's Bearer token on its own invocations.
+- **No ESLint/Prettier config**, **no Dockerfile/`docker-compose.yml`**, **no `.env.example`**, **no CI workflow files**.
 
 ### Local development setup, from scratch
 
@@ -641,6 +645,13 @@ All routes are Next.js Route Handlers under `app/api/`. Response envelope conven
 - Validation: MIME type allow-list (`image/jpeg`, `image/png`, `image/webp`, `image/gif`); max size 5 MB.
 - Response `200`: `{ success: true, url: string }` (public Supabase Storage URL).
 - Auth: admin.
+
+### Cron
+
+**`GET /api/cron/keep-db-active`**
+- Purpose: ping the `products` table so Supabase's free tier doesn't auto-pause the project after 7 days of inactivity. Triggered weekly (Sundays at midnight UTC) by Vercel Cron per `vercel.json`.
+- Response `200`: `{ success: true, message, timestamp }` on a successful ping, or `{ success: false, message: "DB not configured (mock mode)" }` (still `200`) when `db` is in mock mode. `500` on ping failure.
+- Auth: `CRON_SECRET` Bearer token, compared in the route handler rather than via `getAdminSession()` — Vercel Cron has no admin session to send, only the env-var secret it attaches automatically on its own invocations. The check fails closed if `CRON_SECRET` is unset (rejects rather than matching an unauthenticated `Bearer undefined`).
 
 ### Empty/placeholder routes
 `app/api/auth/` and `app/api/messages/` exist as directories but contain no `route.ts` — they are not live endpoints (likely scaffolding for future work).
