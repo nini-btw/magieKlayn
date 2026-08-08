@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **DB keep-alive cron** — `app/api/cron/keep-db-active/route.ts` (`GET`, `CRON_SECRET`-gated via a Bearer-token check against `Authorization`; requires the secret to actually be set, so a missing `CRON_SECRET` env var fails closed rather than accepting an unauthenticated `Bearer undefined` request) pings the `products` table so Supabase's free tier doesn't auto-pause the project after 7 days of inactivity. Scheduled weekly (Sundays at midnight UTC) via new `vercel.json` `crons` config. No-ops safely (200, not 500) when `db` is in mock mode. Requires `CRON_SECRET` to be set in Vercel's project env vars for the cron trigger to authenticate; not yet added to any `.env.local`/docs env-var list beyond this changelog entry.
+
+## [0.2.6] - 2026-08-08
+
+Everything below was committed as `c2e402c` (merge of `add-test-suite`) on `main`.
+
+### Added
 - **Jest test suite** — the project's first automated tests. `jest.config.ts` (via `next/jest`, split into `node` and `jsdom` projects) and `jest.setup.ts`; new `npm run test`/`test:watch`/`test:coverage` scripts. 214 tests across 25 suites: pure business logic in depth (`cart.rules.ts`, delivery/order entity helpers, both zod validation schemas, `cart.service.ts`, the rate limiter, Yalidine config), Redux slices (`cart.slice.ts`, `ui.slice.ts`), API-route integration tests with adapters mocked at the module boundary (`POST /api/orders` — including a dedicated test proving the security audit's price-tamper fix holds, rate-limit exhaustion, coffret/zod/store-pickup edge cases — plus `products`, `products/[id]`, and `upload`, the latter gaining an exported `sniffImageType()` specifically to unit-test each magic-byte signature), and React Testing Library component tests (all `ui/` primitives plus `ProductCard`/`CartDrawer`/`Header`, via a new shared `src/presentation/test-utils.tsx` render helper). See `PROJECT_DOCUMENTATION.md` §16 for exactly what's covered vs. explicitly out of scope (Server Components, Server Actions, E2E).
 
 ### Fixed
