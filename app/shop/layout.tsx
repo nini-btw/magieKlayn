@@ -1,19 +1,22 @@
 import type { Metadata } from "next";
 import { getAllProducts } from "../actions";
 
+// SEO metadata pinned to French, same rationale as app/layout.tsx.
+const TITLE = "Boutique";
+const DESCRIPTION =
+  "Découvrez notre collection complète de parfums de luxe et nos coffrets cadeaux, livrés partout en Algérie.";
+
 export const metadata: Metadata = {
-  title: "Shop",
-  description:
-    "Discover our full collection of luxury fragrances and coffret gift-box packaging.",
+  title: TITLE,
+  description: DESCRIPTION,
   alternates: {
     canonical: "/shop",
   },
   openGraph: {
     type: "website",
     url: "/shop",
-    title: "Shop · Magie Klayn",
-    description:
-      "Discover our full collection of luxury fragrances and coffret gift-box packaging.",
+    title: `${TITLE} · Magie Klayn`,
+    description: DESCRIPTION,
   },
 };
 
@@ -25,8 +28,8 @@ export default async function ShopLayout({
   const siteUrl =
     process.env.NEXT_PUBLIC_SITE_URL || "https://www.magieklayn.com";
 
-  // Server-rendered purely so crawlers get a product ItemList — the
-  // actual listing UI below is client-rendered (see shop/page.tsx).
+  // Server-rendered ItemList JSON-LD to accompany the server-rendered
+  // product grid in shop/page.tsx.
   let itemListJsonLd: object | null = null;
   try {
     const products = await getAllProducts();

@@ -23,11 +23,14 @@ export const dynamic = "force-dynamic";
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || "https://www.magieklayn.com";
 
-const OG_LOCALE: Record<string, string> = {
-  en: "en_US",
-  fr: "fr_DZ",
-  ar: "ar_DZ",
-};
+// SEO metadata (title/description/OG) always renders in French,
+// independent of the visitor's UI locale (cookie-based, see
+// getLocaleAndMessages below): the target audience is Algeria, where
+// French dominates search behavior, and crawlers never carry a
+// NEXT_LOCALE cookie so they'd otherwise always see the "en" default.
+// The <html lang>/UI still switches per-visitor as before — only the
+// <head> metadata surface is pinned to French.
+const SEO_LOCALE = "fr";
 
 const KEYWORDS = [
   "Magie Klayn",
@@ -41,8 +44,9 @@ const KEYWORDS = [
 ];
 
 async function buildMetadata(): Promise<Metadata> {
-  const { locale, messages } = await getLocaleAndMessages();
-  const meta = messages.metadata as { title: string; description: string };
+  const seoMessages = (await import(`../messages/${SEO_LOCALE}.json`))
+    .default;
+  const meta = seoMessages.metadata as { title: string; description: string };
 
   return {
     metadataBase: new URL(SITE_URL),
@@ -63,7 +67,7 @@ async function buildMetadata(): Promise<Metadata> {
     openGraph: {
       type: "website",
       url: SITE_URL,
-      locale: OG_LOCALE[locale] ?? "fr_DZ",
+      locale: "fr_DZ",
       siteName: "Magie Klayn",
       title: meta.title,
       description: meta.description,

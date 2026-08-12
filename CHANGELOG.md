@@ -10,13 +10,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - **SEO foundation for `www.magieklayn.com`** — the domain had no crawl/index infrastructure at all until now:
   - `app/robots.ts` (allows all, disallows `/admin`, `/api`, `/cart`, `/checkout`, `/api-docs`, points at the sitemap) and `app/sitemap.ts` (static routes + every active product's `/shop/[slug]`, pulled live via `getAllProducts()`).
-  - Locale-aware root `<head>` metadata (`app/layout.tsx`): title/description now come from the already-existing but previously-unused `messages/{en,fr,ar}.json` `metadata` block instead of being hardcoded French; added `keywords`, self-referencing `alternates.canonical`, explicit `robots: { index: true, follow: true }`, and a `manifest` link.
+  - Root `<head>` metadata (`app/layout.tsx`) and the shop listing's (`app/shop/layout.tsx`): title/description/keywords/OG/Twitter now pinned to **French** regardless of the visitor's UI locale (see "Changed" below) — added `keywords`, self-referencing `alternates.canonical`, explicit `robots: { index: true, follow: true }`, and a `manifest` link. `<html lang>`/the actual UI is unaffected and still switches en/fr/ar per visitor as before.
   - `app/opengraph-image.tsx`, `app/icon.tsx`, `app/apple-icon.tsx` — code-generated (`next/og` `ImageResponse`) brand-gradient images, replacing a previously-referenced-but-missing `/og-default.jpg`. `app/manifest.ts` adds a PWA manifest.
-  - `Organization` JSON-LD in the root layout (name, url, logo, `sameAs` → Instagram/TikTok); `Product`/`Offer` JSON-LD on `app/shop/[slug]/page.tsx` (price in DZD, availability); `ItemList` JSON-LD server-rendered in `app/shop/layout.tsx` (the listing page itself stays client-rendered/`/api/products`-backed).
+  - `Organization` JSON-LD in the root layout (name, url, logo, `sameAs` → Instagram/TikTok); `Product`/`Offer` JSON-LD on `app/shop/[slug]/page.tsx` (price in DZD, availability); `ItemList` JSON-LD server-rendered in `app/shop/layout.tsx`.
   - `app/shop/[slug]/page.tsx`'s `generateMetadata` now sets `alternates.canonical` and a full `openGraph`/`twitter` block (previously only title/description/one image).
   - `app/admin/(dashboard)/layout.tsx` and a new `app/admin/login/layout.tsx` set `robots: { index: false, follow: false }` so admin routes are never indexed.
-  - `NEXT_PUBLIC_SITE_URL` corrected from the stale `magie-klayn.vercel.app` fallback to `https://www.magieklayn.com` in `app/layout.tsx`, `app/robots.ts`, `app/sitemap.ts`, `app/shop/[slug]/page.tsx`, and `.env.local`.
+  - `NEXT_PUBLIC_SITE_URL` corrected from the stale `magie-klayn.vercel.app` fallback to `https://www.magieklayn.com` in `app/layout.tsx`, `app/robots.ts`, `app/sitemap.ts`, `app/shop/[slug]/page.tsx`, and `.env.local` (the Vercel Production/Preview env var itself also had to be fixed separately — it had literal quote characters baked into its value, which broke `metadataBase`/sitemap URL generation until caught post-deploy).
   - Known gap, deliberately not addressed here: locale is cookie-based with no URL prefix, so true per-locale `hreflang` alternates aren't possible without a larger locale-routing refactor — flagged as a future follow-up, not bundled into this change.
+
+### Changed
+- **SEO metadata (title/description/OG/Twitter) is now pinned to French**, independent of the visitor's cookie-selected UI locale. It previously followed `messages[locale].metadata`, which meant anyone without a saved language preference — including Google's crawler, which never sends the `NEXT_LOCALE` cookie — saw the English default. Since the target market is Algeria, where French dominates search behavior, `app/layout.tsx` and `app/shop/layout.tsx` now always read `messages/fr.json` for `<head>` metadata specifically, while `<html lang>` and the rest of the UI are untouched and still resolve per-visitor as before.
+
+### Fixed
+- **`/shop` was flagged by Google Search Console as a soft 404.** `app/shop/page.tsx` was a `"use client"` page that fetched products via `useEffect` against `/api/products`, so its server-rendered HTML was an empty Suspense shell with no product content — thin enough for Google to treat it as an error page despite the `200` status. It's now an async Server Component that fetches products via the existing `getAllProducts()` server action and passes them to a new `app/shop/ShopPageClient.tsx`, which keeps the prior sort/rendering behavior but works off pre-fetched data instead of its own fetch/loading/error state.
 
 ## [0.2.7] - 2026-08-08
 
