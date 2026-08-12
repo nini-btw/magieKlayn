@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **SEO foundation for `www.magieklayn.com`** — the domain had no crawl/index infrastructure at all until now:
+  - `app/robots.ts` (allows all, disallows `/admin`, `/api`, `/cart`, `/checkout`, `/api-docs`, points at the sitemap) and `app/sitemap.ts` (static routes + every active product's `/shop/[slug]`, pulled live via `getAllProducts()`).
+  - Locale-aware root `<head>` metadata (`app/layout.tsx`): title/description now come from the already-existing but previously-unused `messages/{en,fr,ar}.json` `metadata` block instead of being hardcoded French; added `keywords`, self-referencing `alternates.canonical`, explicit `robots: { index: true, follow: true }`, and a `manifest` link.
+  - `app/opengraph-image.tsx`, `app/icon.tsx`, `app/apple-icon.tsx` — code-generated (`next/og` `ImageResponse`) brand-gradient images, replacing a previously-referenced-but-missing `/og-default.jpg`. `app/manifest.ts` adds a PWA manifest.
+  - `Organization` JSON-LD in the root layout (name, url, logo, `sameAs` → Instagram/TikTok); `Product`/`Offer` JSON-LD on `app/shop/[slug]/page.tsx` (price in DZD, availability); `ItemList` JSON-LD server-rendered in `app/shop/layout.tsx` (the listing page itself stays client-rendered/`/api/products`-backed).
+  - `app/shop/[slug]/page.tsx`'s `generateMetadata` now sets `alternates.canonical` and a full `openGraph`/`twitter` block (previously only title/description/one image).
+  - `app/admin/(dashboard)/layout.tsx` and a new `app/admin/login/layout.tsx` set `robots: { index: false, follow: false }` so admin routes are never indexed.
+  - `NEXT_PUBLIC_SITE_URL` corrected from the stale `magie-klayn.vercel.app` fallback to `https://www.magieklayn.com` in `app/layout.tsx`, `app/robots.ts`, `app/sitemap.ts`, `app/shop/[slug]/page.tsx`, and `.env.local`.
+  - Known gap, deliberately not addressed here: locale is cookie-based with no URL prefix, so true per-locale `hreflang` alternates aren't possible without a larger locale-routing refactor — flagged as a future follow-up, not bundled into this change.
+
 ## [0.2.7] - 2026-08-08
 
 Everything below was committed as `44526f9`/`380db2d`, merged into `main` on the `db-keep-alive-cron` branch.

@@ -32,11 +32,26 @@ export async function generateMetadata({
     return { title: "Product Not Found" };
   }
 
+  const url = `/shop/${product.slug}`;
+
   return {
     title: product.name,
     description: product.description,
+    alternates: {
+      canonical: url,
+    },
     openGraph: {
+      type: "website",
+      url,
+      title: product.name,
+      description: product.description,
       images: product.images[0] ? [{ url: product.images[0] }] : [],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: product.name,
+      description: product.description,
+      images: product.images[0] ? [product.images[0]] : [],
     },
   };
 }
@@ -57,8 +72,37 @@ export default async function ProductPage({
     notFound();
   }
 
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://www.magieklayn.com";
+
+  const productJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: product.description,
+    image: product.images,
+    url: `${siteUrl}/shop/${product.slug}`,
+    brand: {
+      "@type": "Brand",
+      name: "Magie Klayn",
+    },
+    offers: {
+      "@type": "Offer",
+      url: `${siteUrl}/shop/${product.slug}`,
+      priceCurrency: "DZD",
+      price: product.price,
+      availability: product.isSoldOut
+        ? "https://schema.org/OutOfStock"
+        : "https://schema.org/InStock",
+    },
+  };
+
   return (
     <div className="min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
       {/* Product Detail */}
       <section className="section">
         <div className="container-site">
