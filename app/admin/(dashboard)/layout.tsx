@@ -5,6 +5,10 @@ import { requireAdmin } from "@/infrastructure/auth/supabase-auth";
 export const metadata: Metadata = {
   title: "Admin",
   description: "Admin Dashboard for Magie Klayn",
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default async function AdminLayout({

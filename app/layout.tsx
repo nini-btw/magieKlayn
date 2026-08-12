@@ -19,32 +19,66 @@ const notoKufiArabic = Noto_Kufi_Arabic({
   weight: ["400", "500", "600", "700"],
 });
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL || "https://magie-klayn.vercel.app",
-  ),
-  title: {
-    template: "%s · Magie Klayn",
-    default: "Magie Klayn — Fragrances de Luxe à Oran",
-  },
-  description:
-    "Découvrez Magie Klayn, une maison de parfums de luxe livrée directement chez vous à Oran, Algérie. Commandez en ligne, sans compte requis.",
-  openGraph: {
-    type: "website",
-    locale: "fr_DZ",
-    siteName: "Magie Klayn",
-    images: [
-      {
-        url: "/og-default.jpg",
-        width: 1200,
-        height: 630,
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-  },
+
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://www.magieklayn.com";
+
+const OG_LOCALE: Record<string, string> = {
+  en: "en_US",
+  fr: "fr_DZ",
+  ar: "ar_DZ",
 };
+
+const KEYWORDS = [
+  "Magie Klayn",
+  "ماجيك كلاين",
+  "parfum de luxe Algérie",
+  "parfum Oran",
+  "parfum Alger",
+  "brume parfumée",
+  "coffret parfum Algérie",
+  "livraison parfum Algérie",
+];
+
+async function buildMetadata(): Promise<Metadata> {
+  const { locale, messages } = await getLocaleAndMessages();
+  const meta = messages.metadata as { title: string; description: string };
+
+  return {
+    metadataBase: new URL(SITE_URL),
+    title: {
+      template: "%s · Magie Klayn",
+      default: meta.title,
+    },
+    description: meta.description,
+    keywords: KEYWORDS,
+    alternates: {
+      canonical: "/",
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
+    manifest: "/manifest.webmanifest",
+    openGraph: {
+      type: "website",
+      url: SITE_URL,
+      locale: OG_LOCALE[locale] ?? "fr_DZ",
+      siteName: "Magie Klayn",
+      title: meta.title,
+      description: meta.description,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: meta.title,
+      description: meta.description,
+    },
+  };
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  return buildMetadata();
+}
 
 async function getLocaleAndMessages() {
   // Read locale from cookie
@@ -70,6 +104,23 @@ export default async function RootLayout({
   const { locale, messages } = await getLocaleAndMessages();
   const isRTL = locale === "ar";
 
+  const organizationJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Magie Klayn",
+    url: SITE_URL,
+    logo: `${SITE_URL}/icon`,
+    image: `${SITE_URL}/opengraph-image`,
+    sameAs: [
+      "https://www.instagram.com/magie.klayn.algerie/",
+      "https://www.tiktok.com/@magieklaynalgerie",
+    ],
+    areaServed: {
+      "@type": "Country",
+      name: "Algeria",
+    },
+  };
+
   return (
     <html
       lang={locale}
@@ -77,6 +128,12 @@ export default async function RootLayout({
       className={`${comfortaa.variable} ${notoKufiArabic.variable}`}
     >
       <body className="font-body bg-white text-[#1A1A1A] min-h-screen">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(organizationJsonLd),
+          }}
+        />
         <Providers locale={locale} messages={messages}>
           {children}
         </Providers>

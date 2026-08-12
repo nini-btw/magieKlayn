@@ -653,6 +653,16 @@ All routes are Next.js Route Handlers under `app/api/`. Response envelope conven
 - Response `200`: `{ success: true, message, timestamp }` on a successful ping, or `{ success: false, message: "DB not configured (mock mode)" }` (still `200`) when `db` is in mock mode. `500` on ping failure.
 - Auth: `CRON_SECRET` Bearer token, compared in the route handler rather than via `getAdminSession()` — Vercel Cron has no admin session to send, only the env-var secret it attaches automatically on its own invocations. The check fails closed if `CRON_SECRET` is unset (rejects rather than matching an unauthenticated `Bearer undefined`).
 
+### SEO / metadata file conventions
+Not under `app/api/` — these are Next.js file-convention routes that ship no JSON, only crawl/index metadata:
+- **`GET /robots.txt`** (`app/robots.ts`) — allows all, disallows `/admin`, `/api`, `/cart`, `/checkout`, `/api-docs`; points at `/sitemap.xml`.
+- **`GET /sitemap.xml`** (`app/sitemap.ts`) — static public routes plus every active product's `/shop/[slug]`, fetched live via `getAllProducts()` (falls back to static-only if the DB call throws, e.g. mock mode).
+- **`GET /manifest.webmanifest`** (`app/manifest.ts`) — PWA manifest.
+- **`GET /opengraph-image`, `GET /icon`, `GET /apple-icon`** (`app/opengraph-image.tsx`, `app/icon.tsx`, `app/apple-icon.tsx`) — code-generated via `next/og`'s `ImageResponse` (brand-gradient PNGs), auto-linked into `<head>` by Next's file convention. No static image asset is checked in.
+- Root layout (`app/layout.tsx`) emits `Organization` JSON-LD (name/url/logo/`sameAs`); `app/shop/[slug]/page.tsx` emits `Product`/`Offer` JSON-LD (price in DZD, stock availability); `app/shop/layout.tsx` server-fetches the product list purely to emit `ItemList` JSON-LD, since the shop listing page itself (`app/shop/page.tsx`) is a client component fetching from `/api/products` and has nothing crawlable of its own otherwise.
+- `app/admin/(dashboard)/layout.tsx` and `app/admin/login/layout.tsx` set `robots: { index: false, follow: false }` so admin routes are never indexed.
+- **Known gap**: locale is cookie-based with no URL prefix (see §3's "next-intl locale resolved via manual cookie read" decision), so all metadata/canonical/sitemap URLs are locale-agnostic and there is no `hreflang` alternate support — Google indexes one (effectively default-locale) version of each URL. Fixing this properly requires locale-prefixed routing, not attempted here.
+
 ### Empty/placeholder routes
 `app/api/auth/` and `app/api/messages/` exist as directories but contain no `route.ts` — they are not live endpoints (likely scaffolding for future work).
 
