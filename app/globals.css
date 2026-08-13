@@ -950,6 +950,11 @@
     background-color var(--duration-base) var(--ease-luxury),
     transform var(--duration-base) var(--ease-luxury);
 }
+@media (max-width: 700px) {
+  .product-card {
+    padding-bottom: 1rem !important;
+  }
+}
 
 .product-card:hover {
   background-color: var(--color-bg-soft);
@@ -965,8 +970,17 @@
   font-family: var(--font-body);
   font-size: 1rem;
   font-weight: 700;
+  line-height: 1.3;
   color: var(--color-text);
   margin-bottom: 4px;
+  /* Reserve space for 2 lines (and clamp to 2) so cards with short vs.
+     long names still line up to the same card height in the grid. */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  min-height: 2.6rem;
 }
 
 .product-meta {
@@ -1415,6 +1429,14 @@
   }
   .product-card .bottle {
     --w: 110px;
+  }
+  .product-card-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    min-height: 0;
+  }
+  .product-card-footer .icon-circle {
+    align-self: center;
   }
 
   .coffret {

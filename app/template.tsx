@@ -15,7 +15,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     setMounted(true);
     // Set initial direction based on localStorage
-    const savedLocale = localStorage.getItem("locale") || "en";
+    const savedLocale = localStorage.getItem("locale") || "fr";
     const newDir = savedLocale === "ar" ? "rtl" : "ltr";
     setDir(newDir);
     document.documentElement.dir = newDir;
