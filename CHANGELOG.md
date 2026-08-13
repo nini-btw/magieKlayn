@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Brand-name misspelling coverage for search.** Added `app/layout.tsx`'s `BRAND_NAME_VARIANTS` — ~20 phonetic/spelling variants customers actually search with (e.g. "Magic Klein", "Maji Klayn", "Magiclaine", "Magic Line", plus a couple of Arabic-transliteration variants), feeding both the `keywords` meta tag and, more effectively, the Organization JSON-LD's `alternateName` field — the mechanism Google's entity resolution uses to match a typo'd query to the right brand.
+
+## [0.2.9] - 2026-08-13
+
 ### Changed
 - **Default UI locale switched from English to French.** Any visitor with no `NEXT_LOCALE` cookie (e.g. first-time arrivals from search) previously saw the English UI; since the target market is Algeria, where French dominates, the default is now French. Changed `i18n.config.ts`'s `defaultLocale` (the value `app/layout.tsx`'s cookie-fallback logic reads), `app/template.tsx`'s independent `localStorage`-based `<html dir>`/`lang` fallback, `<LanguageSwitcher>`'s language list order (French now leads, so its "no match" fallback also degrades to French), and `app/global-error.tsx`'s hardcoded `<html lang>` on the top-level error boundary. SEO `<head>` metadata was already pinned to French independently of this (see 0.2.8 below) and is unaffected.
 

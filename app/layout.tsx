@@ -32,9 +32,41 @@ const SITE_URL =
 // <head> metadata surface is pinned to French.
 const SEO_LOCALE = "fr";
 
-const KEYWORDS = [
+// Common misspellings/phonetic variants of the brand name, gathered from how
+// customers actually type it when searching (the "gie"/"y" and "Klayn" parts
+// are the two spots people guess wrong). Kept here (not just in the visible
+// UI) so search engines can match a typo'd query to the right result —
+// listed in KEYWORDS below and as schema.org `alternateName` on the
+// Organization JSON-LD, which is the mechanism Google actually uses to
+// associate alternate spellings with an entity.
+const BRAND_NAME_VARIANTS = [
   "Magie Klayn",
+  "Magi Klayn",
+  "Magi Klain",
+  "Magic Klayn",
+  "Magic Klain",
+  "Magic Klein",
+  "Magik Klayn",
+  "Majik Klayn",
+  "Maji Klayn",
+  "Maji Klain",
+  "Magy Klayn",
+  "Magie Klain",
+  "Magie Klein",
+  "Magie Kleyn",
+  "Magie Clain",
+  "Magie Claine",
+  "Magiclaine",
+  "Magic Line",
+  "Majic Line",
+  "Magik Line",
+  "ماجي كلاين",
   "ماجيك كلاين",
+  "ماجي كلين",
+];
+
+const KEYWORDS = [
+  ...BRAND_NAME_VARIANTS,
   "parfum de luxe Algérie",
   "parfum Oran",
   "parfum Alger",
@@ -112,6 +144,9 @@ export default async function RootLayout({
     "@context": "https://schema.org",
     "@type": "Organization",
     name: "Magie Klayn",
+    // Misspellings/phonetic variants customers actually search with — this
+    // is the field Google uses to match a typo'd query to this entity.
+    alternateName: BRAND_NAME_VARIANTS.filter((v) => v !== "Magie Klayn"),
     url: SITE_URL,
     logo: `${SITE_URL}/icon`,
     image: `${SITE_URL}/opengraph-image`,
