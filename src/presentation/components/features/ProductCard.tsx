@@ -143,10 +143,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         )}
 
-        <div className="relative z-[2] flex min-h-[76px] items-start justify-between gap-2 p-4">
+        <div className="product-card-footer relative z-[2] flex min-h-[76px] items-start justify-between gap-2 px-4 pt-4">
           <div className="min-w-0">
             <p
-              className="product-name truncate transition-colors duration-700 ease-(--ease-luxury)"
+              className="product-name transition-colors duration-700 ease-(--ease-luxury)"
               style={{
                 color: isHovered && needsWhiteText ? "#ffffff" : undefined,
               }}

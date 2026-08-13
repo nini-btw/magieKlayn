@@ -64,7 +64,7 @@ No `.env.example` exists. Minimum for local dev: `DATABASE_URL`, `NEXT_PUBLIC_SU
 
 ### i18n
 
-`next-intl`, locales `en`/`fr`/`ar` (RTL for Arabic), catalogs in `messages/{en,fr,ar}.json`. Locale resolution is a manual cookie read in `app/layout.tsx` (`NEXT_LOCALE`, default `en`) — not middleware-based negotiation. Note `app/template.tsx` has a second, independent `<html dir>` mechanism (localStorage/custom event) not guaranteed to stay in sync with the cookie.
+`next-intl`, locales `en`/`fr`/`ar` (RTL for Arabic), catalogs in `messages/{en,fr,ar}.json`. Locale resolution is a manual cookie read in `app/layout.tsx` (`NEXT_LOCALE`, default `fr` — target market is Algeria) — not middleware-based negotiation. Note `app/template.tsx` has a second, independent `<html dir>` mechanism (localStorage/custom event) not guaranteed to stay in sync with the cookie.
 
 ## Naming history
 

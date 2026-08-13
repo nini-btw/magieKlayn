@@ -5,8 +5,8 @@ import { GlobeIcon, CheckIcon, ChevronDownIcon } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 
 const languages = [
-  { code: "en", label: "English", dir: "ltr" },
   { code: "fr", label: "Français", dir: "ltr" },
+  { code: "en", label: "English", dir: "ltr" },
   { code: "ar", label: "العربية", dir: "rtl" },
 ];
 

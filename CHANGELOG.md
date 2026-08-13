@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Default UI locale switched from English to French.** Any visitor with no `NEXT_LOCALE` cookie (e.g. first-time arrivals from search) previously saw the English UI; since the target market is Algeria, where French dominates, the default is now French. Changed `i18n.config.ts`'s `defaultLocale` (the value `app/layout.tsx`'s cookie-fallback logic reads), `app/template.tsx`'s independent `localStorage`-based `<html dir>`/`lang` fallback, `<LanguageSwitcher>`'s language list order (French now leads, so its "no match" fallback also degrades to French), and `app/global-error.tsx`'s hardcoded `<html lang>` on the top-level error boundary. SEO `<head>` metadata was already pinned to French independently of this (see 0.2.8 below) and is unaffected.
+
+### Fixed
+- **Mobile product-card layout crowded the name against the add-to-cart button.** On `/shop` at small screen widths, the product name/price column and the circular add-to-cart button shared one horizontal row, crowding/truncating longer product names. `ProductCard.tsx`'s footer row now switches to a stacked column (name, then price, then button, each on its own line) under the existing `max-width: 700px` mobile breakpoint in `app/globals.css`, with the button centered under the price.
+- **Product cards in the same grid row had inconsistent heights.** `.product-name` (`app/globals.css`) previously had no line-clamp or reserved height, so a card with a short name sat noticeably shorter than one with a long (now-wrapping, not truncated) name, breaking row alignment. It's now clamped to a maximum of 2 lines (`-webkit-line-clamp: 2` plus the standard `line-clamp: 2`) with a `min-height` reserving space for exactly 2 lines, so every card in a row renders at the same height regardless of name length. `ProductCard.tsx`'s footer no longer sets its own bottom padding — bottom spacing is governed entirely by `.product-card`'s own `padding-bottom`, which is forced to `1rem` under the `max-width: 700px` mobile breakpoint (`app/globals.css`) instead of the desktop default (`--space-md`, 1.75rem).
+
+## [0.2.8] - 2026-08-12
+
 ### Added
 - **SEO foundation for `www.magieklayn.com`** — the domain had no crawl/index infrastructure at all until now:
   - `app/robots.ts` (allows all, disallows `/admin`, `/api`, `/cart`, `/checkout`, `/api-docs`, points at the sitemap) and `app/sitemap.ts` (static routes + every active product's `/shop/[slug]`, pulled live via `getAllProducts()`).
