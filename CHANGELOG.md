@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - **Brand-name misspelling coverage for search.** Added `app/layout.tsx`'s `BRAND_NAME_VARIANTS` — ~20 phonetic/spelling variants customers actually search with (e.g. "Magic Klein", "Maji Klayn", "Magiclaine", "Magic Line", plus a couple of Arabic-transliteration variants), feeding both the `keywords` meta tag and, more effectively, the Organization JSON-LD's `alternateName` field — the mechanism Google's entity resolution uses to match a typo'd query to the right brand.
+- **Facebook link.** Added the brand's Facebook page to the footer's social icons (`Footer.tsx`, alongside Instagram/TikTok) and to the Organization JSON-LD's `sameAs` array (`app/layout.tsx`).
 
 ## [0.2.9] - 2026-08-13
 

@@ -65,6 +65,24 @@ export const Footer: React.FC = () => {
                 <path d="M11 3c.3 1.9 1.7 3.3 3.5 3.5" />
               </svg>
             </a>
+            <a
+              href="https://www.facebook.com/profile.php?id=61577217032982"
+              className="icon-circle"
+              aria-label="Facebook"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <svg
+                viewBox="0 0 20 20"
+                width="15"
+                height="15"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+              >
+                <path d="M12.5 6.5h-1.3c-.9 0-1.2.5-1.2 1.3V9.5h2.4l-.3 2.4h-2.1V17h-2.5v-5.1H5.5V9.5h1.9V7.5c0-2 1.1-3.3 3.2-3.3.9 0 1.7.1 1.9.1v2.2Z" />
+              </svg>
+            </a>
           </div>
         </div>
 

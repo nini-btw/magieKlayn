@@ -153,6 +153,7 @@ export default async function RootLayout({
     sameAs: [
       "https://www.instagram.com/magie.klayn.algerie/",
       "https://www.tiktok.com/@magieklaynalgerie",
+      "https://www.facebook.com/profile.php?id=61577217032982",
     ],
     areaServed: {
       "@type": "Country",
