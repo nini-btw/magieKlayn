@@ -576,7 +576,11 @@
           },
           {
             "q": "What if I'm not happy with my order?",
-            "a": "Reach out within 7 days of delivery and our team will make it right, whether that's an exchange or support finding your match."
+            "a": "Reach out within 7 days of delivery and our team will do their best to help — please note we're unable to offer exchanges or returns on delivered products."
+          },
+          {
+            "q": "Can I exchange or return a product?",
+            "a": "No — exchanges and returns are not available for our products. Please choose carefully before confirming your order."
           }
         ]
       }

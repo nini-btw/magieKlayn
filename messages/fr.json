@@ -576,7 +576,11 @@
           },
           {
             "q": "Que faire si je ne suis pas satisfait(e) de ma commande ?",
-            "a": "Contactez-nous dans les 7 jours suivant la livraison et notre équipe fera le nécessaire, qu'il s'agisse d'un échange ou d'une aide pour trouver votre parfum idéal."
+            "a": "Contactez-nous dans les 7 jours suivant la livraison et notre équipe fera de son mieux pour vous aider — sachant que nous ne proposons pas d'échange ni de retour sur les produits livrés."
+          },
+          {
+            "q": "Puis-je échanger ou retourner un produit ?",
+            "a": "Non — les échanges et les retours ne sont pas disponibles pour nos produits. Merci de bien choisir avant de confirmer votre commande."
           }
         ]
       }
