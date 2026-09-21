@@ -253,7 +253,9 @@
       "orders": "Commandes",
       "products": "Produits",
       "signOut": "Se Déconnecter",
-      "language": "Langue"
+      "language": "Langue",
+      "collapse": "Réduire le menu",
+      "expand": "Agrandir le menu"
     },
     "topbar": {
       "adminDashboard": "Tableau de Bord Admin"

@@ -2357,15 +2357,43 @@
   height: 100vh;
   background-color: var(--color-text);
   color: var(--color-white);
-  transition: transform var(--duration-base) var(--ease-luxury);
+  transition:
+    transform var(--duration-base) var(--ease-luxury),
+    width var(--duration-base) var(--ease-luxury);
 }
 
+.admin-sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-lg) var(--space-md);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
 .admin-sidebar-brand {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  padding: var(--space-lg) var(--space-md);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  min-width: 0;
+  flex: 1;
+}
+.admin-sidebar-collapse-toggle {
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.65);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    background-color var(--duration-base) var(--ease-luxury),
+    color var(--duration-base) var(--ease-luxury);
+}
+.admin-sidebar-collapse-toggle:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--color-white);
 }
 .admin-sidebar-brand-mark {
   color: var(--color-white);
@@ -2480,6 +2508,28 @@
   }
   .admin-main {
     margin-left: 0;
+  }
+}
+
+/* Desktop icon-only collapse — mobile always uses the full-width off-canvas
+   overlay above regardless of this preference, so it's scoped to lg+ only.
+   Matches AdminSidebarWrapper.tsx's lg:ml-20/lg:ml-64 on <main>. */
+@media (min-width: 1024px) {
+  .admin-sidebar.is-collapsed {
+    width: 80px;
+  }
+  .admin-sidebar.is-collapsed .admin-collapsible-label {
+    display: none;
+  }
+  .admin-sidebar.is-collapsed .admin-sidebar-brand {
+    justify-content: center;
+  }
+  .admin-sidebar.is-collapsed .admin-nav-link,
+  .admin-sidebar.is-collapsed .admin-sidebar-view-site,
+  .admin-sidebar.is-collapsed .admin-signout,
+  .admin-sidebar.is-collapsed .admin-user-row {
+    justify-content: center;
+    padding-inline: 0;
   }
 }
 
@@ -3119,6 +3169,14 @@
 .admin-cell-subtext {
   font-size: 0.75rem;
   color: var(--color-text-secondary);
+}
+/* Keeps one unusually long name/commune from forcing the orders table wider
+   than its lg+ container and reintroducing a horizontal scrollbar. */
+.admin-cell-truncate {
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .admin-row-actions {
   display: flex;
@@ -3794,6 +3852,14 @@
 .admin-cell-subtext {
   font-size: 0.75rem;
   color: var(--color-text-secondary);
+}
+/* Keeps one unusually long name/commune from forcing the orders table wider
+   than its lg+ container and reintroducing a horizontal scrollbar. */
+.admin-cell-truncate {
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .admin-row-actions {
   display: flex;

@@ -10,6 +10,7 @@ import {
   LogOutIcon,
   UserIcon,
   ExternalLinkIcon,
+  MenuIcon,
 } from "lucide-react";
 import { logoutAdmin } from "../actions";
 import { LanguageSwitcher } from "@/presentation/components/features/LanguageSwitcher";
@@ -20,7 +21,9 @@ export const AdminSidebar: React.FC<{
   userEmail: string;
   isOpen: boolean;
   onClose: () => void;
-}> = ({ userEmail, isOpen, onClose }) => {
+  isCollapsed: boolean;
+  onToggleCollapse: () => void;
+}> = ({ userEmail, isOpen, onClose, isCollapsed, onToggleCollapse }) => {
   const pathname = usePathname();
   const t = useTranslations();
   const locale = useLocale();
@@ -59,20 +62,32 @@ export const AdminSidebar: React.FC<{
       )}
 
       <aside
-        className={`admin-sidebar${isOpen ? " is-open" : ""}`}
+        className={`admin-sidebar${isOpen ? " is-open" : ""}${isCollapsed ? " is-collapsed" : ""}`}
         dir={isRTL ? "rtl" : "ltr"}
       >
-        <Link href="/admin" className="admin-sidebar-brand" onClick={onClose}>
-          <span className="admin-sidebar-brand-mark" aria-hidden="true">
-            <Logo variant="white" />
-          </span>
-          <div>
-            <span className="admin-sidebar-brand-text">Magie Klayn</span>
-            <span className="admin-sidebar-brand-sub">
-              {t("admin.topbar.adminDashboard")}
+        <div className="admin-sidebar-header">
+          <Link href="/admin" className="admin-sidebar-brand" onClick={onClose}>
+            <span className="admin-sidebar-brand-mark" aria-hidden="true">
+              <Logo variant="white" />
             </span>
-          </div>
-        </Link>
+            <div className="admin-collapsible-label">
+              <span className="admin-sidebar-brand-text">Magie Klayn</span>
+              <span className="admin-sidebar-brand-sub">
+                {t("admin.topbar.adminDashboard")}
+              </span>
+            </div>
+          </Link>
+          {/* Desktop-only — mobile already has its own open/close burger in
+              AdminTopBar; this one toggles icon-only vs. full sidebar. */}
+          <button
+            type="button"
+            onClick={onToggleCollapse}
+            className="admin-sidebar-collapse-toggle hidden lg:flex"
+            aria-label={t(isCollapsed ? "admin.sidebar.expand" : "admin.sidebar.collapse")}
+          >
+            <MenuIcon className="h-5 w-5" />
+          </button>
+        </div>
 
         <nav className="admin-nav">
           {navItems.map((item) => {
@@ -90,7 +105,7 @@ export const AdminSidebar: React.FC<{
                 }
               >
                 <Icon className="h-5 w-5" />
-                {t(item.labelKey)}
+                <span className="admin-collapsible-label">{t(item.labelKey)}</span>
               </Link>
             );
           })}
@@ -106,19 +121,21 @@ export const AdminSidebar: React.FC<{
             onClick={onClose}
           >
             <ExternalLinkIcon className="h-4 w-4" />
-            {t("admin.sidebar.viewSite")}
+            <span className="admin-collapsible-label">{t("admin.sidebar.viewSite")}</span>
           </Link>
 
-          <LanguageSwitcher variant="admin" />
+          {/* Needs more than icon-width space to be usable, so it's hidden
+              entirely (not just its label) when collapsed. */}
+          {!isCollapsed && <LanguageSwitcher variant="admin" />}
 
           <div className="admin-user-row">
             <UserIcon className="h-4 w-4" />
-            <span>{userEmail}</span>
+            <span className="admin-collapsible-label">{userEmail}</span>
           </div>
 
           <button onClick={handleLogout} className="admin-signout">
             <LogOutIcon className="h-5 w-5" />
-            {t("admin.sidebar.signOut")}
+            <span className="admin-collapsible-label">{t("admin.sidebar.signOut")}</span>
           </button>
         </div>
       </aside>

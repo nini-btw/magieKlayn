@@ -258,7 +258,9 @@
       "products": "المنتجات",
 
       "signOut": "تسجيل الخروج",
-      "language": "اللغة"
+      "language": "اللغة",
+      "collapse": "طي القائمة الجانبية",
+      "expand": "توسيع القائمة الجانبية"
     },
     "topbar": {
       "adminDashboard": "لوحة تحكم الإدارة"

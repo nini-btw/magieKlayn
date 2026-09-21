@@ -1024,7 +1024,7 @@ export default function AdminOrdersPage() {
         </div>
 
         {/* Desktop Table */}
-        <div className="hidden sm:block" style={{ overflowX: "auto" }}>
+        <div className="hidden lg:block" style={{ overflowX: "auto" }}>
           <table className="admin-table">
             <thead>
               <tr>
@@ -1051,15 +1051,17 @@ export default function AdminOrdersPage() {
                     #{order.id.slice(-6).toUpperCase()}
                   </td>
                   <td>
-                    <p style={{ fontWeight: 500 }}>{order.fullName}</p>
-                    <p className="admin-cell-subtext">{order.phone}</p>
+                    <p className="admin-cell-truncate" style={{ fontWeight: 500 }}>
+                      {order.fullName}
+                    </p>
+                    <p className="admin-cell-subtext admin-cell-truncate">{order.phone}</p>
                   </td>
                   <td>
                     {order.wilayaName ? (
                       <>
-                        <p>{order.wilayaName}</p>
+                        <p className="admin-cell-truncate">{order.wilayaName}</p>
                         {order.communeName && (
-                          <p className="admin-cell-subtext">
+                          <p className="admin-cell-subtext admin-cell-truncate">
                             {order.communeName}
                           </p>
                         )}
@@ -1119,9 +1121,9 @@ export default function AdminOrdersPage() {
           )}
         </div>
 
-        {/* Mobile Cards */}
+        {/* Mobile/tablet Cards — the 8-column desktop table needs lg+ width */}
         <div
-          className="sm:hidden flex flex-col"
+          className="lg:hidden flex flex-col"
           style={{
             padding: "var(--space-md)",
             gap: "var(--space-sm)",

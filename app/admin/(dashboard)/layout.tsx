@@ -23,10 +23,7 @@ export default async function AdminLayout({
 
   return (
     <div className="min-h-screen bg-[#F0E6D6]/30">
-      <AdminSidebarWrapper userEmail={admin.email} />
-      <main className="lg:ml-64 min-h-screen">
-        <div className="p-4 sm:p-6 lg:p-8">{children}</div>
-      </main>
+      <AdminSidebarWrapper userEmail={admin.email}>{children}</AdminSidebarWrapper>
     </div>
   );
 }

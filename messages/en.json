@@ -253,7 +253,9 @@
       "orders": "Orders",
       "products": "Products",
       "signOut": "Sign Out",
-      "language": "Language"
+      "language": "Language",
+      "collapse": "Collapse sidebar",
+      "expand": "Expand sidebar"
     },
     "topbar": {
       "adminDashboard": "Admin Dashboard"
