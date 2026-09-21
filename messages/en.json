@@ -315,7 +315,8 @@
       },
       "stats": {
         "total": "Total Orders",
-        "revenue": "Revenue",
+        "revenue": "Net Revenue",
+        "revenueNote": "Delivered orders only, excl. delivery fee",
         "pending": "Pending",
         "delivered": "Delivered"
       },

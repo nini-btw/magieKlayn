@@ -566,20 +566,101 @@ function OrderDetailSidebar({
   );
 }
 
+// Order status pill — click to change status right where it's shown (table
+// row or mobile card), same as the desktop table cell below. No need to open
+// the detail drawer just to change a status.
+function OrderStatusPill({
+  order,
+  onStatusChange,
+  t,
+}: {
+  order: Order;
+  onStatusChange: (id: string, status: Order["status"]) => void | Promise<void>;
+  t: (key: string) => string;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const wrapRef = React.useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (wrapRef.current && !wrapRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  async function handleSelect(status: string) {
+    setIsOpen(false);
+    if (status === order.status) return;
+    setIsUpdating(true);
+    try {
+      await onStatusChange(order.id, status as Order["status"]);
+    } finally {
+      setIsUpdating(false);
+    }
+  }
+
+  const badgeClass = statusBadgeClass[order.status] || "admin-badge";
+
+  return (
+    <div className="admin-status-pill-wrap" ref={wrapRef}>
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          setIsOpen((prev) => !prev);
+        }}
+        disabled={isUpdating}
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
+        className={`${badgeClass} admin-badge-button`}
+      >
+        {t(`admin.orders.statusLabels.${order.status}`)}
+      </button>
+      {isOpen && (
+        <div className="admin-status-pill-menu" role="listbox">
+          {statusOptionsList.map((status) => (
+            <button
+              key={status}
+              type="button"
+              role="option"
+              aria-selected={status === order.status}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleSelect(status);
+              }}
+              className="admin-status-pill-option"
+            >
+              <span
+                className="admin-status-pill-dot"
+                style={{ backgroundColor: STATUS_COLORS[status] }}
+              />
+              {t(`admin.orders.statusLabels.${status}`)}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // Order Card — mobile
 function OrderCard({
   order,
   onView,
   onDelete,
+  onStatusChange,
   t,
 }: {
   order: Order;
   onView: () => void;
   onDelete: () => void;
+  onStatusChange: (id: string, status: Order["status"]) => void | Promise<void>;
   t: (key: string) => string;
 }) {
-  const badgeClass = statusBadgeClass[order.status] || "admin-badge";
-
   return (
     <div className="admin-order-card">
       <div className="admin-order-card-top">
@@ -589,9 +670,7 @@ function OrderCard({
             {new Date(order.createdAt).toLocaleDateString()}
           </p>
         </div>
-        <span className={badgeClass}>
-          {t(`admin.orders.statusLabels.${order.status}`)}
-        </span>
+        <OrderStatusPill order={order} onStatusChange={onStatusChange} t={t} />
       </div>
 
       <div className="admin-order-customer-row">
@@ -689,9 +768,12 @@ export default function AdminOrdersPage() {
 
   const stats = React.useMemo(() => {
     const total = filteredOrders.length;
-    const totalRevenue = filteredOrders
-      .filter((o) => o.status !== "cancelled")
-      .reduce((sum, o) => sum + o.totalAmount, 0);
+    // Clean revenue: only orders actually delivered, and only the part the
+    // store keeps — the delivery fee is passed through to Yalidine/courier,
+    // it was never real revenue for the shop.
+    const cleanRevenue = filteredOrders
+      .filter((o) => o.status === "delivered")
+      .reduce((sum, o) => sum + (o.totalAmount - (o.deliveryFee || 0)), 0);
     const pending = filteredOrders.filter((o) => o.status === "pending").length;
     const delivered = filteredOrders.filter(
       (o) => o.status === "delivered",
@@ -700,7 +782,7 @@ export default function AdminOrdersPage() {
     const todayOrders = filteredOrders.filter((o) =>
       o.createdAt.toString().includes(today),
     ).length;
-    return { total, totalRevenue, pending, delivered, todayOrders };
+    return { total, cleanRevenue, pending, delivered, todayOrders };
   }, [filteredOrders]);
 
   const handleSort = (field: SortField) => {
@@ -883,8 +965,9 @@ export default function AdminOrdersPage() {
         />
         <StatCard
           title={t("admin.orders.stats.revenue")}
-          value={formatPrice(stats.totalRevenue)}
+          value={formatPrice(stats.cleanRevenue)}
           icon={DollarSignIcon}
+          trend={t("admin.orders.stats.revenueNote")}
         />
         <StatCard
           title={t("admin.orders.stats.pending")}
@@ -965,13 +1048,11 @@ export default function AdminOrdersPage() {
                     {formatPrice(order.totalAmount)}
                   </td>
                   <td>
-                    <span
-                      className={
-                        statusBadgeClass[order.status] || "admin-badge"
-                      }
-                    >
-                      {t(`admin.orders.statusLabels.${order.status}`)}
-                    </span>
+                    <OrderStatusPill
+                      order={order}
+                      onStatusChange={handleStatusChange}
+                      t={t}
+                    />
                   </td>
                   <td style={{ color: "var(--color-text-secondary)" }}>
                     {new Date(order.createdAt).toLocaleDateString()}
@@ -1015,11 +1096,9 @@ export default function AdminOrdersPage() {
 
         {/* Mobile Cards */}
         <div
-          className="sm:hidden"
+          className="sm:hidden flex flex-col"
           style={{
             padding: "var(--space-md)",
-            display: "flex",
-            flexDirection: "column",
             gap: "var(--space-sm)",
           }}
         >
@@ -1031,6 +1110,7 @@ export default function AdminOrdersPage() {
               onDelete={() => {
                 if (confirm(t("admin.common.confirm"))) handleDelete(order.id);
               }}
+              onStatusChange={handleStatusChange}
               t={t}
             />
           ))}

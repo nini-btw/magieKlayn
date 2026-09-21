@@ -2390,6 +2390,12 @@
 
 .admin-nav {
   flex: 1;
+  /* Flex items default to min-height:auto, so without this a nav longer
+     than the remaining space pushes the whole (position:fixed, height:100vh)
+     sidebar taller than the viewport on short screens instead of scrolling
+     internally — that's what shows up as a stray page scrollbar next to the
+     sidebar. */
+  min-height: 0;
   overflow-y: auto;
   padding: var(--space-md);
   display: flex;
@@ -2687,6 +2693,63 @@
   border-color: color-mix(in srgb, #c2761f 35%, transparent);
   background-color: color-mix(in srgb, #c2761f 10%, white);
 }
+/* ---- Clickable order status pill (table + mobile card) ---- */
+.admin-status-pill-wrap {
+  position: relative;
+  display: inline-block;
+}
+.admin-badge-button {
+  cursor: pointer;
+  font-family: inherit;
+}
+.admin-badge-button:hover {
+  filter: brightness(0.96);
+}
+.admin-badge-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.admin-status-pill-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 30;
+  min-width: 168px;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-main);
+  box-shadow: var(--shadow-soft);
+  padding: 0.3rem;
+}
+.admin-status-pill-option {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+  padding: 0.5rem 0.65rem;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--color-text);
+  text-align: left;
+  cursor: pointer;
+}
+.admin-status-pill-option:hover {
+  background: var(--color-bg-soft);
+}
+.admin-status-pill-option[aria-selected="true"] {
+  background: var(--color-bg-soft);
+  font-weight: 700;
+}
+.admin-status-pill-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
 .badge-unisex {
   background-color: color-mix(in srgb, var(--color-text) 10%, transparent);
   color: var(--color-text);

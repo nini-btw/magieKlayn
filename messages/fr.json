@@ -315,7 +315,8 @@
       },
       "stats": {
         "total": "Total des Commandes",
-        "revenue": "Revenu",
+        "revenue": "Revenu Net",
+        "revenueNote": "Commandes livrées uniquement, hors frais de livraison",
         "pending": "En Attente",
         "delivered": "Livrées"
       },

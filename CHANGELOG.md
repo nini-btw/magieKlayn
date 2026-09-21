@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - **Brand-name misspelling coverage for search.** Added `app/layout.tsx`'s `BRAND_NAME_VARIANTS` — ~20 phonetic/spelling variants customers actually search with (e.g. "Magic Klein", "Maji Klayn", "Magiclaine", "Magic Line", plus a couple of Arabic-transliteration variants), feeding both the `keywords` meta tag and, more effectively, the Organization JSON-LD's `alternateName` field — the mechanism Google's entity resolution uses to match a typo'd query to the right brand.
 - **Facebook link.** Added the brand's Facebook page to the footer's social icons (`Footer.tsx`, alongside Instagram/TikTok) and to the Organization JSON-LD's `sameAs` array (`app/layout.tsx`).
+- **Clickable order status pill in the admin orders table.** New `OrderStatusPill` (`app/admin/(dashboard)/orders/page.tsx`) lets an admin change an order's status directly from its colored badge — in both the desktop table row and the mobile card — without opening the detail drawer. Backed by the existing `PUT /api/orders/[id]` status update.
+- **"Net Revenue" stat.** The orders page's revenue stat card now sums only `delivered` orders and subtracts each order's `deliveryFee` before summing, since the delivery fee is passed through to the courier and was never real revenue for the store. Relabeled "Net Revenue" with a short explanatory note, translated in `en`/`fr`/`ar` (`admin.orders.stats.revenue`/`revenueNote`).
+
+### Fixed
+- **A stray mobile order card rendered below the desktop orders table on wide screens.** The mobile-cards wrapper in `app/admin/(dashboard)/orders/page.tsx` had both a `sm:hidden` Tailwind class and an inline `style={{ display: "flex" }}` — the inline style always wins over a CSS class, so it silently canceled `sm:hidden` and the mobile card list rendered at every screen width, appearing stacked right after the desktop table on desktop. Moved `display`/`flex-direction` into Tailwind classes (`flex flex-col`) so the responsive table/card switch actually works.
+- **Admin sidebar could show a stray page scrollbar on short viewports.** `.admin-nav` (`app/globals.css`) is a `flex: 1; overflow-y: auto` child inside the fixed, `height: 100vh` `.admin-sidebar` — without `min-height: 0`, a flex item can't shrink below its content's natural height, so on short screens the nav's full content height pushed the whole sidebar taller than the viewport instead of scrolling internally. Added `min-height: 0`.
 
 ## [0.2.9] - 2026-08-13
 
