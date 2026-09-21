@@ -285,6 +285,8 @@
       "delete": "Delete",
       "noOrders": "No orders yet",
       "topWilayas": "Top Wilayas",
+      "topProducts": "Top Fragrances",
+      "tableBottles": "Bottles",
       "wilaya": "Wilaya",
       "commune": "Commune",
       "deliveryType": "Delivery Type",
@@ -317,7 +319,9 @@
         "revenue": "Net Revenue",
         "revenueNote": "Delivered orders only, excl. delivery fee",
         "pending": "Pending",
-        "delivered": "Delivered"
+        "delivered": "Delivered",
+        "totalBottles": "Total Bottles Sold",
+        "bottlesNote": "Delivered orders only"
       },
       "orderDetails": {
         "luxuryCoffret": "Luxury Box",

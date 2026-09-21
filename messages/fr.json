@@ -285,6 +285,8 @@
       "delete": "Supprimer",
       "noOrders": "Aucune commande pour le moment",
       "topWilayas": "Meilleures Wilayas",
+      "topProducts": "Meilleurs Parfums",
+      "tableBottles": "Flacons",
       "wilaya": "Wilaya",
       "commune": "Commune",
       "deliveryType": "Type de Livraison",
@@ -317,7 +319,9 @@
         "revenue": "Revenu Net",
         "revenueNote": "Commandes livrées uniquement, hors frais de livraison",
         "pending": "En Attente",
-        "delivered": "Livrées"
+        "delivered": "Livrées",
+        "totalBottles": "Total Flacons Vendus",
+        "bottlesNote": "Commandes livrées uniquement"
       },
       "orderDetails": {
         "luxuryCoffret": "Coffret de Luxe",

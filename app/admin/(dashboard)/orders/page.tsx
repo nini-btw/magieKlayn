@@ -28,12 +28,18 @@ import { Select } from "@/presentation/components/ui/Select";
 import type {
   Order,
   WilayaOrderStats,
+  ProductSalesStat,
   BoxColor,
 } from "@/domain/entities/order";
 import type { DeliveryZone } from "@/domain/entities/delivery";
 import { useTranslations, useLocale } from "next-intl";
 import { formatPrice } from "@/presentation/lib/utils";
 import { EmptyState } from "@/presentation/components/ui/EmptyState";
+import { TopProductsChart } from "./TopProductsChart";
+
+function bottleCount(order: Order): number {
+  return order.items.reduce((sum, item) => sum + item.quantity, 0);
+}
 
 type SortField = "id" | "customer" | "total" | "status" | "date";
 type SortDirection = "asc" | "desc";
@@ -685,7 +691,12 @@ function OrderCard({
       </div>
 
       <div className="admin-order-bottom">
-        <p className="admin-order-total">{formatPrice(order.totalAmount)}</p>
+        <div>
+          <p className="admin-order-total">{formatPrice(order.totalAmount)}</p>
+          <p className="admin-order-items">
+            {bottleCount(order)} {t("admin.orders.tableBottles")}
+          </p>
+        </div>
         <div className="admin-order-card-actions">
           <button onClick={onView} className="admin-icon-button">
             <EyeIcon className="w-4 h-4" />
@@ -712,6 +723,7 @@ export default function AdminOrdersPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [wilayas, setWilayas] = useState<DeliveryZone[]>([]);
   const [topWilayas, setTopWilayas] = useState<WilayaOrderStats[]>([]);
+  const [topProducts, setTopProducts] = useState<ProductSalesStat[]>([]);
 
   // Filters
   const [filterWilaya, setFilterWilaya] = useState<string>("");
@@ -739,6 +751,10 @@ export default function AdminOrdersPage() {
         const statsRes = await fetch("/api/orders/stats?type=wilayas&limit=5");
         const statsData = await statsRes.json();
         if (statsData.success) setTopWilayas(statsData.data);
+
+        const productStatsRes = await fetch("/api/orders/stats?type=products");
+        const productStatsData = await productStatsRes.json();
+        if (productStatsData.success) setTopProducts(productStatsData.data);
       } catch (error) {
         console.error("Failed to fetch data:", error);
       } finally {
@@ -778,7 +794,11 @@ export default function AdminOrdersPage() {
     const todayOrders = filteredOrders.filter((o) =>
       o.createdAt.toString().includes(today),
     ).length;
-    return { total, cleanRevenue, pending, delivered, todayOrders };
+    // Same "actually sold" rule as cleanRevenue — only delivered orders count.
+    const totalBottlesSold = filteredOrders
+      .filter((o) => o.status === "delivered")
+      .reduce((sum, o) => sum + bottleCount(o), 0);
+    return { total, cleanRevenue, pending, delivered, todayOrders, totalBottlesSold };
   }, [filteredOrders]);
 
   const handleSort = (field: SortField) => {
@@ -975,12 +995,19 @@ export default function AdminOrdersPage() {
           value={stats.delivered}
           icon={TrendingUpIcon}
         />
+        <StatCard
+          title={t("admin.orders.stats.totalBottles")}
+          value={stats.totalBottlesSold}
+          icon={PackageIcon}
+          trend={t("admin.orders.stats.bottlesNote")}
+        />
       </div>
 
       {/* Charts */}
       <div className="admin-chart-row">
         <TopWilayasChart stats={topWilayas} t={t} />
         <StatusChart orders={filteredOrders} t={t} />
+        <TopProductsChart stats={topProducts} t={t} />
       </div>
 
       {/* Orders */}
@@ -1006,6 +1033,7 @@ export default function AdminOrdersPage() {
                   {t("admin.orders.customer")}
                 </SortHeader>
                 <th>{t("admin.orders.wilaya")}</th>
+                <th>{t("admin.orders.tableBottles")}</th>
                 <SortHeader field="total">{t("admin.orders.total")}</SortHeader>
                 <SortHeader field="status">
                   {t("admin.orders.status")}
@@ -1040,6 +1068,7 @@ export default function AdminOrdersPage() {
                       <span className="admin-cell-subtext">—</span>
                     )}
                   </td>
+                  <td style={{ fontWeight: 600 }}>{bottleCount(order)}</td>
                   <td style={{ fontWeight: 600 }}>
                     {formatPrice(order.totalAmount)}
                   </td>

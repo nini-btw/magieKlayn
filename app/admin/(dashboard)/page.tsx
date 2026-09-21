@@ -10,10 +10,11 @@ import {
   ArrowRightIcon,
   UserIcon,
 } from "lucide-react";
-import type { Order } from "@/domain/entities/order";
+import type { Order, ProductSalesStat } from "@/domain/entities/order";
 import type { Product } from "@/domain/entities/product";
 import { useTranslations, useLocale } from "next-intl";
 import { EmptyState } from "@/presentation/components/ui/EmptyState";
+import { TopProductsChart } from "./orders/TopProductsChart";
 
 const statusBadgeClass: Record<string, string> = {
   pending: "admin-badge admin-badge-warning",
@@ -73,6 +74,7 @@ function RecentOrderCard({
 export default function AdminDashboardPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [topProducts, setTopProducts] = useState<ProductSalesStat[]>([]);
   const [loading, setLoading] = useState(true);
   const t = useTranslations();
   const locale = useLocale();
@@ -81,16 +83,19 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [ordersRes, productsRes] = await Promise.all([
+        const [ordersRes, productsRes, productStatsRes] = await Promise.all([
           fetch("/api/orders"),
           fetch("/api/products"),
+          fetch("/api/orders/stats?type=products"),
         ]);
 
         const ordersData = await ordersRes.json();
         const productsData = await productsRes.json();
+        const productStatsData = await productStatsRes.json();
 
         if (ordersData.success) setOrders(ordersData.data);
         if (productsData.success) setProducts(productsData.data);
+        if (productStatsData.success) setTopProducts(productStatsData.data);
       } catch (error) {
         console.error("Failed to fetch dashboard data:", error);
       } finally {
@@ -103,16 +108,10 @@ export default function AdminDashboardPage() {
   const totalRevenue = orders.reduce((sum, o) => sum + o.totalAmount, 0);
   const totalOrders = orders.length;
 
-  const productCounts = new Map<string, number>();
-  orders.forEach((order) => {
-    order.items.forEach((item) => {
-      const count = productCounts.get(item.productName) || 0;
-      productCounts.set(item.productName, count + item.quantity);
-    });
-  });
-  const mostOrdered = [...productCounts.entries()].sort(
-    (a, b) => b[1] - a[1],
-  )[0];
+  // Backed by the all-time, delivered-only /api/orders/stats?type=products
+  // aggregate instead of counting over the (server-capped, last-100) `orders`
+  // array fetched above, so this is accurate regardless of order history size.
+  const mostOrdered = topProducts[0];
 
   const activeProducts = products.filter((p) => p.isActive).length;
 
@@ -148,10 +147,10 @@ export default function AdminDashboardPage() {
         <StatCard
           icon={PackageIcon}
           label={t("admin.dashboard.mostOrdered")}
-          value={mostOrdered?.[0] || "N/A"}
+          value={mostOrdered?.productName || "N/A"}
           description={
             mostOrdered
-              ? `${mostOrdered[1]} ${t("admin.products.form.sold")}`
+              ? `${mostOrdered.quantitySold} ${t("admin.products.form.sold")}`
               : t("admin.dashboard.noOrders")
           }
         />
@@ -216,11 +215,9 @@ export default function AdminDashboardPage() {
             </div>
 
             <div
-              className="sm:hidden"
+              className="sm:hidden flex flex-col"
               style={{
                 padding: "var(--space-md)",
-                display: "flex",
-                flexDirection: "column",
                 gap: "var(--space-sm)",
               }}
             >
@@ -239,6 +236,10 @@ export default function AdminDashboardPage() {
             }
           />
         )}
+      </div>
+
+      <div className="admin-chart-row">
+        <TopProductsChart stats={topProducts} t={t} />
       </div>
     </div>
   );

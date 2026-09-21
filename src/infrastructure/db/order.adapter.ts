@@ -9,6 +9,7 @@ import type {
   CreateOrderPayload,
   OrderFilters,
   WilayaOrderStats,
+  ProductSalesStat,
 } from "@/domain/entities/order";
 import type { IOrderRepository } from "@/domain/ports/repositories";
 import { calculateCartTotal } from "@/domain/rules/cart.rules";
@@ -195,6 +196,54 @@ export class OrderRepository implements IOrderRepository {
       wilayaName: row.wilayaName || "",
       orderCount: row.orderCount,
       totalRevenue: row.totalRevenue,
+    }));
+  }
+
+  // "Sold" mirrors the Net Revenue stat's definition: delivered orders only
+  // — a cancelled/returned order never actually sold a bottle. Only 14
+  // fragrances exist, so callers can omit `limit` to get the full breakdown
+  // instead of just a top-N slice.
+  async getTopProducts(limit?: number): Promise<ProductSalesStat[]> {
+    let query = db
+      .select({
+        productId: orderItems.productId,
+        productName: orderItems.productName,
+        productSlug: orderItems.productSlug,
+        productColorHex: orderItems.productColorHex,
+        quantitySold: sql<number>`SUM(${orderItems.quantity})::int`,
+      })
+      .from(orderItems)
+      .innerJoin(orders, eq(orderItems.orderId, orders.id))
+      .where(and(isNull(orders.deletedAt), eq(orders.status, "delivered")))
+      .groupBy(
+        orderItems.productId,
+        orderItems.productName,
+        orderItems.productSlug,
+        orderItems.productColorHex,
+      )
+      .orderBy(sql`SUM(${orderItems.quantity}) DESC`)
+      .$dynamic();
+
+    if (limit) {
+      query = query.limit(limit);
+    }
+
+    const result = await query;
+
+    type TopProductRow = {
+      productId: string;
+      productName: string;
+      productSlug: string;
+      productColorHex: string | null;
+      quantitySold: number;
+    };
+
+    return (result as TopProductRow[]).map((row) => ({
+      productId: row.productId,
+      productName: row.productName,
+      productSlug: row.productSlug,
+      productColorHex: row.productColorHex || undefined,
+      quantitySold: row.quantitySold,
     }));
   }
 

@@ -150,6 +150,18 @@ export interface WilayaOrderStats {
   totalRevenue: number;
 }
 
+/**
+ * Per-fragrance units-sold statistics — counts quantity from delivered
+ * orders only (same "actually sold" definition the Net Revenue stat uses).
+ */
+export interface ProductSalesStat {
+  productId: string;
+  productName: string;
+  productSlug: string;
+  productColorHex?: string;
+  quantitySold: number;
+}
+
 // domain/entities/order.ts (or a shared lib file)
 export function splitOrGetFullName(
   order: Pick<Order, "fullName" | "firstName" | "lastName">,

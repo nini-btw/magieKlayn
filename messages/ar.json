@@ -290,6 +290,8 @@
       "delete": "حذف",
       "noOrders": "لا توجد طلبات بعد",
       "topWilayas": "أفضل الولايات",
+      "topProducts": "أفضل العطور مبيعًا",
+      "tableBottles": "القوارير",
       "wilaya": "الولاية",
       "commune": "البلدية",
       "deliveryType": "نوع التوصيل",
@@ -322,7 +324,9 @@
         "revenue": "صافي الإيرادات",
         "revenueNote": "الطلبات المسلَّمة فقط، دون رسوم التوصيل",
         "pending": "قيد الانتظار",
-        "delivered": "تم توصيلها"
+        "delivered": "تم توصيلها",
+        "totalBottles": "إجمالي القوارير المباعة",
+        "bottlesNote": "الطلبات المسلَّمة فقط"
       },
       "orderDetails": {
         "luxuryCoffret": "علبة فاخرة",

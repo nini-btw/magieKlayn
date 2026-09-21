@@ -9,6 +9,7 @@ import type {
   CreateOrderPayload,
   OrderFilters,
   WilayaOrderStats,
+  ProductSalesStat,
 } from "../entities/order";
 
 import type { DeliveryZone } from "../entities/delivery";
@@ -98,6 +99,11 @@ export interface IOrderRepository {
    * Get top wilayas by order count
    */
   getTopWilayas(limit?: number): Promise<WilayaOrderStats[]>;
+
+  /**
+   * Get units sold per product (delivered orders only), most-sold first
+   */
+  getTopProducts(limit?: number): Promise<ProductSalesStat[]>;
 
   /**
    * Update order status
