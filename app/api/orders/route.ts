@@ -32,7 +32,7 @@ import { getMaxBoxCount, calculateCoffretFee } from "@/domain/rules/cart.rules";
  *         schema: { type: string }
  *       - in: query
  *         name: status
- *         schema: { type: string, enum: [pending, confirmed, preparing, ready, delivered, cancelled] }
+ *         schema: { type: string, enum: [pending, confirmed, delivered, cancelled, returned] }
  *       - in: query
  *         name: startDate
  *         schema: { type: string, format: date }

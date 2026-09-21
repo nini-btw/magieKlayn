@@ -12,10 +12,9 @@ export type BoxColor = "white" | "black";
 export type OrderStatus =
   | "pending"
   | "confirmed"
-  | "preparing"
-  | "ready"
   | "delivered"
-  | "cancelled";
+  | "cancelled"
+  | "returned";
 
 /**
  * Packaging type — coffret decision made at checkout, order-level

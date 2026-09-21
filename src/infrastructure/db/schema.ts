@@ -32,10 +32,9 @@ import {
 export const orderStatusEnum = pgEnum("order_status", [
   "pending",
   "confirmed",
-  "preparing",
-  "ready",
   "delivered",
   "cancelled",
+  "returned",
 ]);
 
 export const productGenderEnum = pgEnum("product_gender", [

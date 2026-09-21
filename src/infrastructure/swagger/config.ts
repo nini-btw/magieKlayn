@@ -104,7 +104,7 @@ export function getApiDocs() {
               giftNote: { type: "string", nullable: true },
               status: {
                 type: "string",
-                enum: ["pending", "confirmed", "preparing", "ready", "delivered", "cancelled"],
+                enum: ["pending", "confirmed", "delivered", "cancelled", "returned"],
               },
               totalAmount: { type: "integer" },
               packagingType: { type: "string", enum: ["standard", "luxury_coffret"] },

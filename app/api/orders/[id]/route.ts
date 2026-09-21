@@ -90,7 +90,7 @@ export async function GET(request: NextRequest, { params }: Params) {
  *             type: object
  *             required: [status]
  *             properties:
- *               status: { type: string, enum: [pending, confirmed, preparing, ready, delivered, cancelled] }
+ *               status: { type: string, enum: [pending, confirmed, delivered, cancelled, returned] }
  *     responses:
  *       200: { description: Status updated }
  *       400: { description: Missing or invalid status }
@@ -118,7 +118,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
     }
 
     const validStatuses: Order["status"][] = [
-      "pending", "confirmed", "preparing", "ready", "delivered", "cancelled"
+      "pending", "confirmed", "delivered", "cancelled", "returned"
     ];
     
     if (!validStatuses.includes(body.status)) {

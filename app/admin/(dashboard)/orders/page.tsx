@@ -44,37 +44,33 @@ type SortDirection = "asc" | "desc";
 const statusOptionsList = [
   "pending",
   "confirmed",
-  "preparing",
-  "ready",
   "delivered",
   "cancelled",
+  "returned",
 ];
 
 const STATUS_COLORS: Record<string, string> = {
   pending: "#b8860b",
   confirmed: "#3b6fa0",
-  preparing: "#8a63d2",
-  ready: "#c2761f",
   delivered: "#2f9488",
   cancelled: "#c0392b",
+  returned: "#8a63d2",
 };
 
 const STATUS_DOT: Record<string, string> = {
   pending: "🟡",
   confirmed: "🔵",
-  preparing: "🟣",
-  ready: "🟠",
   delivered: "🟢",
   cancelled: "🔴",
+  returned: "🟣",
 };
 
 const statusBadgeClass: Record<string, string> = {
   pending: "admin-badge admin-badge-warning",
   confirmed: "admin-badge admin-badge-confirmed",
-  preparing: "admin-badge admin-badge-preparing",
-  ready: "admin-badge admin-badge-ready",
   delivered: "admin-badge admin-badge-success",
   cancelled: "admin-badge admin-badge-error",
+  returned: "admin-badge admin-badge-returned",
 };
 
 // Swatch color shown next to the box color name — actual brand hex,

@@ -308,10 +308,9 @@
       "statusLabels": {
         "pending": "Pending",
         "confirmed": "Confirmed",
-        "preparing": "Preparing",
-        "ready": "Ready",
         "delivered": "Delivered",
-        "cancelled": "Cancelled"
+        "cancelled": "Cancelled",
+        "returned": "Returned"
       },
       "stats": {
         "total": "Total Orders",

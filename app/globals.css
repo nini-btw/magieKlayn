@@ -2683,15 +2683,10 @@
   border-color: color-mix(in srgb, #3b6fa0 35%, transparent);
   background-color: color-mix(in srgb, #3b6fa0 10%, white);
 }
-.admin-badge-preparing {
+.admin-badge-returned {
   color: #8a63d2;
   border-color: color-mix(in srgb, #8a63d2 35%, transparent);
   background-color: color-mix(in srgb, #8a63d2 10%, white);
-}
-.admin-badge-ready {
-  color: #c2761f;
-  border-color: color-mix(in srgb, #c2761f 35%, transparent);
-  background-color: color-mix(in srgb, #c2761f 10%, white);
 }
 /* ---- Clickable order status pill (table + mobile card) ---- */
 .admin-status-pill-wrap {

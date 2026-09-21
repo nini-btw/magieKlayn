@@ -17,11 +17,10 @@ import { EmptyState } from "@/presentation/components/ui/EmptyState";
 
 const statusBadgeClass: Record<string, string> = {
   pending: "admin-badge admin-badge-warning",
-  confirmed: "admin-badge",
-  preparing: "admin-badge",
-  ready: "admin-badge",
+  confirmed: "admin-badge admin-badge-confirmed",
   delivered: "admin-badge admin-badge-success",
   cancelled: "admin-badge admin-badge-error",
+  returned: "admin-badge admin-badge-returned",
 };
 
 // Recent order card — mobile

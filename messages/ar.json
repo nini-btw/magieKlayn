@@ -313,10 +313,9 @@
       "statusLabels": {
         "pending": "قيد الانتظار",
         "confirmed": "مؤكد",
-        "preparing": "قيد التحضير",
-        "ready": "جاهز",
         "delivered": "تم التوصيل",
-        "cancelled": "ملغى"
+        "cancelled": "ملغى",
+        "returned": "مرتجعة"
       },
       "stats": {
         "total": "إجمالي الطلبات",
