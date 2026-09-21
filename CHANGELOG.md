@@ -7,6 +7,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Admin sidebar/orders-table UI/UX polish pass** — a refinement of the existing collapsible
+  sidebar and orders table (no redesign, no route/API/DB/auth changes):
+  - **Orders table horizontal scrollbar fixed at the source.** `.admin-table th`/`td` horizontal
+    padding was `var(--space-lg)` (48px/side) — across 8 columns that's ~450px of pure padding,
+    the actual cause of the table outgrowing its container and needing to scroll. Cut to `1.25rem`
+    (20px), within the requested 20–24px band, with no fixed column widths (flexible sizing). The
+    wrapper (`app/admin/(dashboard)/orders/page.tsx`) now uses a new `.admin-table-scroll` class
+    instead of an inline `overflowX: auto` style — same contained (never page-level) horizontal
+    scroll for genuinely narrow desktop widths, but with the scrollbar chrome hidden via the
+    standard cross-browser trio (`scrollbar-width`/`-ms-overflow-style`/`::-webkit-scrollbar`) —
+    touch/trackpad scrolling still works, no new dependency.
+  - **Sidebar collapse toggle now uses `PanelLeftCloseIcon`/`PanelLeftOpenIcon`** (swapped from a
+    generic `MenuIcon`) so the icon itself communicates the action — closed-panel icon while
+    expanded (click to collapse), open-panel icon while collapsed — plus a `title` tooltip
+    alongside the existing `aria-label`.
+  - **Collapsed sidebar is now a real icon rail, not just a squeezed copy of the expanded one.**
+    Nav links/sign-out/"View site" get a fixed 40×40px box (`border-radius: 10px`) instead of a
+    text-pill with its horizontal padding merely zeroed (previously ~20×47px, not square) — the
+    active nav item's white fill is now a true square. `.admin-nav`'s own padding shrinks when
+    collapsed so there's room for that box in the 80px rail. Added `title`+`aria-label` to every
+    icon-only control (nav links, "View site", sign-out) — their text labels get `display: none`
+    when collapsed, which also removes them from the accessibility tree, so an explicit
+    `aria-label` was needed, not just the visual label.
+  - **Logo enlarged and no longer letterboxed.** `.admin-sidebar-brand-mark` was a fixed 26×26px
+    square; the `Logo` SVG's real aspect ratio (~1.414:1) meant it never actually filled that box.
+    Resized to 36×51px expanded / 32×45px collapsed (both within spec, sized to the real aspect
+    ratio so nothing is stretched).
+  - **New `.admin-sidebar-account-group`** wraps the language switcher, admin email, and sign-out
+    with a subtle top border, separating it from "View site" above — communicates the
+    primary-nav / secondary-action / account-settings grouping via spacing alone, no new labels.
+  - **Status badges** (`.admin-badge`) padding bumped from `0.3rem 0.75rem` to `0.45rem 0.8rem` —
+    lands in the ~30–32px height / ~12–14px horizontal padding target without touching colors or
+    semantics; one shared base rule, so every status-color variant and the dashboard's own badges
+    all pick it up together.
+  - **Action buttons**: added `:focus-visible` outlines (previously missing) on
+    `.admin-icon-button`, `.admin-badge-button` (the `OrderStatusPill` trigger), `.admin-nav-link`,
+    `.admin-signout`, `.admin-sidebar-view-site`, and `.admin-sidebar-collapse-toggle`; gave
+    `.admin-icon-button-danger` (Delete) a subtle red tint by default, not just on hover, so it
+    reads as destructive without requiring interaction first; added `title`/`aria-label` to the
+    mobile `OrderCard`'s View/Delete buttons to match the desktop table's existing copies (a parity
+    gap — the desktop buttons already had `title`).
+  - **Date column** shortened via `toLocaleDateString`'s existing options (`2-digit` day/month/year)
+    instead of the locale's full default format — no new date library, no change to the stored
+    value, applied to both the desktop table and mobile card.
+  - **Radius outliers normalized**: `.admin-sidebar-collapse-toggle` (8px → 10px, matching the new
+    collapsed nav squares) — `--radius-card` (20px, panels/stat-cards/chart-panels) was left
+    untouched, it's already applied consistently everywhere and wasn't actually the inconsistency.
+  - **Removed duplicate CSS**: `.admin-cell-truncate`, `.admin-row-actions`, and `.admin-icon-button`
+    were each defined twice, verbatim, in `globals.css` (leftover from earlier sessions) —
+    consolidated into one definition each.
+
 ### Added
 - **Collapsible desktop admin sidebar.** A new burger toggle in the sidebar header (`AdminSidebar.tsx`) shrinks it to an icons-only rail (`width: 80px`, `.admin-sidebar.is-collapsed`) on desktop (`lg`+) — nav links, "View site", the admin email, and sign-out all keep their icons and lose their text labels (wrapped in a shared `.admin-collapsible-label` span); `LanguageSwitcher` is hidden outright when collapsed since it needs more than icon width. `AdminSidebarWrapper.tsx` now also owns `<main>` (moved out of `layout.tsx`, a server component with no channel to this client-only state) so its left margin (`lg:ml-64`/`lg:ml-20`) tracks the collapse state. Persisted via `localStorage` (`magieklayn-admin-sidebar-collapsed`) — the mobile off-canvas overlay is unaffected, this is a desktop-only preference.
 

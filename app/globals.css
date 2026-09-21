@@ -2381,7 +2381,7 @@
   justify-content: center;
   width: 32px;
   height: 32px;
-  border-radius: 8px;
+  border-radius: 10px;
   border: none;
   background: transparent;
   color: rgba(255, 255, 255, 0.65);
@@ -2394,6 +2394,10 @@
 .admin-sidebar-collapse-toggle:hover {
   background-color: rgba(255, 255, 255, 0.08);
   color: var(--color-white);
+}
+.admin-sidebar-collapse-toggle:focus-visible {
+  outline: 2px solid var(--color-white);
+  outline-offset: 2px;
 }
 .admin-sidebar-brand-mark {
   color: var(--color-white);
@@ -2453,12 +2457,26 @@
   background-color: var(--color-white);
   color: var(--color-text);
 }
+.admin-nav-link:focus-visible {
+  outline: 2px solid var(--color-white);
+  outline-offset: 2px;
+}
 
 .admin-sidebar-footer {
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
   padding: var(--space-md);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+/* Account/settings group (language, email, sign-out) — separated from the
+   "View site" action above it purely with spacing, no visible label. */
+.admin-sidebar-account-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-top: var(--space-xs);
+  padding-top: var(--space-sm);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 .admin-user-row {
@@ -2492,6 +2510,10 @@
   background-color: rgba(255, 255, 255, 0.08);
   color: var(--color-white);
 }
+.admin-signout:focus-visible {
+  outline: 2px solid var(--color-white);
+  outline-offset: 2px;
+}
 
 .admin-main {
   flex: 1;
@@ -2521,15 +2543,47 @@
   .admin-sidebar.is-collapsed .admin-collapsible-label {
     display: none;
   }
+
+  /* Header: side-by-side (logo + toggle) doesn't fit an 80px rail once the
+     logo is sized up (see .admin-sidebar-brand-mark below) — stack them
+     instead, both still centered at the top of the sidebar together. */
+  .admin-sidebar.is-collapsed .admin-sidebar-header {
+    flex-direction: column;
+    gap: var(--space-sm);
+    padding: var(--space-md) 0.5rem;
+  }
   .admin-sidebar.is-collapsed .admin-sidebar-brand {
     justify-content: center;
+    flex: 0 0 auto;
   }
+
+  /* .admin-nav's own padding is too wide for an 80px rail to hold a real
+     icon button — shrink it so the 40px squares below have room to center. */
+  .admin-sidebar.is-collapsed .admin-nav {
+    padding-inline: 8px;
+  }
+
+  /* Fixed, truly square icon containers instead of a text-pill with its
+     horizontal padding merely zeroed out (which left a tall, narrow
+     rectangle, not a square) — is-active's white background now fills an
+     actual square. */
   .admin-sidebar.is-collapsed .admin-nav-link,
   .admin-sidebar.is-collapsed .admin-sidebar-view-site,
   .admin-sidebar.is-collapsed .admin-signout,
   .admin-sidebar.is-collapsed .admin-user-row {
     justify-content: center;
-    padding-inline: 0;
+    padding: 0;
+  }
+  .admin-sidebar.is-collapsed .admin-nav-link,
+  .admin-sidebar.is-collapsed .admin-sidebar-view-site,
+  .admin-sidebar.is-collapsed .admin-signout {
+    width: 40px;
+    height: 40px;
+    margin-inline: auto;
+    border-radius: 10px;
+  }
+  .admin-sidebar.is-collapsed .admin-user-row {
+    height: 40px;
   }
 }
 
@@ -2680,9 +2734,13 @@
   font-size: 0.88rem;
   border-collapse: collapse;
 }
+/* 20px horizontal (was 48px, var(--space-lg)) — that excess padding across
+   8 columns was the actual cause of the table outgrowing its lg+ container
+   and needing to scroll; flexible column sizing plus this cut fixes it at
+   the source instead of hiding it with an overflow rule. */
 .admin-table th {
   text-align: left;
-  padding: var(--space-sm) var(--space-lg);
+  padding: var(--space-sm) 1.25rem;
   font-size: 0.66rem;
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -2691,19 +2749,77 @@
   background-color: var(--color-bg-soft);
 }
 .admin-table td {
-  padding: var(--space-sm) var(--space-lg);
+  padding: var(--space-sm) 1.25rem;
   border-top: 1px solid var(--color-border);
   color: var(--color-text);
 }
 .admin-table tr:hover td {
   background-color: var(--color-bg-soft);
 }
+/* Table wrapper: keeps horizontal scroll available (and contained to the
+   table, never the page) at genuinely narrow desktop widths, but hides the
+   scrollbar chrome itself — touch/trackpad scrolling still works. */
+.admin-table-scroll {
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.admin-table-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.admin-cell-subtext {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+/* Keeps one unusually long name/commune from forcing the orders table wider
+   than its lg+ container and reintroducing a horizontal scrollbar. */
+.admin-cell-truncate {
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.admin-row-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-xs);
+}
+.admin-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  border-radius: var(--radius-main);
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: background var(--duration-base) var(--ease-luxury);
+}
+.admin-icon-button:hover {
+  background: var(--color-bg-soft);
+  color: var(--color-text);
+}
+.admin-icon-button:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+}
+/* Reads as destructive before hover too, not only on it. */
+.admin-icon-button-danger {
+  color: color-mix(in srgb, #d64545 55%, var(--color-text-secondary));
+}
+.admin-icon-button-danger:hover {
+  background: #fdecec;
+  color: #d64545;
+}
 
 .admin-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.3rem 0.75rem;
+  padding: 0.45rem 0.8rem;
   border-radius: 999px;
   font-size: 0.68rem;
   font-weight: 600;
@@ -2753,6 +2869,10 @@
 .admin-badge-button:disabled {
   cursor: not-allowed;
   opacity: 0.6;
+}
+.admin-badge-button:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
 }
 .admin-status-pill-menu {
   position: absolute;
@@ -3166,42 +3286,6 @@
   align-items: center;
   gap: 0.25rem;
 }
-.admin-cell-subtext {
-  font-size: 0.75rem;
-  color: var(--color-text-secondary);
-}
-/* Keeps one unusually long name/commune from forcing the orders table wider
-   than its lg+ container and reintroducing a horizontal scrollbar. */
-.admin-cell-truncate {
-  max-width: 180px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.admin-row-actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: var(--space-xs);
-}
-.admin-icon-button {
-  padding: 0.5rem;
-  border-radius: var(--radius-main);
-  border: none;
-  background: transparent;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  transition: background var(--duration-base) var(--ease-luxury);
-}
-.admin-icon-button:hover {
-  background: var(--color-bg-soft);
-  color: var(--color-text);
-}
-.admin-icon-button-danger:hover {
-  background: #fdecec;
-  color: #d64545;
-}
-
 /* Order cards (mobile) */
 .admin-order-card-actions {
   display: flex;
@@ -3849,42 +3933,6 @@
   align-items: center;
   gap: 0.25rem;
 }
-.admin-cell-subtext {
-  font-size: 0.75rem;
-  color: var(--color-text-secondary);
-}
-/* Keeps one unusually long name/commune from forcing the orders table wider
-   than its lg+ container and reintroducing a horizontal scrollbar. */
-.admin-cell-truncate {
-  max-width: 180px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.admin-row-actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: var(--space-xs);
-}
-.admin-icon-button {
-  padding: 0.5rem;
-  border-radius: var(--radius-main);
-  border: none;
-  background: transparent;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  transition: background var(--duration-base) var(--ease-luxury);
-}
-.admin-icon-button:hover {
-  background: var(--color-bg-soft);
-  color: var(--color-text);
-}
-.admin-icon-button-danger:hover {
-  background: #fdecec;
-  color: #d64545;
-}
-
 /* Order cards (mobile) */
 .admin-order-card-actions {
   display: flex;
@@ -4358,18 +4406,29 @@
 }
 
 /* Sidebar additions: Logo wrapper + "view site" link */
+/* Sized to the Logo SVG's real aspect ratio (~1.414:1, viewBox
+   205.591x145.368) so it fills the box exactly instead of being
+   letterboxed inside a square — 36px is within the ~34-40px expanded
+   target, 45px width follows to avoid distortion. */
 .admin-sidebar-brand-mark {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 26px;
-  height: 26px;
+  width: 51px;
+  height: 36px;
   flex-shrink: 0;
+  transition: width var(--duration-base) var(--ease-luxury), height var(--duration-base) var(--ease-luxury);
 }
 .admin-sidebar-brand-mark svg,
 .admin-sidebar-brand-mark img {
   width: 100%;
   height: 100%;
+}
+@media (min-width: 1024px) {
+  .admin-sidebar.is-collapsed .admin-sidebar-brand-mark {
+    width: 45px;
+    height: 32px;
+  }
 }
 
 .admin-sidebar-view-site {
@@ -4388,6 +4447,10 @@
 .admin-sidebar-view-site:hover {
   background-color: rgba(255, 255, 255, 0.08);
   color: var(--color-white);
+}
+.admin-sidebar-view-site:focus-visible {
+  outline: 2px solid var(--color-white);
+  outline-offset: 2px;
 }
 .admin-empty-state {
   display: flex;

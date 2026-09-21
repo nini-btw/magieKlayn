@@ -10,7 +10,8 @@ import {
   LogOutIcon,
   UserIcon,
   ExternalLinkIcon,
-  MenuIcon,
+  PanelLeftCloseIcon,
+  PanelLeftOpenIcon,
 } from "lucide-react";
 import { logoutAdmin } from "../actions";
 import { LanguageSwitcher } from "@/presentation/components/features/LanguageSwitcher";
@@ -78,14 +79,21 @@ export const AdminSidebar: React.FC<{
             </div>
           </Link>
           {/* Desktop-only — mobile already has its own open/close burger in
-              AdminTopBar; this one toggles icon-only vs. full sidebar. */}
+              AdminTopBar; this one toggles icon-only vs. full sidebar. Icon
+              itself communicates the action: showing the "close" icon while
+              expanded (click to collapse) and "open" while collapsed. */}
           <button
             type="button"
             onClick={onToggleCollapse}
             className="admin-sidebar-collapse-toggle hidden lg:flex"
             aria-label={t(isCollapsed ? "admin.sidebar.expand" : "admin.sidebar.collapse")}
+            title={t(isCollapsed ? "admin.sidebar.expand" : "admin.sidebar.collapse")}
           >
-            <MenuIcon className="h-5 w-5" />
+            {isCollapsed ? (
+              <PanelLeftOpenIcon className="h-5 w-5" />
+            ) : (
+              <PanelLeftCloseIcon className="h-5 w-5" />
+            )}
           </button>
         </div>
 
@@ -100,6 +108,8 @@ export const AdminSidebar: React.FC<{
                 href={item.href}
                 onClick={onClose}
                 className={`admin-nav-link${isActive ? " is-active" : ""}`}
+                title={t(item.labelKey)}
+                aria-label={t(item.labelKey)}
                 data-testid={
                   item.href === "/admin/products" ? "nav-products" : undefined
                 }
@@ -119,24 +129,35 @@ export const AdminSidebar: React.FC<{
             rel="noopener noreferrer"
             className="admin-sidebar-view-site"
             onClick={onClose}
+            title={t("admin.sidebar.viewSite")}
+            aria-label={t("admin.sidebar.viewSite")}
           >
             <ExternalLinkIcon className="h-4 w-4" />
             <span className="admin-collapsible-label">{t("admin.sidebar.viewSite")}</span>
           </Link>
 
-          {/* Needs more than icon-width space to be usable, so it's hidden
-              entirely (not just its label) when collapsed. */}
-          {!isCollapsed && <LanguageSwitcher variant="admin" />}
+          {/* Account/settings group — visually separated from primary nav
+              and the "View site" action above via its own top border. */}
+          <div className="admin-sidebar-account-group">
+            {/* Needs more than icon-width space to be usable, so it's hidden
+                entirely (not just its label) when collapsed. */}
+            {!isCollapsed && <LanguageSwitcher variant="admin" />}
 
-          <div className="admin-user-row">
-            <UserIcon className="h-4 w-4" />
-            <span className="admin-collapsible-label">{userEmail}</span>
+            <div className="admin-user-row" title={userEmail}>
+              <UserIcon className="h-4 w-4" />
+              <span className="admin-collapsible-label">{userEmail}</span>
+            </div>
+
+            <button
+              onClick={handleLogout}
+              className="admin-signout"
+              title={t("admin.sidebar.signOut")}
+              aria-label={t("admin.sidebar.signOut")}
+            >
+              <LogOutIcon className="h-5 w-5" />
+              <span className="admin-collapsible-label">{t("admin.sidebar.signOut")}</span>
+            </button>
           </div>
-
-          <button onClick={handleLogout} className="admin-signout">
-            <LogOutIcon className="h-5 w-5" />
-            <span className="admin-collapsible-label">{t("admin.sidebar.signOut")}</span>
-          </button>
         </div>
       </aside>
     </>

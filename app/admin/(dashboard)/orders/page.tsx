@@ -669,7 +669,11 @@ function OrderCard({
         <div>
           <p className="admin-order-id">#{order.id.slice(-6).toUpperCase()}</p>
           <p className="admin-order-date">
-            {new Date(order.createdAt).toLocaleDateString()}
+            {new Date(order.createdAt).toLocaleDateString(undefined, {
+              day: "2-digit",
+              month: "2-digit",
+              year: "2-digit",
+            })}
           </p>
         </div>
         <OrderStatusPill order={order} onStatusChange={onStatusChange} t={t} />
@@ -698,12 +702,19 @@ function OrderCard({
           </p>
         </div>
         <div className="admin-order-card-actions">
-          <button onClick={onView} className="admin-icon-button">
+          <button
+            onClick={onView}
+            className="admin-icon-button"
+            title={t("admin.orders.view")}
+            aria-label={t("admin.orders.view")}
+          >
             <EyeIcon className="w-4 h-4" />
           </button>
           <button
             onClick={onDelete}
             className="admin-icon-button admin-icon-button-danger"
+            title={t("admin.orders.delete")}
+            aria-label={t("admin.orders.delete")}
           >
             <Trash2Icon className="w-4 h-4" />
           </button>
@@ -1024,7 +1035,7 @@ export default function AdminOrdersPage() {
         </div>
 
         {/* Desktop Table */}
-        <div className="hidden lg:block" style={{ overflowX: "auto" }}>
+        <div className="hidden lg:block admin-table-scroll">
           <table className="admin-table">
             <thead>
               <tr>
@@ -1081,8 +1092,17 @@ export default function AdminOrdersPage() {
                       t={t}
                     />
                   </td>
-                  <td style={{ color: "var(--color-text-secondary)" }}>
-                    {new Date(order.createdAt).toLocaleDateString()}
+                  <td
+                    style={{
+                      color: "var(--color-text-secondary)",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {new Date(order.createdAt).toLocaleDateString(undefined, {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "2-digit",
+                    })}
                   </td>
                   <td>
                     <div className="admin-row-actions">
@@ -1090,6 +1110,7 @@ export default function AdminOrdersPage() {
                         onClick={() => handleViewOrder(order)}
                         className="admin-icon-button"
                         title={t("admin.orders.view")}
+                        aria-label={t("admin.orders.view")}
                       >
                         <EyeIcon className="w-4 h-4" />
                       </button>
@@ -1097,6 +1118,7 @@ export default function AdminOrdersPage() {
                         onClick={() => handleDelete(order.id)}
                         className="admin-icon-button admin-icon-button-danger"
                         title={t("admin.orders.delete")}
+                        aria-label={t("admin.orders.delete")}
                       >
                         <Trash2Icon className="w-4 h-4" />
                       </button>
