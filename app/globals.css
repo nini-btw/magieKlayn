@@ -2366,7 +2366,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-xs);
-  padding: var(--space-lg) var(--space-md);
+  padding: var(--space-sm) var(--space-md);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 .admin-sidebar-brand {
@@ -4417,7 +4417,9 @@
   width: 51px;
   height: 36px;
   flex-shrink: 0;
-  transition: width var(--duration-base) var(--ease-luxury), height var(--duration-base) var(--ease-luxury);
+  transition:
+    width var(--duration-base) var(--ease-luxury),
+    height var(--duration-base) var(--ease-luxury);
 }
 .admin-sidebar-brand-mark svg,
 .admin-sidebar-brand-mark img {
